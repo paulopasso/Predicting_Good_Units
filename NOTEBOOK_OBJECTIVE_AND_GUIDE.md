@@ -2,7 +2,7 @@
 
 This repo currently centers on one main notebook supposed to run on colab:
 
-- `Spike QC Prototype Redefining Quality.ipynb`
+- `Spike_UNIT_Quality.ipynb`
 
 ## Objective
 
@@ -19,7 +19,7 @@ from waveform/statistical/relational features extracted from sorted units.
 
 1. Install and validate runtime dependencies (Colab-safe, ABI checks included).
 2. Mount Google Drive and configure persistent paths.
-3. Enumerate SpikeForest outputs (with kachery-cloud auth handling and fallback).
+3. Enumerate SpikeForest outputs from SHA1 manifests (with kachery-cloud auth handling and fallback).
 4. Extract unit-level features for training data (checkpointed per recording/sorter).
 5. Audit dataset and leakage risks.
 6. Train group-aware XGBoost models with leakage controls.
@@ -79,8 +79,13 @@ Raw datasets are referenced from:
 
 Important API detail:
 
+- Enumeration uses the same SHA1 URIs shown in `spikeforest/examples`:
+  - default sorting outputs + recordings
+  - hybrid janelia sorting outputs + recordings
+  - synth monotrode sorting outputs + recordings
 - `SFSortingOutput` provides `study_name`, `recording_name`, `sorter_name`.
-- It may not provide `study_set_name`; notebook logic resolves this via SpikeForest recordings metadata.
+- `study_set_name` is resolved by joining against the paired recordings manifest.
+- Phase 0 stores `sorting_object` directly in manifest rows and Phase 1 loads sortings from that object, avoiding brittle object re-discovery.
 
 ## Practical Run Modes
 
