@@ -1,0 +1,8 @@
+.DS_Store
+.ipynb_checkpoints/
+
+# Local agent/editor settings
+.claude/settings.local.json
+
+# Temporary patch artifacts
+tmp_patch_*.py
