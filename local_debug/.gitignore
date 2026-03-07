@@ -1,0 +1,10 @@
+# Local debug runtime outputs
+artifacts/**
+cache/**
+logs/**
+data/**
+
+!artifacts/.gitkeep
+!cache/.gitkeep
+!logs/.gitkeep
+!data/.gitkeep
