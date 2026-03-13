@@ -91,16 +91,32 @@ def main() -> int:
             obj.to_csv(output_dir / f"{name}.csv", index=False)
 
     winner = artifacts["winner_summary"]
+    combined_winner = artifacts.get("combined_winner_summary")
     print(f"Saved outputs to: {output_dir}")
     if not winner.empty:
-        row = winner.iloc[0]
+        if "target" in winner.columns:
+            print("Per-target winners:")
+            for row in winner.itertuples(index=False):
+                print(
+                    f"  {row.target}: {row.candidate_id} "
+                    f"(protocol={row.protocol_mode}, mae={row.mae:.4f}, eligible_target_default={bool(row.eligible_target_default)})"
+                )
+        else:
+            row = winner.iloc[0]
+            print(
+                "Winner:",
+                row["candidate_id"],
+                f"(protocol={row['protocol_mode']}, primary_avg_mae={row['primary_avg_mae']:.4f}, eligible_default={bool(row['eligible_default'])})",
+            )
+    else:
+        print("Winner: unavailable")
+    if combined_winner is not None and not combined_winner.empty:
+        row = combined_winner.iloc[0]
         print(
-            "Winner:",
+            "Combined primary winner:",
             row["candidate_id"],
             f"(protocol={row['protocol_mode']}, primary_avg_mae={row['primary_avg_mae']:.4f}, eligible_default={bool(row['eligible_default'])})",
         )
-    else:
-        print("Winner: unavailable")
     return 0
 
 

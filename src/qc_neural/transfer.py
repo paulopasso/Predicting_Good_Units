@@ -224,6 +224,12 @@ class SingleTargetDomainAdaptiveRegressor:
         target_labeled_df: pd.DataFrame,
         target_unlabeled_df: pd.DataFrame,
     ) -> "SingleTargetDomainAdaptiveRegressor":
+        try:
+            torch.set_num_threads(1)
+            if hasattr(torch, "set_num_interop_threads"):
+                torch.set_num_interop_threads(1)
+        except RuntimeError:
+            pass
         torch.manual_seed(self.random_state)
         np.random.seed(self.random_state)
 

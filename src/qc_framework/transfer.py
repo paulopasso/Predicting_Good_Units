@@ -324,7 +324,10 @@ class QCTransferBenchmark:
         selection_results = pd.concat(selection_frames, ignore_index=True) if selection_frames else pd.DataFrame()
         selection_summary = self._summarize_selection(selection_results)
         holdout_results = pd.concat(holdout_frames, ignore_index=True) if holdout_frames else pd.DataFrame()
-        holdout_summary, winner_summary = self._summarize_holdout(holdout_results, selection_summary)
+        holdout_summary, winner_summary, combined_winner_summary = self._summarize_holdout(
+            holdout_results,
+            selection_summary,
+        )
 
         self._selection_results = selection_results
         self._selection_summary = selection_summary
@@ -345,6 +348,7 @@ class QCTransferBenchmark:
             "per_target_recommendation": self._per_target_recommendation(holdout_summary).copy(),
             "backend_comparison": self._backend_comparison(holdout_summary).copy(),
             "winner_summary": winner_summary.copy(),
+            "combined_winner_summary": combined_winner_summary.copy(),
         }
 
     def _estimate_total_tasks(self) -> int:
@@ -743,7 +747,6 @@ class QCTransferBenchmark:
     ) -> pd.DataFrame:
         if finalists.empty:
             return pd.DataFrame()
-        candidate_ids = set(finalists["candidate_id"].astype(str))
         all_rows = self._run_candidate_bundle(
             phase="final_holdout",
             split_id="final_holdout",
@@ -753,7 +756,15 @@ class QCTransferBenchmark:
             paired_test=paired_holdout,
             paired_unlabeled=paired_unlabeled,
         )
-        rows = [row for row in all_rows if row["candidate_id"] in candidate_ids]
+        if "target" in finalists.columns:
+            finalist_keys = {
+                (str(candidate_id), str(target))
+                for candidate_id, target in finalists[["candidate_id", "target"]].itertuples(index=False, name=None)
+            }
+            rows = [row for row in all_rows if (row["candidate_id"], row["target"]) in finalist_keys]
+        else:
+            candidate_ids = set(finalists["candidate_id"].astype(str))
+            rows = [row for row in all_rows if row["candidate_id"] in candidate_ids]
         return pd.DataFrame(rows)
 
     # ------------------------------------------------------------------
@@ -1476,9 +1487,15 @@ class QCTransferBenchmark:
             )
         )
         summary = summary.merge(gate, on=["protocol_mode", "candidate_id"], how="left")
+        summary["advances_target"] = summary["beats_dummy"].fillna(False) & summary["beats_best_hybrid_only"].fillna(False)
         beats_dummy_all = summary["beats_dummy_all_primary_targets"].astype("boolean").fillna(False).astype(bool)
         beats_hybrid_all = summary["beats_hybrid_only_all_primary_targets"].astype("boolean").fillna(False).astype(bool)
-        summary["advances"] = beats_dummy_all & beats_hybrid_all
+        summary["advances_all_primary_targets"] = beats_dummy_all & beats_hybrid_all
+        summary["advances"] = (
+            summary["advances_target"]
+            if self.config.deploy_best_per_target
+            else summary["advances_all_primary_targets"]
+        )
         return summary.sort_values(["protocol_mode", "primary_avg_mae", "candidate_id", "target"])
 
     # ------------------------------------------------------------------
@@ -1486,19 +1503,8 @@ class QCTransferBenchmark:
         if selection_summary.empty:
             return pd.DataFrame()
 
-        primary = selection_summary[
-            selection_summary["target"].isin(self.config.primary_targets) & ~selection_summary["is_ceiling_model"]
-        ].copy()
-        candidate_rows = (
-            primary.groupby(
-                ["protocol_mode", "candidate_id", "model_family", "model_name", "feature_view", "primary_avg_mae"],
-                as_index=False,
-            )[["advances", "beats_dummy_all_primary_targets", "beats_hybrid_only_all_primary_targets"]]
-            .first()
-        )
-
         finalists: list[pd.DataFrame] = []
-        for family in (
+        family_order = (
             "dummy",
             "hybrid_only",
             "paired_only",
@@ -1507,11 +1513,41 @@ class QCTransferBenchmark:
             "hybrid_plus_paired",
             "context_tabular",
             "context_transfer",
-        ):
-            family_rows = candidate_rows[candidate_rows["model_family"] == family].sort_values("primary_avg_mae")
-            if family_rows.empty:
-                continue
-            finalists.append(family_rows.head(1))
+        )
+        if self.config.deploy_best_per_target:
+            scored = selection_summary[
+                selection_summary["target"].isin(self.config.all_targets()) & ~selection_summary["is_ceiling_model"]
+            ].copy()
+            for family in family_order:
+                family_rows = scored[scored["model_family"] == family].copy()
+                if family_rows.empty:
+                    continue
+                family_rows["_advances_sort"] = family_rows["advances"].astype("boolean").fillna(False).astype(bool)
+                finalists.append(
+                    family_rows.sort_values(
+                        ["protocol_mode", "target", "_advances_sort", "mae", "candidate_id"],
+                        ascending=[True, True, False, True, True],
+                    )
+                    .groupby(["protocol_mode", "target"], as_index=False)
+                    .head(1)
+                    .drop(columns=["_advances_sort"], errors="ignore")
+                )
+        else:
+            primary = selection_summary[
+                selection_summary["target"].isin(self.config.primary_targets) & ~selection_summary["is_ceiling_model"]
+            ].copy()
+            candidate_rows = (
+                primary.groupby(
+                    ["protocol_mode", "candidate_id", "model_family", "model_name", "feature_view", "primary_avg_mae"],
+                    as_index=False,
+                )[["advances", "beats_dummy_all_primary_targets", "beats_hybrid_only_all_primary_targets"]]
+                .first()
+            )
+            for family in family_order:
+                family_rows = candidate_rows[candidate_rows["model_family"] == family].sort_values("primary_avg_mae")
+                if family_rows.empty:
+                    continue
+                finalists.append(family_rows.head(1))
         if not finalists:
             return pd.DataFrame()
         return pd.concat(finalists, ignore_index=True)
@@ -1519,9 +1555,9 @@ class QCTransferBenchmark:
     # ------------------------------------------------------------------
     def _summarize_holdout(
         self, holdout_results: pd.DataFrame, selection_summary: pd.DataFrame
-    ) -> tuple[pd.DataFrame, pd.DataFrame]:
+    ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         if holdout_results.empty:
-            return pd.DataFrame(), pd.DataFrame()
+            return pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
 
         holdout_summary = (
             holdout_results.groupby(
@@ -1546,9 +1582,22 @@ class QCTransferBenchmark:
         )
 
         selection_gate = selection_summary[
-            ["protocol_mode", "candidate_id", "advances", "beats_dummy_all_primary_targets", "beats_hybrid_only_all_primary_targets"]
+            [
+                "protocol_mode",
+                "candidate_id",
+                "target",
+                "advances",
+                "advances_target",
+                "advances_all_primary_targets",
+                "beats_dummy_all_primary_targets",
+                "beats_hybrid_only_all_primary_targets",
+            ]
         ].drop_duplicates()
-        holdout_summary = holdout_summary.merge(selection_gate, on=["protocol_mode", "candidate_id"], how="left")
+        holdout_summary = holdout_summary.merge(
+            selection_gate,
+            on=["protocol_mode", "candidate_id", "target"],
+            how="left",
+        )
 
         best_paired_only_by_protocol = (
             primary_avg[primary_avg["model_family"] == "paired_only"]
@@ -1560,47 +1609,97 @@ class QCTransferBenchmark:
         holdout_summary["beats_best_paired_only"] = (
             holdout_summary["primary_avg_mae"] < holdout_summary["best_paired_only_primary_avg_mae"]
         )
+        best_paired_only_by_target = (
+            holdout_summary[holdout_summary["model_family"] == "paired_only"]
+            .groupby(["protocol_mode", "target"], as_index=False)["mae"]
+            .min()
+            .rename(columns={"mae": "best_paired_only_target_mae"})
+        )
+        holdout_summary = holdout_summary.merge(
+            best_paired_only_by_target,
+            on=["protocol_mode", "target"],
+            how="left",
+        )
+        holdout_summary["beats_best_paired_only_target"] = (
+            holdout_summary["mae"] < holdout_summary["best_paired_only_target_mae"]
+        )
+        target_advances = holdout_summary["advances_target"].astype("boolean").fillna(False).astype(bool)
+        holdout_summary["eligible_target_default"] = (
+            (holdout_summary["model_family"] == "paired_only")
+            | (holdout_summary["beats_best_paired_only_target"] & target_advances)
+        )
 
-        default_row = (
+        combined_default_row = (
             primary_avg[primary_avg["protocol_mode"] == "inductive"].sort_values("primary_avg_mae")
             .merge(
                 holdout_summary[
-                    ["protocol_mode", "candidate_id", "beats_best_paired_only"]
-                ].drop_duplicates(),
+                    ["protocol_mode", "candidate_id", "beats_best_paired_only", "advances_all_primary_targets"]
+                ].drop_duplicates(subset=["protocol_mode", "candidate_id"]),
                 on=["protocol_mode", "candidate_id"],
                 how="left",
             )
             .assign(
-                advances=lambda df: df["candidate_id"].map(
-                    selection_gate[selection_gate["protocol_mode"] == "inductive"].set_index("candidate_id")["advances"].to_dict()
-                ).fillna(False),
                 eligible_default=lambda df: (
                     (df["model_family"] == "paired_only")
-                    | (df["beats_best_paired_only"] & df["advances"])
+                    | (df["beats_best_paired_only"] & df["advances_all_primary_targets"].fillna(False))
                 ),
             )
             .sort_values(["eligible_default", "primary_avg_mae"], ascending=[False, True])
             .head(1)
         )
 
-        winner_summary = default_row.copy()
-        winner_summary = winner_summary.merge(
+        combined_winner_summary = combined_default_row.copy()
+        combined_winner_summary = combined_winner_summary.merge(
             best_paired_only_by_protocol.rename(columns={"protocol_mode": "winner_protocol_mode"}),
             left_on="protocol_mode",
             right_on="winner_protocol_mode",
             how="left",
         ).drop(columns=["winner_protocol_mode"])
-        return holdout_summary.sort_values(["protocol_mode", "primary_avg_mae", "candidate_id", "target"]), winner_summary
+        if self.config.deploy_best_per_target:
+            winner_summary = self._per_target_recommendation(
+                holdout_summary,
+                protocol_mode="inductive",
+                eligible_only=True,
+            ).copy()
+        else:
+            winner_summary = combined_winner_summary.copy()
+        return (
+            holdout_summary.sort_values(["protocol_mode", "target", "mae", "candidate_id"]),
+            winner_summary,
+            combined_winner_summary,
+        )
 
-    def _per_target_recommendation(self, holdout_summary: pd.DataFrame) -> pd.DataFrame:
+    def _per_target_recommendation(
+        self,
+        holdout_summary: pd.DataFrame,
+        *,
+        protocol_mode: str | None = None,
+        eligible_only: bool = False,
+    ) -> pd.DataFrame:
         if holdout_summary.empty:
             return pd.DataFrame()
         scored = holdout_summary[~holdout_summary["is_ceiling_model"]].copy()
+        scored = scored[scored["target"].isin(self.config.primary_targets)].copy()
+        if protocol_mode is not None:
+            scored = scored[scored["protocol_mode"] == protocol_mode].copy()
+        if scored.empty:
+            return pd.DataFrame()
+        if eligible_only and "eligible_target_default" in scored.columns:
+            eligible = scored[scored["eligible_target_default"].astype("boolean").fillna(False).astype(bool)].copy()
+            if not eligible.empty:
+                scored = eligible
+        if "eligible_target_default" in scored.columns:
+            scored["_eligible_sort"] = scored["eligible_target_default"].astype("boolean").fillna(False).astype(bool)
+            sort_cols = ["protocol_mode", "target", "_eligible_sort", "mae", "candidate_id"]
+            ascending = [True, True, False, True, True]
+        else:
+            sort_cols = ["protocol_mode", "target", "mae", "candidate_id"]
+            ascending = [True, True, True, True]
         best = (
-            scored[scored["target"].isin(self.config.primary_targets)]
-            .sort_values(["protocol_mode", "target", "mae", "candidate_id"])
+            scored.sort_values(sort_cols, ascending=ascending)
             .groupby(["protocol_mode", "target"], as_index=False)
             .head(1)
+            .drop(columns=["_eligible_sort"], errors="ignore")
         )
         return best.reset_index(drop=True)
 
