@@ -1,8 +1,17 @@
 .DS_Store
 .ipynb_checkpoints/
+__pycache__/
+*.pyc
 
 # Local agent/editor settings
-.claude/settings.local.json
+.claude/
+local_debug/
+data/
+
+# Generated analysis artifacts
+analysis/**/outputs/
+analysis/**/*.csv
+analysis/**/*.json
 
 # Temporary patch artifacts
 tmp_patch_*.py

@@ -15,6 +15,8 @@ It trains models to predict:
 
 from waveform/statistical/relational features extracted from sorted units.
 
+Target labels are defined per sorted unit, not per ground-truth unit.
+
 ## High-Level Workflow
 
 1. Install and validate runtime dependencies (Colab-safe, ABI checks included).
@@ -41,6 +43,10 @@ from waveform/statistical/relational features extracted from sorted units.
   - Feature extraction written in small parts to Drive
   - Resume states for feature extraction and CV folds
   - Re-run skips completed chunks by default
+- **Target correctness**:
+  - Ground-truth comparison is derived per tested unit using SpikeInterface match tables
+  - GT-indexed `get_performance(method="by_unit")` is used only for debug/audit, not for row labels
+  - Hard self-checks fail when targets are constant or mostly degenerate
 
 ## Data and Storage Layout
 
@@ -86,6 +92,42 @@ Important API detail:
 - `SFSortingOutput` provides `study_name`, `recording_name`, `sorter_name`.
 - `study_set_name` is resolved by joining against the paired recordings manifest.
 - Phase 0 stores `sorting_object` directly in manifest rows and Phase 1 loads sortings from that object, avoiding brittle object re-discovery.
+- Current SpikeForest package schema uses:
+  - recordings records with `recordingObject` and `sortingTrueObject`
+  - sorting-output records with `sortingObject`
+- Older dev utilities in the SpikeForest repo also show a flatter `recordingUri` / `sortingTrueUri` / `firings` schema. Those are useful for history and sortingview prep, but the notebook targets the current package schema above.
+
+## Ground-Truth Target Semantics
+
+SpikeInterface comparison objects expose two different views that must not be mixed:
+
+- GT-indexed summary tables:
+  - `cmp.count_score`
+  - `cmp.get_performance(method="by_unit")`
+- tested-unit mappings:
+  - `cmp.best_match_21`
+  - `cmp.hungarian_match_21`
+  - `cmp.match_event_count`
+  - `cmp.event_counts2`
+
+The notebook labels each sorted unit using the tested-unit view:
+
+- `matched_gt_unit_id`
+- `hungarian_gt_unit_id`
+- `match_status`
+- `agreement_score`
+- `tp`, `fn`, `fp`
+- `num_gt`, `num_tested`
+- `recall`, `precision`
+- `fmiss`, `fpos`, `accuracy`
+
+For pure false-positive sorted units:
+
+- `fpos = 1.0`
+- `accuracy = 0.0`
+- `fmiss = NaN`
+
+This is intentional. Miss rate is undefined when no GT unit is matched.
 
 ## Practical Run Modes
 
@@ -114,6 +156,15 @@ Important API detail:
 - test predictions + test metrics
 - leakage/data audit JSONs
 - run/source/model manifests
+
+Additional audit outputs for comparison debugging:
+
+- `spikeforest_schema_audit.json`
+- `comparison_debug_summary.json`
+- `comparison_debug/*.json`
+- `comparison_debug/*.csv`
+- `features_train_review.parquet`
+- `features_train_review.csv`
 
 ## If You Need to Extend the Notebook
 
