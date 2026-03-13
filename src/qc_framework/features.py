@@ -8,6 +8,12 @@ import pandas as pd
 _WF_PREFIX = "wf_bin_"
 _ACG_PREFIX = "acg_"
 _RELATIVE_SUFFIX = "_recording_pct"
+_CONTEXT_MEAN_SUFFIX = "_recording_mean"
+_CONTEXT_STD_SUFFIX = "_recording_std"
+_CONTEXT_MEDIAN_SUFFIX = "_recording_median"
+_CONTEXT_IQR_SUFFIX = "_recording_iqr"
+_CONTEXT_CENTERED_SUFFIX = "_recording_delta"
+_STUDY_INDICATOR_PREFIX = "study_indicator__"
 _WF_RE = re.compile(r"^wf_bin_\d+$")
 _ACG_RE = re.compile(r"^acg_\d+$")
 
@@ -39,6 +45,31 @@ _DEFAULT_RECORDING_RELATIVE_COLS = [
     "median_waveform_cosine",
     "std_waveform_cosine",
     "n_waveform_confusable",
+    "min_neighbor_dist_um",
+    "mean_neighbor_dist_um",
+]
+
+_DEFAULT_RECORDING_CONTEXT_COLS = [
+    "snr",
+    "peak_to_trough_uv",
+    "amp_mean",
+    "amp_std",
+    "amp_p50",
+    "template_norm",
+    "wf_energy",
+    "si_snr",
+    "si_amplitude_median",
+    "si_amplitude_cutoff",
+    "si_drift_ptp",
+    "si_drift_std",
+    "si_drift_mad",
+    "firing_rate_hz",
+    "isi_violation_rate",
+    "max_cosine",
+    "mean_cosine_top3",
+    "median_cosine",
+    "n_confusable",
+    "isolation_score",
     "min_neighbor_dist_um",
     "mean_neighbor_dist_um",
 ]
@@ -110,7 +141,14 @@ class FeatureSetBuilder:
         }
     )
     TRANSFER_VIEW_NAMES: frozenset[str] = frozenset(
-        {"norm_swap", "shape_only", "recording_relative"}
+        {
+            "unit_raw",
+            "norm_swap",
+            "shape_only",
+            "recording_relative",
+            "recording_context",
+            "study_identity",
+        }
     )
 
     def build(
@@ -221,6 +259,14 @@ class FeatureSetBuilder:
         normalized_raw_cols: list[str] | tuple[str, ...] | None = None,
         normalizer_suffix: str = "_z",
         relative_suffix: str = _RELATIVE_SUFFIX,
+        context_suffixes: tuple[str, ...] = (
+            _CONTEXT_MEAN_SUFFIX,
+            _CONTEXT_STD_SUFFIX,
+            _CONTEXT_MEDIAN_SUFFIX,
+            _CONTEXT_IQR_SUFFIX,
+            _CONTEXT_CENTERED_SUFFIX,
+        ),
+        study_prefix: str = _STUDY_INDICATOR_PREFIX,
     ) -> list[str]:
         requested = list(view_names)
         unknown = sorted(set(requested) - set(cls.TRANSFER_VIEW_NAMES))
@@ -230,6 +276,9 @@ class FeatureSetBuilder:
         normalized_raw = set(normalized_raw_cols or [])
         base_cols = [c for c in spec.all_features if c in df.columns]
         selected: list[str] = []
+
+        if "unit_raw" in requested:
+            selected.extend(base_cols)
 
         if "norm_swap" in requested:
             selected.extend([c for c in base_cols if c not in normalized_raw])
@@ -246,6 +295,16 @@ class FeatureSetBuilder:
                 if c.endswith(relative_suffix) and c[: -len(relative_suffix)] in df.columns
             ]
             selected.extend(relative_cols)
+
+        if "recording_context" in requested:
+            context_cols = [
+                c for c in df.columns
+                if any(str(c).endswith(suffix) for suffix in context_suffixes)
+            ]
+            selected.extend(context_cols)
+
+        if "study_identity" in requested:
+            selected.extend([c for c in df.columns if str(c).startswith(study_prefix)])
 
         seen: set[str] = set()
         deduped: list[str] = []
@@ -309,6 +368,139 @@ class RecordingRelativeFeatureAugmenter:
             out[f"{col}{self.suffix}"] = pct.astype(float)
 
         self.generated_cols_ = [f"{c}{self.suffix}" for c in cols]
+        return out
+
+    def fit_transform(self, df: pd.DataFrame) -> pd.DataFrame:
+        return self.fit(df).transform(df)
+
+
+class RecordingContextFeatureAugmenter:
+    """Add within-recording summary features using only existing parquet columns."""
+
+    def __init__(
+        self,
+        cols_to_summarize: list[str] | None = None,
+        suffixes: tuple[str, str, str, str, str] = (
+            _CONTEXT_MEAN_SUFFIX,
+            _CONTEXT_STD_SUFFIX,
+            _CONTEXT_MEDIAN_SUFFIX,
+            _CONTEXT_IQR_SUFFIX,
+            _CONTEXT_CENTERED_SUFFIX,
+        ),
+    ) -> None:
+        self.cols_to_summarize = cols_to_summarize
+        self.suffixes = suffixes
+        self.generated_cols_: list[str] = []
+
+    def _effective_cols(self, df: pd.DataFrame) -> list[str]:
+        base = self.cols_to_summarize if self.cols_to_summarize is not None else _DEFAULT_RECORDING_CONTEXT_COLS
+        pattern_cols = [
+            c for c in df.columns
+            if str(c).startswith(("amp_", "si_amplitude_", "si_drift_"))
+            or "cosine" in str(c)
+            or "confusable" in str(c)
+            or str(c).endswith("_neighbor_dist_um")
+        ]
+        merged = list(dict.fromkeys(list(base) + pattern_cols))
+        return [
+            c
+            for c in merged
+            if c in df.columns
+            and pd.api.types.is_numeric_dtype(df[c])
+            and not any(str(c).endswith(suffix) for suffix in self.suffixes)
+        ]
+
+    def fit(self, df: pd.DataFrame) -> "RecordingContextFeatureAugmenter":
+        cols = self._effective_cols(df)
+        generated: list[str] = []
+        for col in cols:
+            generated.extend(
+                [
+                    f"{col}{self.suffixes[0]}",
+                    f"{col}{self.suffixes[1]}",
+                    f"{col}{self.suffixes[2]}",
+                    f"{col}{self.suffixes[3]}",
+                    f"{col}{self.suffixes[4]}",
+                ]
+            )
+        self.generated_cols_ = generated
+        return self
+
+    def transform(self, df: pd.DataFrame) -> pd.DataFrame:
+        if "recording_key" not in df.columns:
+            raise KeyError("RecordingContextFeatureAugmenter requires a recording_key column")
+
+        cols = self._effective_cols(df)
+        out = df.copy()
+        groups = out["recording_key"].astype(str)
+        generated: dict[str, pd.Series] = {}
+
+        for col in cols:
+            vals = pd.to_numeric(out[col], errors="coerce")
+            mean = vals.groupby(groups).transform("mean")
+            std = vals.groupby(groups).transform("std").fillna(0.0)
+            median = vals.groupby(groups).transform("median")
+            q25 = vals.groupby(groups).transform(lambda s: s.quantile(0.25))
+            q75 = vals.groupby(groups).transform(lambda s: s.quantile(0.75))
+            iqr = q75 - q25
+
+            generated[f"{col}{self.suffixes[0]}"] = mean.astype(float)
+            generated[f"{col}{self.suffixes[1]}"] = std.astype(float)
+            generated[f"{col}{self.suffixes[2]}"] = median.astype(float)
+            generated[f"{col}{self.suffixes[3]}"] = iqr.astype(float)
+            generated[f"{col}{self.suffixes[4]}"] = (vals - median).astype(float)
+
+        generated_df = pd.DataFrame(generated, index=out.index)
+        out = pd.concat([out, generated_df], axis=1)
+        self.generated_cols_ = list(generated_df.columns)
+        return out
+
+    def fit_transform(self, df: pd.DataFrame) -> pd.DataFrame:
+        return self.fit(df).transform(df)
+
+
+class StudyIndicatorAugmenter:
+    """Add numeric one-hot indicators for low-cardinality study identity."""
+
+    def __init__(
+        self,
+        source_col: str = "study_set",
+        prefix: str = _STUDY_INDICATOR_PREFIX,
+    ) -> None:
+        self.source_col = source_col
+        self.prefix = prefix
+        self.levels_: list[str] = []
+        self.generated_cols_: list[str] = []
+
+    @staticmethod
+    def _sanitize(value: str) -> str:
+        cleaned = re.sub(r"[^A-Za-z0-9]+", "_", value.strip())
+        return cleaned.strip("_").lower() or "unknown"
+
+    def fit(self, df: pd.DataFrame) -> "StudyIndicatorAugmenter":
+        if self.source_col not in df.columns:
+            self.levels_ = []
+            self.generated_cols_ = []
+            return self
+        levels = (
+            df[self.source_col]
+            .fillna("unknown")
+            .astype(str)
+            .value_counts()
+            .index
+            .tolist()
+        )
+        self.levels_ = levels
+        self.generated_cols_ = [f"{self.prefix}{self._sanitize(level)}" for level in levels]
+        return self
+
+    def transform(self, df: pd.DataFrame) -> pd.DataFrame:
+        out = df.copy()
+        if self.source_col not in out.columns:
+            return out
+        values = out[self.source_col].fillna("unknown").astype(str)
+        for level, col in zip(self.levels_, self.generated_cols_):
+            out[col] = (values == level).astype(float)
         return out
 
     def fit_transform(self, df: pd.DataFrame) -> pd.DataFrame:

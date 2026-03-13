@@ -23,6 +23,13 @@ try:
 except ImportError:
     _LGBM_AVAILABLE = False
 
+try:
+    from xgboost import XGBRegressor as _XGBRegressor
+
+    _XGBOOST_AVAILABLE = True
+except ImportError:
+    _XGBOOST_AVAILABLE = False
+
 
 def _safe_r2(y_true: np.ndarray, pred: np.ndarray) -> float:
     if len(np.unique(y_true)) <= 1:
@@ -76,6 +83,22 @@ class QCModelRegistry:
                     random_state=rs,
                     n_jobs=-1,
                     verbose=-1,
+                ),
+            )
+        if _XGBOOST_AVAILABLE:
+            self.register(
+                "xgboost",
+                lambda rs: _XGBRegressor(
+                    n_estimators=250,
+                    learning_rate=0.05,
+                    max_depth=6,
+                    subsample=0.8,
+                    colsample_bytree=0.8,
+                    objective="reg:squarederror",
+                    random_state=rs,
+                    n_jobs=-1,
+                    verbosity=0,
+                    tree_method="hist",
                 ),
             )
 

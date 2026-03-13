@@ -1,0 +1,2 @@
+protocol_mode,candidate_id,model_family,model_name,feature_view,primary_avg_mae,beats_best_paired_only,advances,eligible_default,best_paired_only_primary_avg_mae
+inductive,inductive|paired_only|lightgbm|shape_only,paired_only,lightgbm,shape_only,0.19710090246004952,False,True,True,0.19710090246004952

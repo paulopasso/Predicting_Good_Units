@@ -3,12 +3,12 @@
 from .normalizer import RecordingNormalizer
 from .model import QCNeuralNet, QCNeuralWrapper
 from .trainer import NeuralTrainer
-from .transfer import MultiTaskDomainAdaptiveRegressor
+from .transfer import SingleTargetDomainAdaptiveRegressor
 
 __all__ = [
     "RecordingNormalizer",
     "QCNeuralNet",
     "QCNeuralWrapper",
     "NeuralTrainer",
-    "MultiTaskDomainAdaptiveRegressor",
+    "SingleTargetDomainAdaptiveRegressor",
 ]

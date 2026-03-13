@@ -32,12 +32,12 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--skip-neural",
         action="store_true",
-        help="Skip the neural transfer family even if torch is installed",
+        help="Skip the context_transfer family even if torch is installed",
     )
     parser.add_argument(
         "--lightgbm-only",
         action="store_true",
-        help="Restrict paired_only baselines to LightGBM for faster smoke runs",
+        help="Restrict all boosting families to LightGBM for faster smoke runs",
     )
     parser.add_argument(
         "--verbose",
@@ -66,16 +66,17 @@ def main() -> int:
         "hybrid_calibrated",
         "hybrid_stack",
         "hybrid_plus_paired",
+        "context_tabular",
     )
     if not args.skip_neural:
-        model_families = model_families + ("neural_transfer",)
+        model_families = model_families + ("context_transfer",)
 
     config = TransferBenchmarkConfig(
         parquet_path=repo_root / args.parquet,
         paired_final_holdout_rows=args.final_holdout_rows,
         model_selection_splits=args.model_selection_splits,
         model_families=model_families,
-        paired_models=("lightgbm",) if args.lightgbm_only else ("lightgbm", "catboost"),
+        boosting_backends=("lightgbm",) if args.lightgbm_only else ("lightgbm", "catboost", "xgboost"),
         verbose=args.verbose,
         neural_verbose=args.neural_verbose,
     )
@@ -96,7 +97,7 @@ def main() -> int:
         print(
             "Winner:",
             row["candidate_id"],
-            f"(primary_avg_mae={row['primary_avg_mae']:.4f}, eligible_default={bool(row['eligible_default'])})",
+            f"(protocol={row['protocol_mode']}, primary_avg_mae={row['primary_avg_mae']:.4f}, eligible_default={bool(row['eligible_default'])})",
         )
     else:
         print("Winner: unavailable")

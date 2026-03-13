@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from qc_neural.transfer import MultiTaskDomainAdaptiveRegressor
+from qc_neural.transfer import SingleTargetDomainAdaptiveRegressor
 
 
 def _make_frame(n_rows: int, seed: int, include_strict_fmiss: bool) -> pd.DataFrame:
@@ -23,7 +23,7 @@ def _make_frame(n_rows: int, seed: int, include_strict_fmiss: bool) -> pd.DataFr
     return pd.DataFrame(data)
 
 
-def test_multitask_transfer_regressor_fit_predicts_all_heads() -> None:
+def test_single_target_transfer_regressor_predicts_bounded_values() -> None:
     source_df = _make_frame(48, seed=1, include_strict_fmiss=False)
     target_labeled_df = _make_frame(16, seed=2, include_strict_fmiss=True)
     target_unlabeled_df = _make_frame(24, seed=3, include_strict_fmiss=True).drop(columns=["accuracy", "fpos", "fmiss", "fmiss_extended"])
@@ -31,27 +31,19 @@ def test_multitask_transfer_regressor_fit_predicts_all_heads() -> None:
     feature_columns = [c for c in source_df.columns if c.startswith("wf_bin_") or c.startswith("acg_")]
     feature_columns += ["snr_z", "amp_mean_recording_pct"]
 
-    model = MultiTaskDomainAdaptiveRegressor(
+    model = SingleTargetDomainAdaptiveRegressor(
         feature_columns=feature_columns,
+        target_name="fpos",
+        source_target_name="fpos",
         pretrain_epochs=1,
         finetune_epochs=1,
         batch_size=8,
         random_state=7,
     )
-    model.fit(
-        source_df=source_df,
-        target_labeled_df=target_labeled_df,
-        target_unlabeled_df=target_unlabeled_df,
-        source_target_map={
-            "accuracy": "accuracy",
-            "fpos": "fpos",
-            "fmiss": "fmiss_extended",
-        },
-    )
+    model.fit(source_df=source_df, target_labeled_df=target_labeled_df, target_unlabeled_df=target_unlabeled_df)
 
-    pred = model.predict_df(target_labeled_df.head(5))
+    pred = model.predict(target_labeled_df.head(5))
 
-    assert list(pred.columns) == ["accuracy", "fpos", "fmiss"]
-    assert len(pred) == 5
-    assert np.isfinite(pred.values).all()
-    assert ((pred.values >= 0.0) & (pred.values <= 1.0)).all()
+    assert pred.shape == (5,)
+    assert np.isfinite(pred).all()
+    assert ((pred >= 0.0) & (pred <= 1.0)).all()

@@ -1,5 +1,11 @@
 from .data import QCDataLoader, QCDataCleaner, QCDataSplitter
-from .features import FeatureSpec, FeatureSetBuilder, RecordingRelativeFeatureAugmenter
+from .features import (
+    FeatureSpec,
+    FeatureSetBuilder,
+    RecordingContextFeatureAugmenter,
+    RecordingRelativeFeatureAugmenter,
+    StudyIndicatorAugmenter,
+)
 from .models import QCModelRegistry, QCPreprocessor, TrainerResult, QCTrainer
 from .evaluation import QCEvaluator, JointEvaluator, TransferEvaluator, SHAPAnalyzer
 from .pipeline import QCBenchmarkPipeline, QCDatasetReviewPipeline
@@ -11,7 +17,9 @@ __all__ = [
     "QCDataSplitter",
     "FeatureSpec",
     "FeatureSetBuilder",
+    "RecordingContextFeatureAugmenter",
     "RecordingRelativeFeatureAugmenter",
+    "StudyIndicatorAugmenter",
     "QCModelRegistry",
     "QCPreprocessor",
     "TrainerResult",

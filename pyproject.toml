@@ -11,7 +11,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-modeling = ["lightgbm", "shap", "catboost"]
+modeling = ["lightgbm", "shap", "catboost", "xgboost"]
 neural = ["torch"]
 notebook = ["nbformat", "seaborn", "matplotlib", "pyarrow"]
 
