@@ -2,6 +2,9 @@
 .ipynb_checkpoints/
 __pycache__/
 *.pyc
+*.pyo
+.pytest_cache/
+catboost_info/
 
 # Local agent/editor settings
 .claude/
@@ -15,3 +18,11 @@ analysis/**/*.json
 
 # Temporary patch artifacts
 tmp_patch_*.py
+
+# Thesis/legacy generated noise
+legacy_architecture/**/outputs/
+legacy_architecture/**/__pycache__/
+legacy_architecture/**/*.pyc
+thesis/**/__pycache__/
+thesis/.pytest_cache/
+thesis/artifacts/runs/
