@@ -1,0 +1,5 @@
+comparison,feature_set,rows_a,rows_b,n_features,cv_auc_mean,cv_auc_std
+hybrid_vs_paired_all,unit,5000,5000,164,0.976469520100548,0.0463005376655663
+hybrid_vs_paired_all,full_context,5000,5000,685,0.999738219895288,0.0005235602094241
+hybrid_vs_paired_test,unit,5000,100,164,0.9996529786003472,0.0006940427993059
+hybrid_vs_paired_test,full_context,5000,100,685,1.0,0.0

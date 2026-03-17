@@ -1,0 +1,6 @@
+ablation_group,best_label,best_recipe_id,best_r2,best_mae,notes
+source_target_choice,Hybrid stack residual,fmiss_hybrid_residual,0.2566489515303245,0.1927616466494451,First positive transfer baseline
+context,Reduced-latent winner,fmiss_reduced_latent,0.3764629523481959,0.1719452413726764,Final fmiss winner
+transfer_family,Reduced-latent winner,fmiss_reduced_latent,0.3764629523481959,0.1719452413726764,Final fmiss winner
+unlabeled_paired_use,Transplanted fpos waveform recipe,fmiss_transplanted_fpos,0.3775736881319869,0.1680590046560183,Failed fpos transplant
+representation_filtering,Transplanted fpos waveform recipe,fmiss_transplanted_fpos,0.3775736881319869,0.1680590046560183,Failed fpos transplant

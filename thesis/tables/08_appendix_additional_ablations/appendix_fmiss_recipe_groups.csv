@@ -1,0 +1,6 @@
+ablation_group,recipe_ids
+source_target_choice,"fmiss_dummy, fmiss_paired_raw, fmiss_hybrid_only, fmiss_hybrid_calibrated, fmiss_hybrid_residual"
+context,"fmiss_paired_raw, fmiss_paired_context, fmiss_source_reweighted, fmiss_embed_nommd, fmiss_reduced_latent"
+transfer_family,"fmiss_hybrid_only, fmiss_hybrid_calibrated, fmiss_hybrid_residual, fmiss_reduced_latent"
+unlabeled_paired_use,"fmiss_source_reweighted, fmiss_reduced_latent, fmiss_transplanted_fpos"
+representation_filtering,"fmiss_embed_nommd, fmiss_reduced_latent, fmiss_transplanted_fpos"

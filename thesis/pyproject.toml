@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qc-thesis-package"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+  "numpy",
+  "pandas",
+  "scikit-learn",
+  "matplotlib",
+  "nbformat",
+  "nbclient",
+  "ipython",
+  "pyarrow",
+  "scipy",
+  "lightgbm",
+  "xgboost",
+  "catboost",
+  "shap",
+  "torch",
+  "optuna",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["qc_thesis*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

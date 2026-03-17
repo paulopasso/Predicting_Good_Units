@@ -1,0 +1,6 @@
+subset,rows,recordings,families
+full,33206,61,6
+hybrid_labeled,24224,30,1
+paired_total,8982,31,5
+paired_labeled,207,29,5
+paired_unlabeled,8775,31,5

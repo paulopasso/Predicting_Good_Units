@@ -1,0 +1,9 @@
+stage,model,r2,mae
+1  sanity floor,Dummy paired mean,-0.0032633326895263,0.2572313193583584
+2  basic stack transfer,Hybrid stack residual,0.2566489515303245,0.1927616466494451
+3  neural SSL,Best SSL neural,-0.2594550367408721,0.2308637428779589
+4  neural MMD,Best MMD neural,-0.1419166075419791,0.2606427150042078
+5  paired-only context,Paired-only context,0.2644809443236344,0.1950473293667486
+6  source-reweighted ctx,Source-reweighted full context,0.3066516382441933,0.1806433528930648
+7  reduced-latent winner,Reduced-latent winner,0.3764629523481959,0.1719452413726764
+8  fpos transplant (fail),Transplanted fpos waveform recipe,0.3775736881319869,0.1680590046560183

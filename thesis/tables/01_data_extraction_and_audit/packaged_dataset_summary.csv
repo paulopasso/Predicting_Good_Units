@@ -1,0 +1,7 @@
+item,value
+parquet_source_path,/Users/paulruiz/Documents/Predicting_Good_Units/data/raw/33000_ROWS.parquet
+rows,33206
+unique_recordings,61
+unique_sorters,9
+fmiss_missing_rows,14546
+fmiss_non_missing_rows,18660

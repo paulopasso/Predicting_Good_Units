@@ -1,0 +1,6 @@
+ablation_group,best_label,best_recipe_id,best_r2,best_mae,notes
+source_supervision,Paired-only raw,fpos_paired_raw,0.4996046575052398,0.1236399835855718,Small paired baseline
+context,Context-first source stack,fpos_context_stack,0.5215196966867025,0.1189606640631401,Best pre-unlabeled context-first stack
+unlabeled_paired_structure,Context-first source stack,fpos_context_stack,0.5215196966867025,0.1189606640631401,Best pre-unlabeled context-first stack
+waveform_representation,Waveform winner,fpos_waveform_winner,0.5331891877732409,0.1160615450398521,Final fpos winner
+robustness,Waveform winner,fpos_waveform_winner,0.5331891877732409,0.1160615450398521,Final fpos winner

@@ -1,0 +1,9 @@
+item,value
+total_rows,33206
+unique_recordings,61
+unique_sorters,9
+feature_columns,184
+hybrid_labeled_rows,24224
+paired_rows,8982
+paired_labeled_rows,207
+paired_unlabeled_rows,8775
