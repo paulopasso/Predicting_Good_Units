@@ -5,6 +5,7 @@ __pycache__/
 *.pyo
 .pytest_cache/
 catboost_info/
+.gitignore copy
 
 # Local agent/editor settings
 .claude/
@@ -26,3 +27,6 @@ legacy_architecture/**/*.pyc
 thesis/**/__pycache__/
 thesis/.pytest_cache/
 thesis/artifacts/runs/
+
+# Root-level generated artifacts after thesis flattening
+artifacts/runs/
