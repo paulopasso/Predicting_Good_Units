@@ -1,0 +1,2 @@
+protocol_mode,candidate_id,model_family,model_name,feature_view,primary_avg_mae,beats_best_paired_only,advances_all_primary_targets,eligible_default,best_paired_only_primary_avg_mae
+inductive,inductive|hybrid_plus_paired|xgboost_w25|unit_raw,hybrid_plus_paired,xgboost_w25,unit_raw,0.18564804927870146,False,False,False,

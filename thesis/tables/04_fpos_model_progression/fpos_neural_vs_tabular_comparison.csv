@@ -1,4 +1,0 @@
-model,approach,r2,mae,notes
-Best SSL neural,SSL autoencoder (neural),-1.057135712663341,0.2769436150201184,Best SSL comparison
-Best MMD neural,MMD alignment (neural),0.3048692784541869,0.1503194568950421,Best MMD comparison
-Context-first source stack,Context-first tabular stack,0.5215196966867025,0.1189606640631401,Best pre-unlabeled context-first stack

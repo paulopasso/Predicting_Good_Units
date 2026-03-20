@@ -1,0 +1,63 @@
+{
+  "allow_unlabeled_paired": true,
+  "boosting_backends": [
+    "lightgbm",
+    "xgboost"
+  ],
+  "deploy_best_per_target": false,
+  "feature_view_sets": [
+    [
+      "unit_raw",
+      [
+        "unit_raw"
+      ]
+    ]
+  ],
+  "feature_views": [
+    "unit_raw",
+    "norm_swap",
+    "shape_only",
+    "recording_relative",
+    "recording_context",
+    "study_identity"
+  ],
+  "final_eval_fmiss_target": "fmiss",
+  "include_ceiling_diagnostics": false,
+  "lightgbm_estimators": 250,
+  "lightgbm_learning_rate": 0.05,
+  "lightgbm_num_leaves": 31,
+  "model_families": [
+    "paired_only",
+    "hybrid_plus_paired"
+  ],
+  "model_selection_splits": 5,
+  "model_selection_test_size": 0.4,
+  "neural_batch_size": 128,
+  "neural_domain_loss_weight": 0.15,
+  "neural_finetune_epochs": 20,
+  "neural_lr": 0.001,
+  "neural_pretrain_epochs": 35,
+  "neural_target_loss_weight": 2.0,
+  "neural_verbose": false,
+  "paired_final_holdout_rows": 100,
+  "paired_models": [],
+  "paired_weight_grid": [
+    25.0
+  ],
+  "parquet_path": "/Users/paulruiz/Documents/Predicting_Good_Units/data/raw/33000_ROWS.parquet",
+  "primary_targets": [
+    "fpos"
+  ],
+  "protocol_modes": [
+    "inductive"
+  ],
+  "random_state": 2026,
+  "secondary_targets": [],
+  "source_fmiss_target": "fmiss_extended",
+  "target_transform": "logit",
+  "use_recording_context": true,
+  "verbose": false,
+  "xgboost_estimators": 250,
+  "xgboost_learning_rate": 0.05,
+  "xgboost_max_depth": 6
+}

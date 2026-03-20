@@ -1,0 +1,5 @@
+model,approach_type,r2,notes
+Best SSL neural,neural pipeline,-1.057135712663341,SSL fine-tune
+Best MMD neural,neural pipeline,0.3048692784541869,MMD fine-tune
+Context-first source stack,tabular,0.5215196966867025,context stack baseline
+Waveform winner,tabular + SSL features,0.5331891877732409,waveform winner

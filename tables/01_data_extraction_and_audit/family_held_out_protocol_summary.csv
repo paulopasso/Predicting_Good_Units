@@ -1,0 +1,6 @@
+held_out_family,train_rows,test_rows,train_recordings,test_recordings
+ENGLISH,136,71,16,13
+BOYDEN,164,43,25,4
+MEA64C_YGER,171,36,25,4
+KAMPFF,172,35,25,4
+CRCNS_HC1,185,22,25,4
