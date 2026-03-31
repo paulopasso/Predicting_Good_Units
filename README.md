@@ -1,42 +1,65 @@
-# Thesis Package
+# Predicting Good Units
 
-This directory is the thesis-facing research repository for the project.
+This repository is the working codebase for leakage-safe prediction of spike-sorting quality metrics under hybrid-to-paired domain shift.
 
-It is intended to behave like the clean standalone package that would be handed to a thesis reviewer or publisher.
+The public documentation surface is intentionally small:
 
-It contains:
+- this file for navigation
+- [EXPERIMENT_SUMMARY.md](EXPERIMENT_SUMMARY.md) for the main findings and why they matter
+- folder-level README files for the parts of the repo that people actually edit
 
-- documentation and manuscript planning
-- thesis-local data extraction code
-- thesis-local analysis and audit code
-- thesis-local experiment framework code
-- curated historical provenance code for the benchmarked model families
-- frozen thesis inputs
-- exploratory notebooks
-- exported manuscript figures and tables
-- executed notebook artifacts
-- reproducibility metadata
+## Read These First
 
-Authoritative specification:
+1. [README.md](README.md)
+2. [EXPERIMENT_SUMMARY.md](EXPERIMENT_SUMMARY.md)
+3. [notebooks/README.md](notebooks/README.md)
+4. [src/qc_thesis/README.md](src/qc_thesis/README.md)
+5. [src/qc_thesis/modeling/README.md](src/qc_thesis/modeling/README.md)
 
-- [THESIS_BLUEPRINT.md](/Users/paulruiz/Documents/Predicting_Good_Units/thesis/THESIS_BLUEPRINT.md)
+## Repo Layout
 
-Core companion files:
+- [src/qc_thesis](src/qc_thesis)
+  Reusable Python package. This is the main implementation layer.
 
-- [MANUSCRIPT_PLAN.md](/Users/paulruiz/Documents/Predicting_Good_Units/thesis/MANUSCRIPT_PLAN.md)
-- [FIGURE_INDEX.md](/Users/paulruiz/Documents/Predicting_Good_Units/thesis/FIGURE_INDEX.md)
-- [TABLE_INDEX.md](/Users/paulruiz/Documents/Predicting_Good_Units/thesis/TABLE_INDEX.md)
-- [reproducibility/README.md](/Users/paulruiz/Documents/Predicting_Good_Units/thesis/reproducibility/README.md)
-- [data_pipeline/README.md](/Users/paulruiz/Documents/Predicting_Good_Units/thesis/data_pipeline/README.md)
-- [analysis_pipeline/README.md](/Users/paulruiz/Documents/Predicting_Good_Units/thesis/analysis_pipeline/README.md)
-- [src/qc_thesis/modeling/README.md](/Users/paulruiz/Documents/Predicting_Good_Units/thesis/src/qc_thesis/modeling/README.md)
-- [data/README.md](/Users/paulruiz/Documents/Predicting_Good_Units/thesis/data/README.md)
-- [notebooks/README.md](/Users/paulruiz/Documents/Predicting_Good_Units/thesis/notebooks/README.md)
+- [notebooks](notebooks)
+  Thesis story notebooks. These should call into `qc_thesis`.
 
-Framework-first rule:
+- [data_pipeline](data_pipeline)
+  SpikeForest extraction and corpus-building workflow.
 
-- runtime experiment and plotting logic lives only in [src/qc_thesis](/Users/paulruiz/Documents/Predicting_Good_Units/thesis/src/qc_thesis)
-- notebooks call that framework
-- [src/qc_thesis/modeling](/Users/paulruiz/Documents/Predicting_Good_Units/thesis/src/qc_thesis/modeling) is the modeling namespace:
-  - clean runtime recipe/experiment APIs
-  - curated provenance files that explain how the historical model families were originally built
+- [scripts](scripts)
+  Small operational utilities such as notebook execution and registry validation.
+
+- [data](data)
+  Local raw data plus frozen inputs used by notebooks.
+
+- [reproducibility](reproducibility)
+  Minimal reproducibility notes and environment snapshot support.
+
+- [artifacts](artifacts), [figures](figures), [tables](tables)
+  Mostly generated outputs.
+
+Archived exploratory audit code lives under `legacy_architecture/` and is not part of the main workflow.
+
+## Where To Make Changes
+
+- modeling logic:
+  [src/qc_thesis/modeling](src/qc_thesis/modeling)
+
+- notebook narrative and plots:
+  [notebooks](notebooks)
+
+- SpikeForest extraction:
+  [data_pipeline/extraction/ntb_data_extraction_colab.ipynb](data_pipeline/extraction/ntb_data_extraction_colab.ipynb)
+
+- helper commands and repo maintenance:
+  [scripts](scripts)
+
+## Minimal Commands
+
+```bash
+conda env create -f reproducibility/environment.yml
+conda activate spike-qc-local
+python scripts/validate_model_registry.py
+python scripts/execute_notebooks.py --only 04_fpos_model_progression.ipynb
+```

@@ -1,14 +1,49 @@
-# Thesis Experiment Summary
+# Main Findings
+
+This is the one non-README summary document that explains the main results and why they matter.
+
+## Executive Summary
+
+- metric note: the old experiment log below mostly records single-run strict-holdout results
+- all metrics called out here are from recording-disjoint evaluation
+- the saved sweep spans 20 recording-disjoint seeds: `42` through `61`
+- important: this saved sweep changes the held-out recordings across seeds, so these are 20 different recording-disjoint split results averaged together, not 20 model reruns on one fixed split
+- the hybrid-to-paired domain shift is large, measurable, and operationally important, so all serious conclusions use strict recording-disjoint paired holdout evaluation
+- the best deployment story is asymmetric: `fpos` and `fmiss` should not share the same final model family
+- `fpos`:
+  - strongest average result across seeds `42` to `61`: `source_reweighted_anchor_stack_cluster_trust_pseudo_xgboost_default`
+  - mean MAE `0.1302`
+  - mean `R² 0.4068`
+  - strongest saved single-split result to keep in mind: seed `45`, `wf_embed_anchor_stack_xgboost`
+  - seed-45 MAE `0.1070`
+  - seed-45 `R² 0.6855`
+- `fmiss`:
+  - the available 20-split sweep does not show a strong stable `fmiss` winner
+  - `source_plus_reduced_latent_fullctx_lightgbm` averages MAE `0.2101` and mean `R² -0.0128` across seeds `42` to `61`
+  - among the swept `fmiss` recipes saved in `artifacts/`, the best average `R²` is only near break-even:
+  - `fmiss_wf_embed_anchor_stack_xgboost` with mean MAE `0.2084` and mean `R² 0.0049`
+  - strongest saved single-split result to keep in mind: seed `44`, `source_plus_reduced_latent_fullctx_lightgbm`
+  - seed-44 MAE `0.1563`
+  - seed-44 `R² 0.5021`
+- the `source_reweighted_fullctx_lightgbm` number cited later in this document remains a single-run reference, not a 20-seed average, because a comparable saved sweep for that recipe is not present in `artifacts/`
+- the consistent winners are context-aware tree models enriched with source-derived signals; standalone SSL, standalone MMD neural transfer, and broad post-hoc blending did not become the best answer
+- the unlabeled paired pool is highly valuable for `fpos` when used selectively, but `fmiss` remains better served by conservative context-first transfer rather than pseudo supervision
+- study/family heterogeneity inside the paired domain is real, but simple overlap trimming, coarse subgroup balancing, and global filtering were not enough to solve it
+- the next likely gains are better feature engineering and waveform/template representations, plus cleaning any remaining SpikeForest extraction coverage gaps
+- overall conclusion: the project now supports a credible positive transfer story for `fpos`, but not yet a comparably stable one for `fmiss`
+- practical conclusion: report both split-averaged stability and best single-split performance, because one without the other can misrepresent how strong the methods really are
+- modeling conclusion: keep separate target-specific deployment paths, treat `fpos` as the stronger current result, and treat `fmiss` as the main open problem for the next iteration
 
 Historical-path note:
 
 - this file was migrated from the exploratory workspace log
 - references to `crash_tests/...` and related historical paths describe original lineage
-- the thesis-local authoritative materials now live in:
-  - [data/frozen_inputs](/Users/paulruiz/Documents/Predicting_Good_Units/thesis/data/frozen_inputs)
-  - [src/qc_thesis/modeling/provenance](/Users/paulruiz/Documents/Predicting_Good_Units/thesis/src/qc_thesis/modeling/provenance)
-  - [src/qc_thesis](/Users/paulruiz/Documents/Predicting_Good_Units/thesis/src/qc_thesis)
-  - [notebooks](/Users/paulruiz/Documents/Predicting_Good_Units/thesis/notebooks)
+- the surviving archived audit code now sits under `legacy_architecture/analysis_pipeline/packages/crash_tests/...`
+- the current repository entry points are:
+  - [data/frozen_inputs](data/frozen_inputs)
+  - [src/qc_thesis](src/qc_thesis)
+  - [src/qc_thesis/modeling](src/qc_thesis/modeling)
+  - [notebooks](notebooks)
 
 This note summarizes the crash-test experiments run to improve transfer from hybrid QC data to paired real QC data for `fpos` and `fmiss`.
 
@@ -312,7 +347,7 @@ Why this matters for the modeling:
 - yes, a 3D PCA view is worth exporting as a diagnostic
 - it will not solve the problem by itself, but it can show whether the apparent overlap in 2D separates along `PC3`
 - a 3D PCA export is now available from the domain-shift audit as `pca_projection_3d.csv`
-- a rendered 3D figure is now available as `crash_tests/domain_shift_audit/outputs/domain_shift_3d_v1/pca_projection_3d.png`
+- the archived code for regenerating the rendered 3D figure lives under `legacy_architecture/analysis_pipeline/packages/crash_tests/domain_shift_audit`
 
 ## Filtered-Feature Benchmark
 

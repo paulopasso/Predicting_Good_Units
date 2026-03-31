@@ -34,3 +34,18 @@ artifacts/explainers/
 artifacts/runs_seed*/
 artifacts/seed_sweep_publication*.json
 artifacts/what_if*/
+
+# Hidden documentation that is not part of the public navigation surface
+FIGURE_INDEX.md
+MANUSCRIPT_PLAN.md
+REPO_EXPERIMENT_HANDOFF.md
+THESIS_OUTLINE.md
+appendix/
+main_text/
+reproducibility/ENVIRONMENT_TEMPLATE.md
+reproducibility/RUN_CHECKLIST.md
+reproducibility/REPRODUCIBILITY_SPEC.md
+artifacts/executed_notebooks/README.md
+src/qc_thesis/modeling/MODEL_CODE_INDEX.md
+src/qc_thesis/modeling/notebooks/README.md
+src/qc_thesis/modeling/stacking/STACKING_COMPRESSION_AUDIT.md
