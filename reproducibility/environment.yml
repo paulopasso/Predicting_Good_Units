@@ -1,0 +1,30 @@
+name: spike-qc-local
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - ipykernel=7.2.0
+  - ipython=9.10.0
+  - jupyterlab=4.5.5
+  - matplotlib=3.9.4
+  - nbclient=0.10.4
+  - nbformat=5.10.4
+  - numba=0.60.0
+  - numpy=2.0.2
+  - pandas=2.2.3
+  - psutil=7.2.2
+  - pyarrow=18.1.0
+  - rich=14.3.3
+  - scikit-learn=1.5.2
+  - scipy=1.14.1
+  - seaborn=0.13.2
+  - tqdm=4.67.3
+  - xgboost=2.1.4
+  - pip:
+      - catboost==1.2.10
+      - lightgbm==4.6.0
+      - optuna==4.7.0
+      - shap==0.51.0
+      - torch==2.10.0
