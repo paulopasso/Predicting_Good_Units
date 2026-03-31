@@ -10,7 +10,6 @@ catboost_info/
 # Local agent/editor settings
 .claude/
 local_debug/
-data/
 
 # Generated analysis artifacts
 analysis/**/outputs/

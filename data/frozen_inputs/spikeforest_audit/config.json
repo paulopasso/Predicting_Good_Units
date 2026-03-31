@@ -1,0 +1,10 @@
+{
+  "common_sorter_fraction": 0.5,
+  "extraction_notebook": "/Users/paulruiz/Documents/Predicting_Good_Units/notebooks/Units_Spikeforest_Extraction_Colab.ipynb",
+  "output_root": "/Users/paulruiz/Documents/Predicting_Good_Units/crash_tests/spikeforest_audit/outputs",
+  "paired_prefix": "PAIRED_",
+  "parquet_path": "/Users/paulruiz/Documents/Predicting_Good_Units/data/raw/33000_ROWS.parquet",
+  "resolved_output_dir": "/Users/paulruiz/Documents/Predicting_Good_Units/crash_tests/spikeforest_audit/outputs/spikeforest_audit_validation",
+  "run_name": "spikeforest_audit_validation",
+  "verbose": true
+}

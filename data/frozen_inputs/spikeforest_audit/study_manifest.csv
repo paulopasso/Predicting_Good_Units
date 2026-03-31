@@ -1,0 +1,6 @@
+study_set,requested_in_notebook,present_in_parquet,rows,matched_rows,unmatched_rows,recordings,studies,sorters,sorter_union
+PAIRED_BOYDEN,True,True,907,43,864,4,1,8,IronClust|JRClust|KiloSort|KiloSort2|Klusta|MountainSort4|SpykingCircus|Tridesclous
+PAIRED_CRCNS_HC1,True,True,184,22,162,4,1,8,IronClust|JRClust|KiloSort|KiloSort2|Klusta|MountainSort4|SpykingCircus|Tridesclous
+PAIRED_ENGLISH,True,True,3151,71,3080,15,1,7,HerdingSpikes2|IronClust|KiloSort|KiloSort2|MountainSort4|SpykingCircus|Tridesclous
+PAIRED_KAMPFF,True,True,1743,35,1708,4,1,8,HerdingSpikes2|IronClust|JRClust|KiloSort|KiloSort2|MountainSort4|SpykingCircus|Tridesclous
+PAIRED_MEA64C_YGER,True,True,2997,36,2961,4,1,9,HerdingSpikes2|IronClust|JRClust|KiloSort|KiloSort2|Klusta|MountainSort4|SpykingCircus|Tridesclous

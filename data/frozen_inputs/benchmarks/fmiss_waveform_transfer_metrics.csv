@@ -1,0 +1,3 @@
+protocol,target,variant_id,family,backend,source_target,notes,mae,rmse,r2,bias,calibration_slope,calibration_intercept
+main,fmiss,fmiss_wf_embed_anchor_stack_xgboost,fmiss_waveform_transfer,xgboost_default,fmiss_extended,fpos winner recipe applied to fmiss,0.16726676324781478,0.22772390449991262,0.3819204484943789,-0.054038659883463395,1.1493049501243378,0.020671500671537595
+main,fmiss,fmiss_reference_anchor_stack_xgboost,fmiss_waveform_transfer,xgboost_default,fmiss_extended,fpos winner recipe applied to fmiss,0.16671834102224775,0.23040783660412953,0.36726533992199806,-0.05757751211969706,1.16886040598332,0.02043760761565298

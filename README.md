@@ -31,7 +31,7 @@ The public documentation surface is intentionally small:
   Small operational utilities such as notebook execution and registry validation.
 
 - [data](data)
-  Local raw data plus frozen inputs used by notebooks.
+  Public derived dataset bundle plus frozen inputs used by notebooks. These files were extracted from SpikeForest outputs; upstream project: [SpikeForest](https://github.com/flatironinstitute/spikeforest).
 
 - [reproducibility](reproducibility)
   Minimal reproducibility notes and environment snapshot support.
