@@ -1,0 +1,8 @@
+feature_block,feature_count,mean_missing_pct
+acg_bins,40,0.0
+waveform_bins,30,0.0
+amplitude,23,0.09715373596704628
+waveform_shape,21,2.374929373062241
+spikeinterface,15,14.25103896886105
+recording_context,6,0.0
+isi,5,0.0

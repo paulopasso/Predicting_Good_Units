@@ -1,8 +1,0 @@
-feature_block,feature_count
-numeric_total,224
-waveform_bins,30
-acg_bins,40
-context_only,40
-full_context,264
-reduced_latent,49
-waveform_embedding_view,90

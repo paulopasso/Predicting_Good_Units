@@ -1,0 +1,10 @@
+summary_item,value
+total_rows,33206
+total_recordings,61
+total_sorters,9
+hybrid_rows,24224
+paired_rows,8982
+paired_labeled_rows,207
+paired_unlabeled_rows,8775
+fpos_non_missing,33206
+fmiss_non_missing,18660
