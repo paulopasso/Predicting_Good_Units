@@ -30,3 +30,7 @@ thesis/artifacts/runs/
 
 # Root-level generated artifacts after thesis flattening
 artifacts/runs/
+artifacts/explainers/
+artifacts/runs_seed*/
+artifacts/seed_sweep_publication*.json
+artifacts/what_if*/
