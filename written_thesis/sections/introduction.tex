@@ -1,0 +1,56 @@
+\chapter{Introduction}
+\label{chap:introduction}
+
+Large extracellular electrophysiological recordings provide invaluable information about neuronal activity and interactions. However, for this information to be uncovered, a good spike sorting is necessary, assigning detected electrical events to putative neurons. In this process, numerous issues could potentially arise. The sorter could confuse neurons, miss spikes, or create spurious units. Such mistakes would naturally impact downstream scientific interpretation, for example, the firing rate and population structure. Classic validation work was done manually. This was not only tedious but also demonstrated that spike separation errors can vary significantly even under careful analysis. For over a decade now, the field has relied on quantitative quality metrics \parencite{doi:10.1152/jn.2000.84.1.401,Hill2011} and often a hard threshold to determine whether a sorted unit should be considered well-isolated or not.
+
+The challenge lies in the fact that the most meaningful quality targets require ground-truth data for each neuron. Ground-truth data provide the information to identify \fpos{}, which measures the fraction of spikes assigned to a unit that should not be there (false positives), and \fmiss{}, which measures the fraction of true spikes the sorted unit did not capture (false negatives). In this thesis, both \fpos{} and \fmiss{} are targets we aim to predict. A model capable of doing this would be practically useful because it would assist in quantifying the risk of over-counting and under-counting neuronal activity. However, training such a model would require extensive ground-truth data, ideally using paired recordings that provide the most realistic ground-truth targets. Yet paired recordings are rare and costly, and each recording only supplies a single ground-truth unit. Conversely, hybrid simulations are plentiful and comprehensively labelled, but they are not identical to real deployment data.
+
+This asymmetry turns our prediction of \fpos{} and \fmiss{} into a transfer-learning challenge. The key question then becomes: can supervision from hybrid simulation data be effectively transferred to real paired recordings? The main task is for the model to learn using hybrid simulations as our large labelled source domain, then adapt to realistic noise and feature distributions using a small labelled target set plus a large unlabeled target pool, and finally evaluate under strict recording-disjoint protocols that mimic real operational use.
+
+This thesis lies at the intersection of computational neuroscience, benchmark design, and low-label machine learning. Neuroscience allows us to identify the problem, define our features, and define the targets \fmiss{} and \fpos{}. Benchmarking practice determines what constitutes an honest test. Machine learning then allows us to compare different ways of leveraging the available datasets.
+
+\section{Research Questions and Hypotheses}
+
+The thesis is organised around four hypotheses that reflect the most significant uncertainties.
+
+\begin{table}[H]
+    \centering
+    \caption{Research hypotheses introduced in the thesis.}
+    \label{tab:hypotheses}
+    \begin{tabularx}{\textwidth}{@{}lY@{}}
+        \toprule
+        Hypothesis & Statement \\
+        \midrule
+        H1 & Hybrid and paired data are strongly shifted, making naive source-only transfer insufficient for reliable quality prediction. \\
+        H2 & Leakage-safe recording context adds meaningful predictive signal. \\
+        H3 & \fpos{} and \fmiss{} are structurally different prediction targets. \\
+        H4 & The best model depends on the dataset family and evaluation regime rather than being universal across all paired recordings. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+H1 questions the existence of a meaningful transfer problem that would require methods more complex than source-only transfer. H2 tests whether information at the recording level can add significant signal. H3 and H4 move beyond performance and question the heterogeneity of our targets as well as whether different models perform better under different paired-recording families.
+
+\section{Contributions}
+
+The main contributions of the thesis are as follows.
+
+\begin{itemize}
+    \item It constructs a leakage-safe benchmark for predicting spike-sorting error metrics, using recording-disjoint and family-disjoint splits as its main evaluation method rather than mere unit-level random splits.
+    \item It quantifies the hybrid-to-paired domain shift, showing near-perfect domain separability.
+    \item It compares multiple families of transfer methods, including source-only transfer, context-aware stacking, unlabeled target structure, and waveform-enriched stacking.
+    \item It shows a clear target asymmetry: \fpos{} reveals a significant signal and meaningful transfer, while \fmiss{} shows greater instability.
+    \item It demonstrates that paired-domain family structure matters. The best \fpos{} model differs across paired-recording families.
+\end{itemize}
+
+These contributions are deliberately scoped and do not claim to fully solve the quality-control problem.
+
+\section{Why This Thesis Focuses on Quality Prediction Rather Than Spike Sorting End-to-End}
+
+End-to-end spike sorting and post hoc quality estimation are related but distinct problems. First, from a noisy recording signal across multiple channels, neuronal activity, or spikes, needs to be identified. Then a spike sorter groups the detected spikes into sets of putative neurons, whose accuracy can range from perfectly accurate to fully erroneous, with spikes misassigned, missed, or attributed to spurious units. Between those two situations exists a continuous spectrum of intermediate levels of sorting accuracy. The quality predictor comes after that sorting stage to identify where each specific putative neuron lies on the spectrum.
+
+State-of-the-art spike sorters have already drastically improved their performance over the last few decades, as they have been the main focus of the spike-sorting field. Post hoc quality estimation is not yet up to date with all the discoveries in both computational neuroscience and machine learning. This discrepancy highlights the necessity for more resilient, data-driven methods for post hoc quality evaluation. A reliable quality predictor would improve scientific analysis and curation and could later help us understand what constitutes a good neuron, which could support the next generation of spike-sorting algorithms.
+
+\section{Roadmap}
+
+The rest of the manuscript proceeds as follows. \Cref{chap:background} reviews the history of spike sorting, post hoc quality control, ground-truth dataset types, and the machine-learning setting that motivates the benchmark. \Cref{chap:methodology} describes the data package, feature construction, model families, leakage controls, and evaluation protocols. \Cref{chap:results} presents the empirical results, including domain shift, model progression for \fpos{} and \fmiss{}, cross-target asymmetry, explainability, and label-budget constraints. \Cref{chap:discussion} returns to the hypotheses and interprets what the benchmark actually demonstrates. \Cref{chap:conclusion} closes with the main thesis-level takeaway.

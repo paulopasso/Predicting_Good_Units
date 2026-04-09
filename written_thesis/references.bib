@@ -1,0 +1,707 @@
+@article{Banga2025,
+  title     = {MEArec: A Fast and Customizable Testbench Simulator for Ground-truth Extracellular Spiking Activity},
+  author    = {Alessio Paolo Buccino and Gaute Tomas Einevoll},
+  year      = 2021,
+  month     = {January},
+  journal   = {Neuroinformatics},
+  publisher = {Springer Nature},
+  doi       = {10.1007/s12021-020-09467-7},
+  volume    = 19,
+  number    = 2,
+  pages     = {185--204}
+}
+
+@article{Magland2020,
+  article_type = {journal},
+  title        = {SpikeForest, reproducible web-facing ground-truth validation of automated neural spike sorters},
+  author       = {Magland, Jeremy and Jun, James J and Lovero, Elizabeth and Morley, Alexander J and Hurwitz, Cole Lincoln and Buccino, Alessio Paolo and Garcia, Samuel and Barnett, Alex H},
+  editor       = {Meister, Markus and Calabrese, Ronald L and Meister, Markus},
+  volume       = 9,
+  year         = 2020,
+  month        = {May},
+  pub_date     = {2020-05-19},
+  pages        = {{e55167}},
+  citation     = {eLife 2020;9:e55167},
+  doi          = {10.7554/eLife.55167},
+  url          = {https://doi.org/10.7554/eLife.55167},
+  abstract     = {Spike sorting is a crucial step in electrophysiological studies of neuronal activity. While many spike sorting packages are available, there is little consensus about which are most accurate under different experimental conditions. SpikeForest is an open-source and reproducible software suite that benchmarks the performance of automated spike sorting algorithms across an extensive, curated database of ground-truth electrophysiological recordings, displaying results interactively on a continuously-updating website. With contributions from eleven laboratories, our database currently comprises 650 recordings (1.3 TB total size) with around 35,000 ground-truth units. These data include paired intracellular/extracellular recordings and state-of-the-art simulated recordings. Ten of the most popular spike sorting codes are wrapped in a Python package and evaluated on a compute cluster using an automated pipeline. SpikeForest documents community progress in automated spike sorting, and guides neuroscientists to an optimal choice of sorter and parameters for a wide range of probes and brain regions.},
+  keywords     = {spike sorting, electrophysiology, reproducibility, validation, ground truth},
+  journal      = {eLife},
+  issn         = {2050-084X},
+  publisher    = {eLife Sciences Publications, Ltd}
+}
+
+@inproceedings{Pachitariu2016,
+  author    = {Pachitariu, Marius and Steinmetz, Nicholas A and Kadir, Shabnam N and Carandini, Matteo and Harris, Kenneth D},
+  booktitle = {Advances in Neural Information Processing Systems},
+  editor    = {D. Lee and M. Sugiyama and U. Luxburg and I. Guyon and R. Garnett},
+  pages     = {},
+  publisher = {Curran Associates, Inc.},
+  title     = {Fast and accurate spike sorting of high-channel count probes with KiloSort},
+  url       = {https://proceedings.neurips.cc/paper_files/paper/2016/file/1145a30ff80745b56fb0cecf65305017-Paper.pdf},
+  doi       = {10.5555/3157096.3157306},
+  volume    = {29},
+  year      = {2016}
+}
+
+@article{10.7554/eLife.34518,
+  article_type = {journal},
+  title        = {A spike sorting toolbox for up to thousands of electrodes validated with ground truth recordings in vitro and in vivo},
+  author       = {Yger, Pierre and Spampinato, Giulia LB and Esposito, Elric and Lefebvre, Baptiste and Deny, Stéphane and Gardella, Christophe and Stimberg, Marcel and Jetter, Florian and Zeck, Guenther and Picaud, Serge and Duebel, Jens and Marre, Olivier},
+  editor       = {Kleinfeld, David},
+  volume       = 7,
+  year         = 2018,
+  month        = {March},
+  pub_date     = {2018-03-20},
+  pages        = {e34518},
+  citation     = {eLife 2018;7:e34518},
+  doi          = {10.7554/eLife.34518},
+  url          = {https://doi.org/10.7554/eLife.34518},
+  abstract     = {In recent years, multielectrode arrays and large silicon probes have been developed to record simultaneously between hundreds and thousands of electrodes packed with a high density. However, they require novel methods to extract the spiking activity of large ensembles of neurons. Here, we developed a new toolbox to sort spikes from these large-scale extracellular data. To validate our method, we performed simultaneous extracellular and loose patch recordings in rodents to obtain ‘ground truth’ data, where the solution to this sorting problem is known for one cell. The performance of our algorithm was always close to the best expected performance, over a broad range of signal-to-noise ratios, in vitro and in vivo. The algorithm is entirely parallelized and has been successfully tested on recordings with up to 4225 electrodes. Our toolbox thus offers a generic solution to sort accurately spikes for up to thousands of electrodes.},
+  keywords     = {electrophysiology, silicon probe, population recording, spike sorting, neural ensemble},
+  journal      = {eLife},
+  issn         = {2050-084X},
+  publisher    = {eLife Sciences Publications, Ltd}
+}
+
+@article{doi:10.1152/jn.00103.2016,
+  author   = {Neto, Joana P. and Lopes, Gon\c{c}alo and Fraz\~{a}o, Jo\~{a}o and Nogueira, Joana and Lacerda, Pedro and Bai\~{a}o, Pedro and Aarts, Arno and Andrei, Alexandru and Musa, Silke and Fortunato, Elvira and Barquinha, Pedro and Kampff, Adam R.},
+  title    = {Validating silicon polytrodes with paired juxtacellular recordings: method and dataset},
+  journal  = {Journal of Neurophysiology},
+  volume   = {116},
+  number   = {2},
+  pages    = {892-903},
+  year     = {2016},
+  doi      = {10.1152/jn.00103.2016},
+  note     = {PMID: 27306671},
+  url      = {    
+              https://doi.org/10.1152/jn.00103.2016
+              },
+  eprint   = {    
+              https://doi.org/10.1152/jn.00103.2016
+              },
+  abstract = { Cross-validating new methods for recording neural activity is necessary to accurately interpret and compare the signals they measure. Here we describe a procedure for precisely aligning two probes for in vivo “paired-recordings” such that the spiking activity of a single neuron is monitored with both a dense extracellular silicon polytrode and a juxtacellular micropipette. Our new method allows for efficient, reliable, and automated guidance of both probes to the same neural structure with micrometer resolution. We also describe a new dataset of paired-recordings, which is available online. We propose that our novel targeting system, and ever expanding cross-validation dataset, will be vital to the development of new algorithms for automatically detecting/sorting single-units, characterizing new electrode materials/designs, and resolving nagging questions regarding the origin and nature of extracellular neural signals. }
+}
+
+@article{10.7554/eLife.61834,
+  article_type = {journal},
+  title        = {SpikeInterface, a unified framework for spike sorting},
+  author       = {Buccino, Alessio P and Hurwitz, Cole L and Garcia, Samuel and Magland, Jeremy and Siegle, Joshua H and Hurwitz, Roger and Hennig, Matthias H},
+  editor       = {Colgin, Laura L and Grün, Sonja and Kloosterman, Fabian},
+  volume       = 9,
+  year         = 2020,
+  month        = {November},
+  pub_date     = {2020-11-10},
+  pages        = {e61834},
+  citation     = {eLife 2020;9:e61834},
+  doi          = {10.7554/eLife.61834},
+  url          = {https://doi.org/10.7554/eLife.61834},
+  abstract     = {Much development has been directed toward improving the performance and automation of spike sorting. This continuous development, while essential, has contributed to an over-saturation of new, incompatible tools that hinders rigorous benchmarking and complicates reproducible analysis. To address these limitations, we developed SpikeInterface, a Python framework designed to unify preexisting spike sorting technologies into a single codebase and to facilitate straightforward comparison and adoption of different approaches. With a few lines of code, researchers can reproducibly run, compare, and benchmark most modern spike sorting algorithms; pre-process, post-process, and visualize extracellular datasets; validate, curate, and export sorting outputs; and more. In this paper, we provide an overview of SpikeInterface and, with applications to real and simulated datasets, demonstrate how it can be utilized to reduce the burden of manual curation and to more comprehensively benchmark automated spike sorters.},
+  keywords     = {spike sorting, extracellular recordings, open-source software, python, reproducibility},
+  journal      = {eLife},
+  issn         = {2050-084X},
+  publisher    = {eLife Sciences Publications, Ltd}
+}
+
+@inproceedings{Rossant2016,
+  title        = {Spike sorting for large, dense electrode arrays},
+  author       = {Cyrille Rossant and Shabnam N. Kadir and Dan F. M. Goodman and John Schulman and Hunter J. D. G. M. Hunter and Nicholas L. Steinmetz and Kenneth D. Harris},
+  year         = 2016,
+  month        = {March},
+  booktitle    = {Nature Neuroscience},
+  publisher    = {Nature Publishing Group},
+  address      = {New York, NY},
+  series       = {Nature Neuroscience Journal Series},
+  volume       = 19,
+  number       = 4,
+  pages        = {634--641},
+  doi          = {10.1038/nn.4268},
+  editor       = {Marlene Behrmann},
+  organization = {Nature}
+}
+
+@inproceedings{Jun2017,
+  title        = {Fully integrated silicon probes for high-density recording of neural activity},
+  author       = {James J. Jun and Nicholas L. Steinmetz and Joshua H. Siegle and Dan J. Denman and Marius Bauza and Barbaros Barbarits and Albert K. Lee and Costas A. Anastassiou and Andrei Alexandru and Mu Qiao and Scholvin Jorg and Andrew J. Dutta and Timothy D. Harris},
+  year         = 2017,
+  month        = {November},
+  booktitle    = {Nature},
+  publisher    = {Nature Publishing Group},
+  address      = {London, UK},
+  series       = {Nature Journal Series},
+  volume       = 551,
+  number       = 7679,
+  pages        = {232--236},
+  doi          = {10.1038/nature24636},
+  editor       = {Magdalena Skipper},
+  organization = {Nature Portfolio}
+}
+
+@inproceedings{Ye2025,
+  title        = {Ultra-high-density Neuropixels probes improve detection and identification in neuronal recordings},
+  author       = {Zhuowei Ye and Andrew M. Shelton and Jennifer R. Shaker and Julien Boussard and Jennifer Colonell and Daniel Birman and Sarah Manavi and Shawn Chen and Charlie Windolf and Cole Hurwitz and Huai-Ti Yu and Tomoya Namima and Federico Pedraja and Samuel Weiss and Bogdan C. Raducanu and Torbjørn V. Ness and Xiaoxuan Jia and Gabriele Mastroberardino and Luigi F. Rossi and Matteo Carandini and Nicholas A. Steinmetz},
+  year         = 2025,
+  month        = {December},
+  booktitle    = {Neuron},
+  publisher    = {Cell Press / Elsevier},
+  address      = {Cambridge, MA},
+  series       = {Neuron Journal Series},
+  volume       = 113,
+  number       = 23,
+  pages        = {3966--3982.e12},
+  doi          = {10.1016/j.neuron.2025.08.030},
+  editor       = {Mariela Zirlinger},
+  organization = {Elsevier}
+}
+
+@article{Boussard2021.11.05.467503,
+  author       = {Boussard, Julien and Varol, Erdem and Lee, Hyun Dong and Dethe, Nishchal and Paninski, Liam},
+  title        = {Three-dimensional spike localization and improved motion correction for Neuropixels recordings},
+  elocation-id = {2021.11.05.467503},
+  year         = {2021},
+  doi          = {10.1101/2021.11.05.467503},
+  publisher    = {Cold Spring Harbor Laboratory},
+  abstract     = {Neuropixels (NP) probes are dense linear multi-electrode arrays that have rapidly become essential tools for studying the electrophysiology of large neural populations. Unfortunately, a number of challenges remain in analyzing the large datasets output by these probes. Here we introduce several new methods for extracting useful spiking information from NP probes. First, we use a simple point neuron model, together with a neural-network denoiser, to efficiently map single spikes detected on the probe into three-dimensional localizations. Previous methods localized individual spikes in two dimensions only; we show that the new localization approach is significantly more robust and provides an improved feature set for clustering spikes according to neural identity ({\textquotedblleft}spike sorting{\textquotedblright}). Next, we denoise the resulting three-dimensional point-cloud representation of the data, and show that the resulting 3D images can be accurately registered over time, leading to improved tracking of time-varying neural activity over the probe, and in turn, crisper estimates of neural clusters over time. Open source code is available at https://github.com/int-brain-lab/spikes_localization_registration.git.Competing Interest StatementThe authors have declared no competing interest.},
+  url          = {https://www.biorxiv.org/content/early/2021/11/08/2021.11.05.467503},
+  eprint       = {https://www.biorxiv.org/content/early/2021/11/08/2021.11.05.467503.full.pdf},
+  journal      = {bioRxiv}
+}
+
+@article{Hill2011,
+  author    = {Hill, Daniel N. and Mehta, Samar B. and Kleinfeld, David},
+  title     = {Quality Metrics to Accompany Spike Sorting of Extracellular Signals},
+  volume    = {31},
+  number    = {24},
+  pages     = {8699--8705},
+  year      = {2011},
+  doi       = {10.1523/JNEUROSCI.0971-11.2011},
+  publisher = {Society for Neuroscience},
+  issn      = {0270-6474},
+  url       = {https://www.jneurosci.org/content/31/24/8699},
+  eprint    = {https://www.jneurosci.org/content/31/24/8699.full.pdf},
+  journal   = {Journal of Neuroscience}
+}
+
+@article{doi:10.1152/jn.2000.84.1.401,
+  author   = {Harris, Kenneth D. and Henze, Darrell A. and Csicsvari, Jozsef and Hirase, Hajime and Buzs\'{a}ki, Gy\"{o}rgy},
+  title    = {Accuracy of Tetrode Spike Separation as Determined by Simultaneous Intracellular and Extracellular Measurements},
+  journal  = {Journal of Neurophysiology},
+  volume   = {84},
+  number   = {1},
+  pages    = {401-414},
+  year     = {2000},
+  doi      = {10.1152/jn.2000.84.1.401},
+  note     = {PMID: 10899214},
+  url      = {    
+              https://doi.org/10.1152/jn.2000.84.1.401
+              },
+  eprint   = {    
+              https://doi.org/10.1152/jn.2000.84.1.401
+              },
+  abstract = { Simultaneous recording from large numbers of neurons is a prerequisite for understanding their cooperative behavior. Various recording techniques and spike separation methods are being used toward this goal. However, the error rates involved in spike separation have not yet been quantified. We studied the separation reliability of “tetrode” (4-wire electrode)-recorded spikes by monitoring simultaneously from the same cell intracellularly with a glass pipette and extracellularly with a tetrode. With manual spike sorting, we found a trade-off between Type I and Type II errors, with errors typically ranging from 0 to 30\% depending on the amplitude and firing pattern of the cell, the similarity of the waveshapes of neighboring neurons, and the experience of the operator. Performance using only a single wire was markedly lower, indicating the advantages of multiple-site monitoring techniques over single-wire recordings. For tetrode recordings, error rates were increased by burst activity and during periods of cellular synchrony. The lowest possible separation error rates were estimated by a search for the best ellipsoidal cluster shape. Human operator performance was significantly below the estimated optimum. Investigation of error distributions indicated that suboptimal performance was caused by inability of the operators to mark cluster boundaries accurately in a high-dimensional feature space. We therefore hypothesized that automatic spike-sorting algorithms have the potential to significantly lower error rates. Implementation of a semi-automatic classification system confirms this suggestion, reducing errors close to the estimated optimum, in the range 0–8\%. }
+}
+
+@inproceedings{SchmitzerTorbert2005,
+  title        = {Quantitative measures of cluster quality for use in extracellular recordings},
+  author       = {Neil Schmitzer-Torbert and Jared Jackson and Darrell Henze and Kenneth Harris and A. David Redish},
+  year         = 2005,
+  month        = {February},
+  booktitle    = {Journal of Neuroscience Methods},
+  publisher    = {Elsevier},
+  address      = {Amsterdam, Netherlands},
+  series       = {Neuroscience Methods Journal Series},
+  volume       = 141,
+  number       = 1,
+  pages        = {1--11},
+  doi          = {10.1016/j.jneumeth.2004.06.017},
+  editor       = {J.S. Gerstein},
+  organization = {Elsevier Science}
+}
+
+@inproceedings{Liu2014,
+  title        = {Quality Metrics of Spike Sorting Using Neighborhood Components Analysis},
+  author       = {Xinyu Liu and Hong Wan and Li Shi},
+  year         = 2014,
+  month        = {July},
+  booktitle    = {The Open Biomedical Engineering Journal},
+  publisher    = {Bentham Open},
+  address      = {Sharjah, UAE},
+  series       = {Biomedical Engineering Journal Series},
+  volume       = 8,
+  number       = 1,
+  pages        = {60--66},
+  doi          = {10.2174/1874120701408010060},
+  editor       = {Gualberto Catania},
+  organization = {Bentham Science}
+}
+
+@article{VincentENEURO.0554-23.2024,
+  author       = {Vincent, Jack P. and Economo, Michael N.},
+  title        = {Assessing Cross-Contamination in Spike-Sorted Electrophysiology Data},
+  volume       = {11},
+  number       = {8},
+  elocation-id = {ENEURO.0554-23.2024},
+  year         = {2024},
+  doi          = {10.1523/ENEURO.0554-23.2024},
+  publisher    = {Society for Neuroscience},
+  abstract     = {Recent advances in extracellular electrophysiology now facilitate the recording of spikes from hundreds or thousands of neurons simultaneously. This has necessitated both the development of new computational methods for spike sorting and better methods to determine spike-sorting accuracy. One long-standing method of assessing the false discovery rate (FDR) of spike sorting{\textemdash}the rate at which spikes are assigned to the wrong cluster{\textemdash}has been the rate of interspike interval (ISI) violations. Despite their near ubiquitous usage in spike sorting, our understanding of how exactly ISI violations relate to FDR, as well as best practices for using ISI violations as a quality metric, remains limited. Here, we describe an analytical solution that can be used to predict FDR from the ISI violation rate (ISIv). We test this model in silico through Monte Carlo simulation and apply it to publicly available spike-sorted electrophysiology datasets. We find that the relationship between ISIv and FDR is highly nonlinear, with additional dependencies on firing frequency, the correlation in activity between neurons, and contaminant neuron count. Predicted median FDRs in public datasets recorded in mice were found to range from 3.1 to 50.0\%. We found that stochasticity in the occurrence of ISI violations as well as uncertainty in cluster-specific parameters make it difficult to predict FDR for single clusters with high confidence but that FDR can be estimated accurately across a population of clusters. Our findings will help the growing community of researchers using extracellular electrophysiology assess spike-sorting accuracy in a principled manner.},
+  url          = {https://www.eneuro.org/content/11/8/ENEURO.0554-23.2024},
+  eprint       = {https://www.eneuro.org/content/11/8/ENEURO.0554-23.2024.full.pdf},
+  journal      = {eNeuro}
+}
+
+@article{EINEVOLL201211,
+  title    = {Towards reliable spike-train recordings from thousands of neurons with multielectrodes},
+  journal  = {Current Opinion in Neurobiology},
+  volume   = {22},
+  number   = {1},
+  pages    = {11-17},
+  year     = {2012},
+  note     = {Neurotechnology},
+  issn     = {0959-4388},
+  doi      = {https://doi.org/10.1016/j.conb.2011.10.001},
+  url      = {https://www.sciencedirect.com/science/article/pii/S0959438811001565},
+  author   = {Gaute T Einevoll and Felix Franke and Espen Hagen and Christophe Pouzat and Kenneth D Harris},
+  abstract = {The new generation of silicon-based multielectrodes comprising hundreds or more electrode contacts offers unprecedented possibilities for simultaneous recordings of spike trains from thousands of neurons. Such data will not only be invaluable for finding out how neural networks in the brain work, but will likely be important also for neural prosthesis applications. This opportunity can only be realized if efficient, accurate and validated methods for automatic spike sorting are provided. In this review we describe some of the challenges that must be met to achieve this goal, and in particular argue for the critical need of realistic model data to be used as ground truth in the validation of spike-sorting algorithms.}
+}
+
+@inproceedings{Siegle2021,
+  title        = {Survey of spiking in the mouse visual system reveals functional hierarchy},
+  author       = {Joshua H. Siegle and Xiaoxuan Jia and S{\'e}verine Durand and Sam Gale and Corbett Bennett and Nile Graddis and Greggory Heller and Tamina K. Ramirez and Hannah Choi and Jennifer A. Luviano and Peter A. Groblewski and Ruweida Ahmed and Anton Arkhipov and Amy Bernard and Yazan N. Billeh and Michael A. Buice and Saskia E. J. de Vries and Marius Pachitariu and Hongkui Zeng and Sarah Naylor and John W. Phillips and R. Clay Reid and Stefan Mihalas and Shawn R. Olsen and Christof Koch},
+  year         = 2021,
+  month        = {January},
+  booktitle    = {Nature},
+  publisher    = {Nature Publishing Group},
+  address      = {London, UK},
+  series       = {Nature Journal Series},
+  volume       = 592,
+  number       = 7852,
+  pages        = {86--92},
+  doi          = {10.1038/s41586-020-03171-x},
+  editor       = {Magdalena Skipper},
+  organization = {Allen Institute for Brain Science}
+}
+
+@inproceedings{SchmitzerTorbert2004,
+  title        = {Neuronal activity in the rodent dorsal striatum in sequential navigation: separation of spatial and reward responses on the multiple T task},
+  author       = {Neil Schmitzer-Torbert and A. David Redish},
+  year         = 2004,
+  month        = {May},
+  booktitle    = {Journal of Neurophysiology},
+  publisher    = {American Physiological Society},
+  address      = {Bethesda, MD},
+  series       = {Neurophysiology Journal Series},
+  volume       = 91,
+  number       = 5,
+  pages        = {2259--2272},
+  doi          = {10.1152/jn.00687.2003},
+  editor       = {Bill J. Yates},
+  organization = {American Physiological Society}
+}
+
+@article{ROUSSEEUW198753,
+  title    = {Silhouettes: A graphical aid to the interpretation and validation of cluster analysis},
+  journal  = {Journal of Computational and Applied Mathematics},
+  volume   = {20},
+  pages    = {53-65},
+  year     = {1987},
+  issn     = {0377-0427},
+  doi      = {https://doi.org/10.1016/0377-0427(87)90125-7},
+  url      = {https://www.sciencedirect.com/science/article/pii/0377042787901257},
+  author   = {Peter J. Rousseeuw},
+  keywords = {Graphical display, cluster analysis, clustering validity, classification},
+  abstract = {A new graphical display is proposed for partitioning techniques. Each cluster is represented by a so-called silhouette, which is based on the comparison of its tightness and separation. This silhouette shows which objects lie well within their cluster, and which ones are merely somewhere in between clusters. The entire clustering is displayed by combining the silhouettes into a single plot, allowing an appreciation of the relative quality of the clusters and an overview of the data configuration. The average silhouette width provides an evaluation of clustering validity, and might be used to select an ‘appropriate’ number of clusters.}
+}
+
+@article{Llobet2022.02.08.479192,
+  author       = {Llobet, Victor and Wyngaard, Aur{\'e}lien and Barbour, Boris},
+  title        = {Automatic post-processing and merging of multiple spike-sorting analyses with Lussac},
+  elocation-id = {2022.02.08.479192},
+  year         = {2022},
+  doi          = {10.1101/2022.02.08.479192},
+  publisher    = {Cold Spring Harbor Laboratory},
+  abstract     = {The increasing site counts of multielectrodes used in extracellular recording preclude traditional manual spike-sorting and have led to the development of several new software suites with increased automation. It remains difficult, however, to find parameters enabling optimal processing of signals from all neuronal types simultaneously. Here, we describe a procedure for automatically post-processing and merging the outputs of multiple spike-sorting analyses, enabling the accumulation of results optimised for different activity features. This approach was motivated by and first applied to the analysis of cerebellar activity, in which the complex spikes challenge standard analyses. The core of our modular procedure involves the identification of cluster-fusion candidates and assurance that only fusions that increase a clearly defined cluster-quality metric are performed; important subsidiary steps that have also been automated include spike alignment and duplicate removal. The procedure was validated by recovery of injected spike waveforms. In tests combining analyses from Kilosort and MountainSort, our procedure yielded a 50 \% increase in the detected number of Purkinje cell clusters with both simple and complex spikes. A further validation used the synthetic SpikeForest dataset approximating neocortical activity, in which our package also improved performance. Combining multiple analyses therefore offers a general method for improving spike-sorting, and furthermore Lussac reduces manual input and increases the objectivity of analyses.Competing Interest StatementThe authors have declared no competing interest.},
+  url          = {https://www.biorxiv.org/content/early/2022/02/10/2022.02.08.479192},
+  eprint       = {https://www.biorxiv.org/content/early/2022/02/10/2022.02.08.479192.full.pdf},
+  journal      = {bioRxiv}
+}
+
+
+@inproceedings{Lemon1984,
+  title        = {Methods for neuronal recording in conscious animals},
+  author       = {Roger Lemon and Arthur Prochazka},
+  year         = 1984,
+  month        = {January},
+  booktitle    = {Methods for Neuronal Recording in Conscious Animals},
+  publisher    = {John Wiley \& Sons},
+  address      = {Chichester; New York},
+  series       = {IBRO Handbook Series: Methods in the Neurosciences},
+  volume       = 4,
+  number       = {MMS ID 995730633406676},
+  pages        = {1--220},
+  doi          = {10.1002/0471901741},
+  editor       = {A. D. Smith},
+  organization = {Wiley-Interscience}
+}
+
+@inproceedings{IBL2022,
+  title        = {Spike sorting pipeline for the International Brain Laboratory},
+  author       = {{International Brain Laboratory}},
+  year         = 2022,
+  month        = {May},
+  booktitle    = {IBL Public Documentation Series},
+  publisher    = {International Brain Laboratory},
+  address      = {Geneva, Switzerland},
+  series       = {Open Science Resources},
+  volume       = 1,
+  number       = {v1.0},
+  pages        = {1--15},
+  doi          = {10.6084/m9.figshare.19705573},
+  editor       = {Gaelle Chapuis and Olivier Winter},
+  organization = {International Brain Laboratory}
+}
+
+@article{Lewicki1998,
+  doi       = {10.1088/0954-898X/9/4/001},
+  url       = {https://doi.org/10.1088/0954-898X/9/4/001},
+  year      = {1998},
+  month     = {November},
+  publisher = {},
+  volume    = {9},
+  number    = {4},
+  pages     = {R53},
+  author    = {Michael S Lewicki},
+  title     = {A review of methods for spike sorting: the detection and classification of neural action potentials},
+  journal   = {Network: Computation in Neural Systems},
+  abstract  = {The detection of neural spike activity is a technical challenge that is a prerequisite for studying many types of brain function. Measuring the activity of individual neurons accurately can be difficult due to large amounts of background noise and the difficulty in distinguishing the action potentials of one neuron from those of others in the local area. This article reviews algorithms and methods for detecting and classifying action potentials, a problem commonly referred to as spike sorting. The article first discusses the challenges of measuring neural activity and the basic issues of signal detection and classification. It reviews and illustrates algorithms and techniques that have been applied to many of the problems in spike sorting and discusses the advantages and limitations of each and the applicability of these methods for different types of experimental demands. The article is written both for the physiologist wanting to use simple methods that will improve experimental yield and minimize the selection biases of traditional techniques and for those who want to apply or extend more sophisticated algorithms to meet new experimental challenges.}
+}
+
+@article{HARRIS2001141,
+  title    = {Temporal Interaction between Single Spikes and Complex Spike Bursts in Hippocampal Pyramidal Cells},
+  journal  = {Neuron},
+  volume   = {32},
+  number   = {1},
+  pages    = {141-149},
+  year     = {2001},
+  issn     = {0896-6273},
+  doi      = {https://doi.org/10.1016/S0896-6273(01)00447-0},
+  url      = {https://www.sciencedirect.com/science/article/pii/S0896627301004470},
+  author   = {Kenneth D Harris and Hajime Hirase and Xavier Leinekugel and Darrell A Henze and György Buzsáki},
+  abstract = {Cortical pyramidal cells fire single spikes and complex spike bursts. However, neither the conditions necessary for triggering complex spikes, nor their computational function are well understood. CA1 pyramidal cell burst activity was examined in behaving rats. The fraction of bursts was not reliably higher in place field centers, but rather in places where discharge frequency was 6–7 Hz. Burst probability was lower and bursts were shorter after recent spiking activity than after prolonged periods of silence (100 ms–1 s). Burst initiation probability and burst length were correlated with extracellular spike amplitude and with intracellular action potential rising slope. We suggest that bursts may function as “conditional synchrony detectors,” signaling strong afferent synchrony after neuronal silence, and that single spikes triggered by a weak input may suppress bursts evoked by a subsequent strong input.}
+}
+
+@article{Harris2001,
+  title    = {Temporal Interaction between Single Spikes and Complex Spike Bursts in Hippocampal Pyramidal Cells},
+  journal  = {Neuron},
+  volume   = {32},
+  number   = {1},
+  pages    = {141-149},
+  year     = {2001},
+  issn     = {0896-6273},
+  doi      = {https://doi.org/10.1016/S0896-6273(01)00447-0},
+  url      = {https://www.sciencedirect.com/science/article/pii/S0896627301004470},
+  author   = {Kenneth D Harris and Hajime Hirase and Xavier Leinekugel and Darrell A Henze and György Buzsáki},
+  abstract = {Cortical pyramidal cells fire single spikes and complex spike bursts. However, neither the conditions necessary for triggering complex spikes, nor their computational function are well understood. CA1 pyramidal cell burst activity was examined in behaving rats. The fraction of bursts was not reliably higher in place field centers, but rather in places where discharge frequency was 6–7 Hz. Burst probability was lower and bursts were shorter after recent spiking activity than after prolonged periods of silence (100 ms–1 s). Burst initiation probability and burst length were correlated with extracellular spike amplitude and with intracellular action potential rising slope. We suggest that bursts may function as “conditional synchrony detectors,” signaling strong afferent synchrony after neuronal silence, and that single spikes triggered by a weak input may suppress bursts evoked by a subsequent strong input.}
+}   
+
+@inproceedings{Stevenson2011,
+  title        = {How advances in neural recording affect data analysis},
+  author       = {Ian H. Stevenson and Konrad P. Kording},
+  year         = 2011,
+  month        = {February},
+  booktitle    = {Nature Neuroscience},
+  publisher    = {Nature Publishing Group},
+  address      = {New York, NY},
+  volume       = 14,
+  number       = 2,
+  pages        = {139--142},
+  doi          = {10.1038/nn.2731},
+  organization = {Nature}
+}
+
+@article{Hubel1962,
+  title     = {Receptive fields, binocular interaction and functional architecture in the cat's visual cortex},
+  author    = {Hubel, David H and Wiesel, Torsten N},
+  journal   = {The Journal of Physiology},
+  volume    = {160},
+  number    = {1},
+  pages     = {106--154},
+  year      = {1962},
+  publisher = {Wiley Online Library}
+}
+
+@article{Pachitariu2024,
+  title     = {Spike sorting with Kilosort4},
+  author    = {Pachitariu, Marius and Sridhar, S and Pennington, J and Stringer, C},
+  journal   = {Nature Methods},
+  volume    = {21},
+  pages     = {914--921},
+  year      = {2024},
+  publisher = {Nature Publishing Group}
+}
+
+@article{Stringer2024,
+author = "Carsen Stringer and Marius Pachitariu",
+title = "{Simulations from kilosort4 paper}",
+year = "2024",
+month = "2",
+url = "https://janelia.figshare.com/articles/dataset/Simulations_from_kilosort4_paper/25298815",
+doi = "10.25378/janelia.25298815.v1"
+}
+
+@article{Buccino2021MEArec,
+  title     = {MEArec: A Fast and Customizable Testbench Simulator for Ground-truth Extracellular Spiking Activity},
+  author    = {Buccino, Alessio Paolo and Einevoll, Gaute Tomas},
+  journal   = {Neuroinformatics},
+  year      = {2021},
+  month     = {January},
+  volume    = {19},
+  number    = {2},
+  pages     = {185--204},
+  doi       = {10.1007/s12021-020-09467-7},
+  publisher = {Springer Nature}
+}
+
+@article{Buccino2020SpikeInterface,
+  title     = {SpikeInterface, a unified framework for spike sorting},
+  author    = {Buccino, Alessio P and Hurwitz, Cole L and Garcia, Samuel and Magland, Jeremy and Siegle, Joshua H and Hurwitz, Roger and Hennig, Matthias H},
+  journal   = {eLife},
+  year      = {2020},
+  month     = {November},
+  volume    = {9},
+  pages     = {e61834},
+  doi       = {10.7554/eLife.61834},
+  url       = {https://doi.org/10.7554/eLife.61834},
+  publisher = {eLife Sciences Publications, Ltd}
+}
+
+@article{Neto2016Paired,
+  author    = {Neto, Joana P. and Lopes, Gon\c{c}alo and Fraz\~{a}o, Jo\~{a}o and Nogueira, Joana and Lacerda, Pedro and Bai\~{a}o, Pedro and Aarts, Arno and Andrei, Alexandru and Musa, Silke and Fortunato, Elvira and Barquinha, Pedro and Kampff, Adam R.},
+  title     = {Validating silicon polytrodes with paired juxtacellular recordings: method and dataset},
+  journal   = {Journal of Neurophysiology},
+  year      = {2016},
+  volume    = {116},
+  number    = {2},
+  pages     = {892--903},
+  doi       = {10.1152/jn.00103.2016},
+  url       = {https://doi.org/10.1152/jn.00103.2016}
+}
+
+@misc{CRCNSSPE2,
+  author    = {Neto, Joana P. and Lopes, Gon\c{c}alo and Fraz\~{a}o, Jo\~{a}o and Nogueira, Joana and Lacerda, Pedro and Bai\~{a}o, Pedro and Aarts, Arno and Andrei, Alexandru and Musa, Silke and Fortunato, Elvira and Barquinha, Pedro and Kampff, Adam R.},
+  title     = {Polytrode extracellular recordings with paired juxtacellular recordings (SPE-2)},
+  year      = {2018},
+  publisher = {Collaborative Research in Computational Neuroscience (CRCNS.org)},
+  doi       = {10.6080/K0CC0XW0},
+  url       = {https://crcns.org/data-sets/methods/spe-2/about-spe-2},
+  note      = {Data set and citation page}
+}
+
+@article{PanYang2010,
+  author    = {Pan, Sinno Jialin and Yang, Qiang},
+  title     = {A Survey on Transfer Learning},
+  journal   = {IEEE Transactions on Knowledge and Data Engineering},
+  year      = {2010},
+  volume    = {22},
+  number    = {10},
+  pages     = {1345--1359},
+  doi       = {10.1109/TKDE.2009.191},
+  url       = {https://doi.org/10.1109/TKDE.2009.191}
+}
+
+@article{Gretton2012,
+  author    = {Gretton, Arthur and Borgwardt, Karsten M. and Rasch, Malte J. and Sch\"{o}lkopf, Bernhard and Smola, Alexander},
+  title     = {A Kernel Two-Sample Test},
+  journal   = {Journal of Machine Learning Research},
+  year      = {2012},
+  volume    = {13},
+  pages     = {723--773},
+  url       = {https://www.jmlr.org/papers/v13/gretton12a.html}
+}
+
+@inproceedings{Long2015,
+  author    = {Long, Mingsheng and Cao, Yue and Wang, Jianmin and Jordan, Michael I.},
+  title     = {Learning Transferable Features with Deep Adaptation Networks},
+  booktitle = {Proceedings of the 32nd International Conference on Machine Learning},
+  year      = {2015},
+  pages     = {97--105},
+  publisher = {PMLR},
+  url       = {https://proceedings.mlr.press/v37/long15.html}
+}
+
+@article{Ganin2016,
+  author    = {Ganin, Yaroslav and Ustinova, Evgeniya and Ajakan, Hana and Germain, Pascal and Larochelle, Hugo and Laviolette, Fran\c{c}ois and Marchand, Mario and Lempitsky, Victor},
+  title     = {Domain-Adversarial Training of Neural Networks},
+  journal   = {Journal of Machine Learning Research},
+  year      = {2016},
+  volume    = {17},
+  number    = {59},
+  pages     = {1--35},
+  url       = {https://www.jmlr.org/papers/v17/15-239.html}
+}
+
+@inproceedings{Chen2020SimCLR,
+  author    = {Chen, Ting and Kornblith, Simon and Norouzi, Mohammad and Hinton, Geoffrey},
+  title     = {A Simple Framework for Contrastive Learning of Visual Representations},
+  booktitle = {Proceedings of the 37th International Conference on Machine Learning},
+  year      = {2020},
+  pages     = {1597--1607},
+  publisher = {PMLR},
+  url       = {https://proceedings.mlr.press/v119/chen20j.html}
+}
+
+@inproceedings{ChenGuestrin2016,
+  author    = {Chen, Tianqi and Guestrin, Carlos},
+  title     = {XGBoost: A Scalable Tree Boosting System},
+  booktitle = {Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining},
+  year      = {2016},
+  pages     = {785--794},
+  doi       = {10.1145/2939672.2939785},
+  url       = {https://doi.org/10.1145/2939672.2939785}
+}
+
+@inproceedings{Ke2017,
+  author    = {Ke, Guolin and Meng, Qi and Finley, Thomas and Wang, Taifeng and Chen, Wei and Ma, Weidong and Ye, Qiwei and Liu, Tie-Yan},
+  title     = {LightGBM: A Highly Efficient Gradient Boosting Decision Tree},
+  booktitle = {Advances in Neural Information Processing Systems 30},
+  year      = {2017},
+  pages     = {3146--3154},
+  url       = {https://papers.nips.cc/paper_files/paper/2017/hash/6449f44a102fde848669bdd9eb6b76fa-Abstract.html}
+}
+
+@article{Grinsztajn2022,
+  author    = {Grinsztajn, L{\'e}o and Oyallon, Edouard and Varoquaux, Ga{\"e}l},
+  title     = {Why Do Tree-Based Models Still Outperform Deep Learning on Typical Tabular Data?},
+  journal   = {arXiv},
+  year      = {2022},
+  eprint    = {2207.08815},
+  archiveprefix = {arXiv},
+  primaryclass = {cs.LG},
+  url       = {https://arxiv.org/abs/2207.08815}
+}
+
+@ARTICLE{Zhang2022-wg,
+  title    = "Micro-object pose estimation with sim-to-real transfer learning
+              using small dataset",
+  author   = "Zhang, Dandan and Barbot, Antoine and Seichepine, Florent and Lo,
+              Frank P-W and Bai, Wenjia and Yang, Guang-Zhong and Lo, Benny",
+  journal  = "Communications Physics",
+  volume   =  5,
+  number   =  1,
+  pages    = "80",
+  month    =  apr,
+  year     =  2022
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@article{Leblanc01121996,
+author = {Michael Leblanc and Robert Tibshirani},
+title = {Combining Estimates in Regression and Classification},
+journal = {Journal of the American Statistical Association},
+volume = {91},
+number = {436},
+pages = {1641--1650},
+year = {1996},
+publisher = {Taylor \& Francis},
+doi = {10.1080/01621459.1996.10476733},
+
+
+URL = { 
+    
+        https://doi.org/10.1080/01621459.1996.10476733
+    
+    
+
+},
+eprint = { 
+    
+        https://doi.org/10.1080/01621459.1996.10476733
+    
+    
+
+}
+
+}
+
+@ARTICLE{Breiman1996-xk,
+  title    = "Bagging predictors",
+  author   = "Breiman, Leo",
+  journal  = "Machine Learning",
+  volume   =  24,
+  number   =  2,
+  pages    = "123--140",
+  month    =  aug,
+  year     =  1996
+}
+@article{Wood2004,
+author = {Wood, Frank and Black, Michael and Vargas-Irwin, Carlos and Fellows, Matthew and Donoghue, John},
+year = {2004},
+month = {07},
+pages = {912-8},
+title = {On the Variability of Manual Spike Sorting},
+volume = {51},
+journal = {IEEE transactions on bio-medical engineering},
+doi = {10.1109/TBME.2004.826677}
+}
+
+@article{WOLPERT1992241,
+title = {Stacked generalization},
+journal = {Neural Networks},
+volume = {5},
+number = {2},
+pages = {241-259},
+year = {1992},
+issn = {0893-6080},
+doi = {https://doi.org/10.1016/S0893-6080(05)80023-1},
+url = {https://www.sciencedirect.com/science/article/pii/S0893608005800231},
+author = {David H. Wolpert},
+keywords = {Generalization and induction, Combining generalizers, Learning set preprocessing, cross-validation, Error estimation and correction},
+abstract = {This paper introduces stacked generalization, a scheme for minimizing the generalization error rate of one or more generalizers. Stacked generalization works by deducing the biases of the generalizer(s) with respect to a provided learning set. This deduction proceeds by generalizing in a second space whose inputs are (for example) the guesses of the original generalizers when taught with part of the learning set and trying to guess the rest of it, and whose output is (for example) the correct guess. When used with multiple generalizers, stacked generalization can be seen as a more sophisticated version of cross-validation, exploiting a strategy more sophisticated than cross-validation's crude winner-takes-all for combining the individual generalizers. When used with a single generalizer, stacked generalization is a scheme for estimating (and then correcting for) the error of a generalizer which has been trained on a particular learning set and then asked a particular question. After introducing stacked generalization and justifying its use, this paper presents two numerical experiments. The first demonstrates how stacked generalization improves upon a set of separate generalizers for the NETtalk task of translating text to phonemes. The second demonstrates how stacked generalization improves the performance of a single surface-fitter. With the other experimental evidence in the literature, the usual arguments supporting cross-validation, and the abstract justifications presented in this paper, the conclusion is that for almost any real-world generalization problem one should use some version of stacked generalization to minimize the generalization error rate. This paper ends by discussing some of the variations of stacked generalization, and how it touches on other fields like chaos theory.}
+}
+
+@article{Heidenreich2023,
+author = {Heidenreich, Julian and Bonatti, Colin and Mohr, Dirk},
+year = {2023},
+month = {09},
+pages = {},
+title = {Transfer learning of recurrent neural network‐based plasticity models},
+volume = {125},
+journal = {International Journal for Numerical Methods in Engineering},
+doi = {10.1002/nme.7357}
+}
+
+@inproceedings{10.1145/2939672.2939785,
+author = {Chen, Tianqi and Guestrin, Carlos},
+title = {XGBoost: A Scalable Tree Boosting System},
+year = {2016},
+isbn = {9781450342322},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2939672.2939785},
+doi = {10.1145/2939672.2939785},
+booktitle = {Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining},
+pages = {785–794},
+numpages = {10},
+keywords = {large-scale machine learning},
+location = {San Francisco, California, USA},
+series = {KDD '16}
+}

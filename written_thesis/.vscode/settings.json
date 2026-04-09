@@ -1,0 +1,46 @@
+{
+	"latex-workshop.latex.outDir": "build",
+	"latex-workshop.latex.tools": [
+		{
+			"name": "latexmk",
+			"command": "latexmk",
+			"args": [
+				"-synctex=1",
+				"-interaction=nonstopmode",
+				"-file-line-error",
+				"-pdf",
+				"-outdir=build",
+				"%DOC%"
+			],
+			"env": {}
+		},
+		{
+			"name": "lualatexmk",
+			"command": "latexmk",
+			"args": [
+				"-synctex=1",
+				"-interaction=nonstopmode",
+				"-file-line-error",
+				"-lualatex",
+				"-outdir=build",
+				"%DOC%"
+			],
+			"env": {}
+		},
+		{
+			"name": "xelatexmk",
+			"command": "latexmk",
+			"args": [
+				"-synctex=1",
+				"-interaction=nonstopmode",
+				"-file-line-error",
+				"-xelatex",
+				"-outdir=build",
+				"%DOC%"
+			],
+			"env": {}
+		}
+	],
+	"latex-workshop.view.pdf.browser.external.browserCommand": "open",
+	"latex-workshop.view.pdf.viewer": "tab"
+}

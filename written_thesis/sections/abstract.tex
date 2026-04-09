@@ -1,0 +1,13 @@
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+Automated spike sorting has become indispensable for modern electrophysiology, yet the quality-control step remains difficult because the most meaningful error targets require ground truth. This thesis studies whether two spike-sorting error metrics, \fpos{} and \fmiss{}, can be predicted for real paired recordings by transferring supervision from much larger SpikeForest hybrid datasets. The central challenge is not model capacity alone, but domain shift: hybrid data are abundant and labelled, whereas paired recordings are scarce, biologically closer to deployment, and structurally heterogeneous.
+
+The work builds a leakage-safe benchmark that separates recordings rather than units, preventing recording-level context from leaking into evaluation. The final packaged dataset contains 33,206 rows from 61 recordings and 9 spike sorters. Of these rows, 24,224 come from hybrid data and 8,982 from paired data, while only 207 paired rows carry the matched labels used for the target benchmark.
+
+Three findings define the manuscript. First, the hybrid-to-paired shift is severe: domain-classifier AUC reaches 0.9765 with unit-only features and 0.9997 with full recording context, showing that the transfer problem is structurally hard rather than cosmetically different. Second, the transfer story is sharply asymmetric. For \fpos{}, context-aware transfer models achieve strong performance, with the strongest robust structured stack reaching 0.4068 mean \rsq{} across 20 recording-disjoint seeds, while the paired-only raw baseline reaches 0.4209. For \fmiss{}, the picture is much weaker: the best retained 20-seed mean \rsq{} is only -0.0128, and unseen-family performance remains clearly negative overall. Third, the preferred \fpos{} recipe depends on evaluation regime and held-out family. Under recording-disjoint evaluation, the pre-waveform unlabeled-structure stack is the main robust transfer reference, whereas under leave-one-family-out evaluation the waveform-augmented structure model becomes slightly stronger overall and wins 3 of the 5 held-out families.
+
+The main scientific conclusion is therefore not that one universal model is best. Instead, leakage-safe quality prediction is feasible for \fpos{}, much less stable for \fmiss{}, and strongly shaped by domain shift, label scarcity, biological regime, and family heterogeneity. The strongest contribution of the thesis is a benchmark-oriented account of when automated spike-sorting quality prediction works, when it fails, and why.
+
+\vspace{0.8em}
+\noindent\textbf{Keywords:} spike sorting, electrophysiology, transfer learning, domain shift, quality control, gradient-boosted trees, SpikeForest

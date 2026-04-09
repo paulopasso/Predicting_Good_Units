@@ -1,0 +1,34 @@
+\chapter{Appendix}
+\label{chap:appendix}
+
+\section{Additional Note on Single-Split Versus Robustness Numbers}
+
+Some readers may notice that the canonical single-split \fmiss{} results look much stronger than the 20-seed averages. This is not an error. The canonical split is a valid but favorable realization of the recording-disjoint benchmark, whereas the seed sweep intentionally changes which recordings are held out. The difference between those numbers is therefore a feature of the thesis, not a bug: it demonstrates that reporting only one split would exaggerate the maturity of the \fmiss{} result.
+
+\section{Packaged Structure of the Paired Families}
+
+For convenience, \cref{tab:appendix-family-structure} restates the local structural summary of the paired families that underlies the family-preference discussion in the main text.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Local structural summary of the paired study families.}
+    \label{tab:appendix-family-structure}
+    \small
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{@{}p{3.1cm}rrrrp{7.6cm}@{}}
+        \toprule
+        Family & Rows & Recordings & Labeled rows & PCA distance from hybrid & Context summary \\
+        \midrule
+        BOYDEN & 907 & 4 & 43 & 12.14 & 32-channel cortical subset, short recordings, moderate shift and low target mean. \\
+        CRCNS\_HC1 & 184 & 4 & 22 & 10.48 & Rat hippocampus, tiny labeled set, highest target variance in the package. \\
+        ENGLISH & 3,151 & 15 & 71 & 11.78 & Broadest packaged family, multiple regions and acquisition settings. \\
+        KAMPFF & 1,743 & 4 & 35 & 20.55 & Cortical subset with the largest centroid distance from hybrid and strongest waveform gain. \\
+        MEA64C\_YGER & 2,997 & 4 & 36 & 5.23 & Short retina MEA recordings, comparatively compact and homogeneous. \\
+        \bottomrule
+    \end{tabular}
+    }
+\end{table}
+
+\section{Reproducibility Note}
+
+The thesis figures and tables are generated from frozen notebook outputs and tracked CSV files in the repository. The manuscript deliberately cites those frozen outputs rather than rerunning exploratory experiments during writing. This keeps the document aligned with the packaged state of the project and ensures that the narrative remains reproducible even when the repository evolves later.

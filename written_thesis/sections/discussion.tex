@@ -1,0 +1,36 @@
+\chapter{Discussion}
+\label{chap:discussion}
+
+\section{What the Benchmark Actually Shows}
+
+The most important interpretive choice is to state the claim at the right level. This thesis does not demonstrate that a single novel model universally solves spike-sorting quality prediction. It demonstrates something narrower and more useful: under a leakage-safe benchmark with severe hybrid-to-paired shift, \fpos{} can be predicted with meaningful accuracy by context-aware transfer models, whereas \fmiss{} cannot yet be predicted with the same robustness.
+
+This distinction matters because the benchmark contains several different notions of success. A favourable single split can make a model look mature. A twenty-seed recording-disjoint sweep asks whether that performance survives changing held-out recordings. A leave-one-family-out protocol asks something harsher still: whether the recipe extrapolates to a paired family never observed during training. The right thesis-level conclusion must take all three levels into account.
+
+\section{Returning to the Hypotheses}
+
+\textbf{H1 is supported.} The hybrid and paired domains are strongly shifted, and this is not a subtle effect. The domain classifier reaches 0.9765 AUC with unit-level features and 0.9997 AUC once recording context is added. The failure of hybrid-only transfer is therefore expected rather than surprising. The benchmark confirms that source supervision is useful only if it is filtered through target-aware structure.
+
+\textbf{H2 is also supported.} Leakage-safe recording context adds meaningful predictive signal. The strongest \fpos{} stacks use context successfully, and the explainability analysis shows that recording-context features dominate the grouped SHAP summary of the canonical waveform-augmented model. This is important because quality is not only a local waveform property. Whether a unit is suspicious often depends on how it compares with the rest of its recording.
+
+\textbf{H3 is supported.} \fpos{} and \fmiss{} are structurally different prediction targets. They differ in label availability, in how directly the current feature package exposes them, and in how they respond to the same modelling ideas. \fpos{} enters a clearly positive regime under the retained benchmark, while \fmiss{} only approaches break-even on recording-disjoint evaluation and degrades again under family holdout.
+
+\textbf{H4 is supported.} The best \fpos{} model depends on dataset family and evaluation regime rather than being universal across all paired recordings. Under recording-disjoint evaluation, the pre-waveform unlabeled-structure stack is the main robust transfer reference. Under family-held-out evaluation, the waveform-augmented structure model becomes slightly stronger overall and wins three of the five held-out families. The best recipe therefore depends on what kind of generalisation is being asked of the model.
+
+\section{Why the Targets and Families Diverge}
+
+The cross-target asymmetry is not an accident of optimisation. Several properties of the benchmark help explain it. First, the targets are supervised differently. \fpos{} is available throughout the packaged dataset, whereas \fmiss{} only exists for valid matched units. Second, the current feature package describes contamination-like failure more naturally than missed-spike mechanisms. Recording-relative amplitude instability, waveform spread, confusability, and support disagreement all map intuitively onto \fpos{}. Missed spikes, by contrast, are more entangled with overlap, template mismatch, bursting, thresholding, and local dynamics that are only partially visible in the current summaries.
+
+This also helps explain the family-specific pattern. KAMPFF is the clearest waveform-sensitive case: it is structurally farther from the hybrid centroid, and it remains one of the families where the waveform-augmented model retains a real advantage. CRCNS\_HC1 is tiny and high variance, so extra representation layers may simply introduce more instability than benefit. ENGLISH is broad and internally heterogeneous, which can make simpler structural transfer recipes safer when the whole family is absent from training. BOYDEN is especially important biologically because it contains bursting neurons. In such a regime, assumptions based on amplitude regularity, contamination summaries, and spike-timing heuristics can break down or behave differently, which helps explain why waveform helps somewhat there but still does not lead to a high absolute \rsq{}.
+
+The family-held-out results are scientifically useful precisely because they stop the thesis from overclaiming. A model can be good for new recordings from familiar families and still fail to be the best option once the evaluation objective becomes extrapolation to a completely unseen family. That is exactly what happens here.
+
+\section{Limitations, Biological Scope, and Implications}
+
+Several limitations constrain what can be claimed from the benchmark. The paired labelled set contains only 207 rows, which is enough to compare recipes carefully but not enough to make fine-grained claims about every subgroup with high confidence. The packaged paired domain is also only a subset of the broader SpikeForest universe. Family coverage is uneven, and some families contain only four recordings. The benchmark is therefore scientifically useful without being exhaustive.
+
+Another limitation is representational. The models operate on extracted summaries rather than raw traces. This is a deliberate design choice, because the deployment scenario assumes a post-sorting quality predictor. However, it also means that some failure modes, especially those driving \fmiss{}, may not be fully visible to the learner. The weak \fmiss{} story therefore points not only to a model problem, but also to a feature bottleneck.
+
+Despite these limitations, the benchmark still supports practical recommendations. \fpos{} and \fmiss{} should be treated as separate deployment targets. Recording-disjoint evaluation should remain the default whenever context features are involved. Context-aware tree models are the strongest practical baseline family in this low-label tabular setting. Waveform enrichment is a regime-dependent gain rather than a guaranteed universal improvement.
+
+The main next step is therefore not simply more tuning. For \fmiss{}, the priority is richer representations of missed-spike mechanisms. For \fpos{}, a promising direction is not a search for one universal final recipe, but a better understanding of when waveform augmentation is worth the extra complexity and when simpler structure-aware transfer remains safer.

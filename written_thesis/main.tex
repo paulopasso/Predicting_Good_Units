@@ -1,0 +1,104 @@
+\documentclass[12pt,a4paper,oneside]{report}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{newtxtext,newtxmath}
+\usepackage[a4paper,margin=2.6cm]{geometry}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{enumitem}
+\usepackage{csquotes}
+\usepackage{siunitx}
+\usepackage{pdflscape}
+\usepackage{placeins}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage[capitalise,noabbrev]{cleveref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{etoolbox}
+
+\usepackage[style=apa,backend=biber,sortcites=true,sorting=nyt,maxcitenames=2,maxbibnames=99]{biblatex}
+\addbibresource{references.bib}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  citecolor=black,
+  urlcolor=blue
+}
+
+\doublespacing
+\raggedbottom
+\setlength{\parskip}{0.55em}
+\setlength{\parindent}{0pt}
+\setlength{\headheight}{15pt}
+\setlist[itemize]{leftmargin=1.6em}
+\setlist[enumerate]{leftmargin=1.8em}
+\captionsetup{font={small,stretch=1},labelfont=bf}
+\graphicspath{{graphics/}}
+\renewcommand{\arraystretch}{1.18}
+
+\AtBeginEnvironment{table}{\singlespacing}
+\AtBeginEnvironment{longtable}{\singlespacing}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcommand{\fpos}{\texttt{fpos}}
+\newcommand{\fmiss}{\texttt{fmiss}}
+\newcommand{\rsq}{$R^2$}
+\newcommand{\mae}{MAE}
+\newcommand{\study}[1]{\textsc{#1}}
+
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\Large}
+  {Chapter \thechapter}
+  {0.5em}
+  {\LARGE}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\nouppercase{\leftmark}}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+
+\title{Beyond the Best Channel}
+\author{Paul Ruiz Alliata}
+\date{April 2026}
+
+\begin{document}
+
+\pagenumbering{gobble}
+\hypersetup{pageanchor=false}
+\input{sections/title_page}
+\cleardoublepage
+\hypersetup{pageanchor=true}
+\pagenumbering{roman}
+\setcounter{page}{1}
+\input{sections/abstract}
+\tableofcontents
+\cleardoublepage
+
+\pagenumbering{arabic}
+\input{sections/introduction}
+\input{sections/litterature_review}
+\input{sections/methodology}
+\input{sections/results}
+\input{sections/discussion}
+\input{sections/conclusions}
+
+\cleardoublepage
+\printbibliography
+
+\appendix
+\input{sections/appendix}
+
+\end{document}

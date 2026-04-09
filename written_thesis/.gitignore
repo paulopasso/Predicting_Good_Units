@@ -1,0 +1,18 @@
+# LaTeX build files
+build/
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.bbl
+*.bcf
+*.blg
+*.run.xml
+_minted-*/
+
+# PDF files (optional, if you only want source in git)
+*.pdf
+.DS_Store

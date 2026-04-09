@@ -1,0 +1,21 @@
+\chapter{Conclusion}
+\label{chap:conclusion}
+
+This thesis asked whether spike-sorting quality metrics can be predicted for real paired electrophysiology recordings by transferring supervision from larger hybrid SpikeForest datasets. The answer is qualified but clear.
+
+The benchmark shows that transfer is difficult for principled reasons. Hybrid and paired data are strongly shifted, and naive source-only transfer fails. Once that shift is respected rather than ignored, context-aware transfer models produce a credible positive benchmark for \fpos{}, but the main robust story is narrower than one final model wins. On the twenty-seed recording-disjoint ladder, the strongest overall \fpos{} score in the retained core set is the paired-only raw model at 0.4209 \rsq{}, while among the structured transfer stacks the pre-waveform unlabeled-structure model is the strongest robust transfer reference at 0.4068 mean \rsq{}. Under family-held-out LOFO evaluation, the waveform-augmented structure model becomes slightly stronger overall and wins three of the five held-out families, but again not universally.
+
+The same cannot yet be said for \fmiss{}. Context-aware models repair some of the damage done by pure source transfer, but they do not cross into a stable positive regime. In the retained core ladder, the reduced-latent context model reaches only -0.0128 mean \rsq{} across the twenty-seed sweep, and under LOFO the least-bad aggregate recipe falls to -0.3673. The thesis therefore concludes that the current feature space and transfer setup are sufficient for a strong \fpos{} benchmark contribution, but not yet for a robust \fmiss{} deployment story.
+
+\section{Final Resolution of the Hypotheses}
+
+\begin{itemize}
+    \item \textbf{H1 supported.} The hybrid and paired domains are strongly shifted, and this shift is measurable through near-perfect domain separability.
+    \item \textbf{H2 supported.} Leakage-safe recording context adds meaningful predictive value and becomes the dominant explanatory block in the canonical \fpos{} model.
+    \item \textbf{H3 supported.} \fpos{} and \fmiss{} are structurally different prediction targets and should not be forced into one shared modelling story.
+    \item \textbf{H4 supported.} The preferred \fpos{} recipe depends on study family and on whether the evaluation objective is recording-disjoint robustness or unseen-family robustness.
+\end{itemize}
+
+\section{Main Takeaway}
+
+The main takeaway is that leakage-safe spike-sorting quality prediction under hybrid-to-paired transfer is feasible for \fpos{}, not yet robust for \fmiss{}, and strongly conditioned by target-domain heterogeneity. In practical terms, the project is strongest as a benchmark and analysis contribution: it shows where quality prediction works, where it remains fragile, and why the answer depends on both the biological regime and the evaluation regime.
