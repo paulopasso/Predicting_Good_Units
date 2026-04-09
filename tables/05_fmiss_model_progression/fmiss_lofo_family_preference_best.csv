@@ -1,0 +1,6 @@
+held_out_family,best_recipe_id,best_label,best_r2,best_mae,family_rank
+PAIRED_BOYDEN,fmiss_paired_raw,Paired-only raw,-0.4012218249479147,0.2460171001280784,1
+PAIRED_CRCNS_HC1,fmiss_paired_raw,Paired-only raw,-0.299897106108583,0.1717871575023803,1
+PAIRED_ENGLISH,fmiss_paired_context,Paired-only context,-0.6507204628132481,0.291745455989722,1
+PAIRED_KAMPFF,fmiss_paired_raw,Paired-only raw,-0.206854468760199,0.2305944363683887,1
+PAIRED_MEA64C_YGER,fmiss_reduced_latent,Reduced-latent context,0.4461916174760881,0.1777074547489047,1

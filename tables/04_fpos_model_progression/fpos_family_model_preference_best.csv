@@ -1,0 +1,6 @@
+study_set,best_recipe_id,best_label,best_r2,best_mae,family_rank
+PAIRED_BOYDEN,fpos_pre_waveform_unlabeled,Pre-waveform unlabeled structure,0.2727052031327051,0.0653680531249145,1
+PAIRED_CRCNS_HC1,fpos_paired_context,Paired-only context,0.0411412752951081,0.1909671251543397,1
+PAIRED_ENGLISH,fpos_paired_raw,Paired-only raw,0.2499944280907294,0.1690325946364346,1
+PAIRED_KAMPFF,fpos_waveform_winner,Waveform-augmented structure,0.7983719046102475,0.0632092967896168,1
+PAIRED_MEA64C_YGER,fpos_paired_context,Paired-only context,0.3841123075809756,0.072938109632154,1

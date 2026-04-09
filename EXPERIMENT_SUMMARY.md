@@ -2103,7 +2103,7 @@ What was informative:
 - the multiscale learned representation did add some useful holdout signal
 - the combined embedding branch beat the local baseline on `R²`
 - however CV got worse for both multiscale branches
-- the gain was not strong enough to beat the earlier global waveform winner:
+- the gain was not strong enough to beat the earlier global waveform-augmented structure model:
   - `wf_embed_anchor_stack_xgboost`
   - MAE `0.1140`
   - `R² 0.5479`
@@ -2352,12 +2352,12 @@ Aggregate results:
   - macro `R² 0.4527`
   - weighted `R² 0.4240`
   - worst-family `R² 0.2940`
-- waveform winner:
+- waveform-augmented structure model:
   - macro `R² 0.4386`
   - weighted `R² 0.4116`
   - worst-family `R² 0.1482`
 
-Per-family results for the waveform winner:
+Per-family results for the waveform-augmented structure model:
 
 - `PAIRED_BOYDEN`
   - MAE `0.0751`
@@ -2392,7 +2392,7 @@ Interpretation:
 
 Updated conclusion:
 
-- for standard recording-disjoint evaluation, keep the waveform winner as the best `fpos` model
+- for standard recording-disjoint evaluation, keep the waveform-augmented structure model as the best `fpos` model
 - for family-unseen robustness, the simpler reference stack is currently safer
 - the thesis should explicitly distinguish:
   - recording-disjoint generalization

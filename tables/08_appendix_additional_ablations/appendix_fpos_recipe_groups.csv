@@ -1,6 +1,6 @@
 ablation_group,recipe_ids
-source_supervision,"fpos_dummy, fpos_paired_raw, fpos_hybrid_only, fpos_hybrid_calibrated, fpos_hybrid_plus_paired, fpos_hybrid_residual"
+source_supervision,"fpos_dummy, fpos_paired_raw, fpos_hybrid_only"
 context,"fpos_paired_raw, fpos_paired_context, fpos_context_stack"
-unlabeled_paired_structure,"fpos_context_stack, fpos_pre_waveform_unlabeled, fpos_family_balanced"
-waveform_representation,"fpos_pre_waveform_unlabeled, fpos_family_balanced, fpos_waveform_winner"
-robustness,"fpos_pre_waveform_unlabeled, fpos_family_balanced, fpos_waveform_winner"
+unlabeled_paired_structure,"fpos_context_stack, fpos_pre_waveform_unlabeled"
+waveform_representation,"fpos_pre_waveform_unlabeled, fpos_waveform_winner"
+robustness,"fpos_pre_waveform_unlabeled, fpos_waveform_winner"

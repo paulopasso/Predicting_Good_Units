@@ -1,8 +1,8 @@
 stage,model,r2,mae
-1  sanity floor,Dummy paired mean,-0.0002207581638757,0.1910159415821171
-2  basic transfer,Hybrid+paired basic XGBoost,0.2709752422738135,0.1483971889909965
-3  neural SSL,Best SSL neural,-1.057135712663341,0.2769436150201184
-4  neural MMD,Best MMD neural,0.3048692784541869,0.1503194568950421
-5  context stacking,Context-first source stack,0.5215196966867025,0.1189606640631401
-6  + unlabeled paired,Pre-waveform unlabeled structure,0.501473465085337,0.1178656977327637
-7  + waveform embedding,Waveform winner,0.5331891877732409,0.1160615450398521
+1  sanity floor,Dummy paired mean,-0.0568569593589972,0.196679875214863
+2  paired baseline,Paired-only raw,0.4208807903133641,0.130419819739609
+3  source transfer,Hybrid-only XGBoost,-1.816164839466413,0.2933808211172917
+4  paired context,Paired-only context,0.41875445265987,0.1337293038912158
+5  context stacking,Context-first source stack,0.3972832018566536,0.1328901663272017
+6  + unlabeled paired,Pre-waveform unlabeled structure,0.406761955611441,0.1301866712108471
+7  + waveform embedding,Waveform-augmented structure,0.3906053969147798,0.1316994613076213

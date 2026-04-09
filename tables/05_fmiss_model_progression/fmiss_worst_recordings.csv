@@ -1,13 +1,13 @@
 label,recording_key,r2
-Reduced-latent winner,PAIRED_ENGLISH::paired_english::m139_200114_222743,-411.2588195819958
-Reduced-latent winner,PAIRED_ENGLISH::paired_english::m14_190326_155432,-180.74409630072017
-Reduced-latent winner,PAIRED_ENGLISH::paired_english::m139_200114_191955,-28.575624269768944
-Reduced-latent winner,PAIRED_KAMPFF::paired_kampff::c14,-14.14200823131267
-Reduced-latent winner,PAIRED_ENGLISH::paired_english::m57_191105_160026,-10.371393923018177
-Reduced-latent winner,PAIRED_ENGLISH::paired_english::m26_190524_100859_cell1,-9.13007986015436
-Reduced-latent winner,PAIRED_ENGLISH::paired_english::m15_190315_152315_cell1,-2.009113955881277
-Reduced-latent winner,PAIRED_ENGLISH::paired_english::m15_190315_142052_cell1,-0.9326444500340461
-Reduced-latent winner,PAIRED_CRCNS_HC1::paired_crcns::d11222_d11222.002,0.002825364410957265
-Reduced-latent winner,PAIRED_BOYDEN::paired_boyden32c::1103_1_1,0.6198580307330486
-Reduced-latent winner,PAIRED_ENGLISH::paired_english::m57_191105_141906,0.683136912143162
-Reduced-latent winner,PAIRED_BOYDEN::paired_boyden32c::419_1_8,0.718333704779414
+Reduced-latent context,PAIRED_KAMPFF::paired_kampff::2014_11_25_Pair_3_0,-7306.240874529956
+Reduced-latent context,PAIRED_ENGLISH::paired_english::m139_200114_222743,-2107.8580877701816
+Reduced-latent context,PAIRED_ENGLISH::paired_english::m14_190326_155432,-168.64987547928234
+Reduced-latent context,PAIRED_ENGLISH::paired_english::m139_200114_191955,-53.7003584350526
+Reduced-latent context,PAIRED_BOYDEN::paired_boyden32c::509_1_1,-22.68496962371094
+Reduced-latent context,PAIRED_ENGLISH::paired_english::m57_191105_153915,-18.131797609963417
+Reduced-latent context,PAIRED_ENGLISH::paired_english::m57_191105_160026,-10.459075118990429
+Reduced-latent context,PAIRED_ENGLISH::paired_english::m15_190315_150831_cell1,-5.350803818516771
+Reduced-latent context,PAIRED_KAMPFF::paired_kampff::c14,-5.330004958571539
+Reduced-latent context,PAIRED_ENGLISH::paired_english::m108_191125_171427,-4.275121532075108
+Reduced-latent context,PAIRED_ENGLISH::paired_english::m26_190524_100859_cell1,-3.2464528089998126
+Reduced-latent context,PAIRED_ENGLISH::paired_english::m15_190315_152315_cell1,-2.8499210204497314

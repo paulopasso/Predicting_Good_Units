@@ -1,2 +1,0 @@
-target,best_holdout_variant_id,best_holdout_mae,best_holdout_r2
-fpos,source_reweighted_anchor_stack_cluster_trust_pseudo_lightgbm_default,0.14824710191247922,0.4717486801311368

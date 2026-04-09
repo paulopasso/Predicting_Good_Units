@@ -1,13 +1,13 @@
 label,recording_key,r2
-Reduced-latent winner,PAIRED_MEA64C_YGER::paired_mea64c::20170622_patch2,0.8180984693194897
-Reduced-latent winner,PAIRED_MEA64C_YGER::paired_mea64c::20170622_patch1,0.8146545140546247
-Reduced-latent winner,PAIRED_BOYDEN::paired_boyden32c::419_1_8,0.718333704779414
-Reduced-latent winner,PAIRED_ENGLISH::paired_english::m57_191105_141906,0.683136912143162
-Reduced-latent winner,PAIRED_BOYDEN::paired_boyden32c::1103_1_1,0.6198580307330486
-Reduced-latent winner,PAIRED_CRCNS_HC1::paired_crcns::d11222_d11222.002,0.002825364410957265
-Reduced-latent winner,PAIRED_ENGLISH::paired_english::m15_190315_142052_cell1,-0.9326444500340461
-Reduced-latent winner,PAIRED_ENGLISH::paired_english::m15_190315_152315_cell1,-2.009113955881277
-Reduced-latent winner,PAIRED_ENGLISH::paired_english::m26_190524_100859_cell1,-9.13007986015436
-Reduced-latent winner,PAIRED_ENGLISH::paired_english::m57_191105_160026,-10.371393923018177
-Reduced-latent winner,PAIRED_KAMPFF::paired_kampff::c14,-14.14200823131267
-Reduced-latent winner,PAIRED_ENGLISH::paired_english::m139_200114_191955,-28.575624269768944
+Reduced-latent context,PAIRED_MEA64C_YGER::paired_mea64c::20170622_patch1,0.8176757169806199
+Reduced-latent context,PAIRED_MEA64C_YGER::paired_mea64c::20170621_patch1,0.8091714188369381
+Reduced-latent context,PAIRED_MEA64C_YGER::paired_mea64c::20170622_patch2,0.689900931289476
+Reduced-latent context,PAIRED_ENGLISH::paired_english::m57_191105_161455,0.4428761815716844
+Reduced-latent context,PAIRED_BOYDEN::paired_boyden32c::419_1_7,0.3475897241031289
+Reduced-latent context,PAIRED_BOYDEN::paired_boyden32c::419_1_8,0.3428453330081187
+Reduced-latent context,PAIRED_MEA64C_YGER::paired_mea64c::20160415_patch2,0.3079919766212304
+Reduced-latent context,PAIRED_ENGLISH::paired_english::m57_191105_141906,0.2979761352878787
+Reduced-latent context,PAIRED_BOYDEN::paired_boyden32c::1103_1_1,0.0736414908097079
+Reduced-latent context,PAIRED_CRCNS_HC1::paired_crcns::d11221_d11221.002,0.0369160258120788
+Reduced-latent context,PAIRED_KAMPFF::paired_kampff::2015_09_03_Pair_9_0A,-0.067844045705856
+Reduced-latent context,PAIRED_KAMPFF::paired_kampff::2015_09_03_Pair_9_0B,-0.1245048545647451

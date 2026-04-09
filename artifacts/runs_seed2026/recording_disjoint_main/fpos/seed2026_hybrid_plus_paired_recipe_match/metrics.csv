@@ -1,2 +1,0 @@
-phase,split_id,protocol_mode,candidate_id,target,source_target,feature_view,model_family,model_name,is_ceiling_model,source_label_rows,target_label_rows,target_eval_rows,target_unlabeled_rows,used_unlabeled_paired,mae,rmse,r2,bias,calibration_slope,calibration_intercept
-final_holdout,final_holdout,inductive,inductive|hybrid_plus_paired|xgboost_w25|unit_raw,fpos,fpos,unit_raw,hybrid_plus_paired,xgboost_w25,False,24211,107,100,0,False,0.18564804927870146,0.2543220357553187,-0.01339067929693094,0.1162817507179901,0.6166417330739108,0.013921470249371067

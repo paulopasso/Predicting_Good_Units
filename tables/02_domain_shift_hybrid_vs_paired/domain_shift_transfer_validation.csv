@@ -1,5 +1,5 @@
-model,domain_awareness,r2,mae
-Dummy paired mean,none (sanity floor),-0.0002207581638757,0.1910159415821171
-Hybrid-only XGBoost,none (pure source),-0.9251268719373652,0.2514640107411443
-Hybrid+paired basic XGBoost,basic (hybrid+paired combined),0.2709752422738135,0.1483971889909965
-Context-first source stack,full context-first stack,0.5215196966867025,0.1189606640631401
+label,recipe_id,domain_awareness,r2,mae
+Dummy paired mean,fpos_dummy,none (sanity floor),-0.0002207581638757,0.1910159415821171
+Hybrid-only XGBoost,fpos_hybrid_only,none (pure source),-0.9251268719373652,0.2514640107411443
+Hybrid+paired basic XGBoost,fpos_hybrid_plus_paired,basic (hybrid+paired combined),0.2709752422738135,0.1483971889909965
+Context-first source stack,fpos_context_stack,full context-first stack,0.5215196966867025,0.1189606640631401

@@ -1,0 +1,15 @@
+feature_set,feature_group,n_features
+full_context,recording_context,470
+full_context,recording_relative,51
+full_context,other,41
+full_context,acg_bins,40
+full_context,waveform_bins,30
+full_context,amplitude,23
+full_context,confusability,15
+full_context,spikeinterface,15
+unit,other,41
+unit,acg_bins,40
+unit,waveform_bins,30
+unit,amplitude,23
+unit,confusability,15
+unit,spikeinterface,15

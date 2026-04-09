@@ -1,2 +1,0 @@
-phase,split_id,protocol_mode,candidate_id,target,source_target,feature_view,model_family,model_name,is_ceiling_model,source_label_rows,target_label_rows,target_eval_rows,target_unlabeled_rows,used_unlabeled_paired,mae,rmse,r2,bias,calibration_slope,calibration_intercept
-final_holdout,final_holdout,inductive,inductive|paired_only|lightgbm|unit_raw,fpos,fpos,unit_raw,paired_only,lightgbm,False,0,107,100,0,False,0.16047436263514192,0.20587796783468565,0.33590735774485225,0.07381231218117029,0.8531988007794473,-0.030187539798200325

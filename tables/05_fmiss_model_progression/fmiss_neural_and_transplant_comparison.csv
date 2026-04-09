@@ -1,6 +1,0 @@
-model,approach,r2,mae,notes
-Best SSL neural,SSL autoencoder (neural),-0.2594550367408721,0.2308637428779589,Best SSL comparison
-Best MMD neural,MMD alignment (neural),-0.1419166075419791,0.2606427150042078,Best MMD comparison
-Paired-only context,Paired-only context (tabular),0.2644809443236344,0.1950473293667486,Context-only target baseline
-Reduced-latent winner,Reduced-latent winner,0.3764629523481959,0.1719452413726764,Final fmiss winner
-Transplanted fpos waveform recipe,Transplanted fpos recipe,0.3775736881319869,0.1680590046560183,Failed fpos transplant

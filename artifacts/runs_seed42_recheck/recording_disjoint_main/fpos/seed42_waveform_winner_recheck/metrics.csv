@@ -1,5 +1,0 @@
-protocol,target,variant_id,family,backend,source_target,notes,mae,rmse,r2,bias,calibration_slope,calibration_intercept
-main,fpos,wf_embed_anchor_stack_xgboost,signal_embedding_stack,xgboost_default,fpos,conv embedding stack variant,0.1134037535530755,0.16453165726534544,0.5542199052140749,-0.05123495771126607,1.2540575944720642,0.008127733370092514
-main,fpos,acg_embed_anchor_stack_xgboost,signal_embedding_stack,xgboost_default,fpos,conv embedding stack variant,0.12088126323632392,0.1758704321593964,0.4906604628330713,-0.049252769177972985,1.2303573479812382,0.009710272652894366
-main,fpos,wf_acg_embed_anchor_stack_xgboost,signal_embedding_stack,xgboost_default,fpos,conv embedding stack variant,0.11979309162090913,0.17667969623950608,0.48596224802608146,-0.05315381592415059,1.2690497340569675,0.008019068472808222
-main,fpos,reference_anchor_stack_xgboost,signal_embedding_stack,xgboost_default,fpos,conv embedding stack variant,0.12348815983588883,0.18067103608175772,0.4624748389672786,-0.06012487039827527,1.318700227452439,0.008882623992879356

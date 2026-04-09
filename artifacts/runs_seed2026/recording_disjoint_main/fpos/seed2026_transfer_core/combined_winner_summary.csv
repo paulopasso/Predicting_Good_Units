@@ -1,2 +1,0 @@
-protocol_mode,candidate_id,model_family,model_name,feature_view,primary_avg_mae,beats_best_paired_only,advances_all_primary_targets,eligible_default,best_paired_only_primary_avg_mae
-inductive,inductive|paired_only|xgboost|unit_raw,paired_only,xgboost,unit_raw,0.13137044342639714,False,False,True,0.13137044342639714
