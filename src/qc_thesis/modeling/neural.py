@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import copy
 import json
+import shutil
 from dataclasses import dataclass
 from pathlib import Path
 import sys
@@ -2248,19 +2249,30 @@ def run_mmd_with_config(config: MMDDomainAdaptationConfig) -> Path:
     history_df = _frame_with_columns(history_rows, _MMD_HISTORY_COLUMNS)
     baseline_df = metrics_df.copy()
 
-    with (output_dir / "config.json").open("w", encoding="utf-8") as handle:
-        json.dump(config.to_dict(), handle, indent=2, sort_keys=True)
-    with (output_dir / "split_manifest.json").open("w", encoding="utf-8") as handle:
-        json.dump({"config": config.to_dict(), "main": split_manifest}, handle, indent=2, sort_keys=True)
-    metrics_df.to_csv(output_dir / "metrics.csv", index=False)
-    predictions_df.to_csv(output_dir / "predictions.csv", index=False)
-    baseline_df.to_csv(output_dir / "baseline_comparison.csv", index=False)
-    lambda_df.to_csv(output_dir / "lambda_sweep.csv", index=False)
-    history_df.to_csv(output_dir / "training_history.csv", index=False)
-    (output_dir / "README_run.md").write_text(
-        _build_mmd_readme(config=config, split_manifest=split_manifest, metrics_df=metrics_df, lambda_df=lambda_df),
-        encoding="utf-8",
-    )
+    # Recreate the destination directory immediately before final writes in case
+    # a long run ended up racing with filesystem cleanup or a partial prior run.
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    try:
+        with (output_dir / "config.json").open("w", encoding="utf-8") as handle:
+            json.dump(config.to_dict(), handle, indent=2, sort_keys=True)
+        with (output_dir / "split_manifest.json").open("w", encoding="utf-8") as handle:
+            json.dump({"config": config.to_dict(), "main": split_manifest}, handle, indent=2, sort_keys=True)
+        metrics_df.to_csv(output_dir / "metrics.csv", index=False)
+        predictions_df.to_csv(output_dir / "predictions.csv", index=False)
+        baseline_df.to_csv(output_dir / "baseline_comparison.csv", index=False)
+        lambda_df.to_csv(output_dir / "lambda_sweep.csv", index=False)
+        history_df.to_csv(output_dir / "training_history.csv", index=False)
+        (output_dir / "README_run.md").write_text(
+            _build_mmd_readme(config=config, split_manifest=split_manifest, metrics_df=metrics_df, lambda_df=lambda_df),
+            encoding="utf-8",
+        )
+    except OSError as exc:
+        free_bytes = shutil.disk_usage(output_dir).free
+        raise OSError(
+            f"Failed to write MMD outputs in {output_dir} "
+            f"(free_bytes={free_bytes}, errno={getattr(exc, 'errno', None)}): {exc}"
+        ) from exc
     return output_dir
 
 

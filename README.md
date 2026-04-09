@@ -63,3 +63,14 @@ conda activate spike-qc-local
 python scripts/validate_model_registry.py
 python scripts/execute_notebooks.py --only 04_fpos_model_progression.ipynb
 ```
+
+## Final Thesis Freeze
+
+The thesis-facing finalization path is:
+
+1. finish the `42-61` robustness sweep with [scripts/run_full_seed_robustness.py](scripts/run_full_seed_robustness.py)
+2. rebuild and execute the story notebooks
+3. regenerate any summary figures that are computed directly from saved tables or seed artifacts
+4. export a fresh environment snapshot
+
+The exact command sequence is documented in [reproducibility/README.md](reproducibility/README.md).

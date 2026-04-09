@@ -34,15 +34,16 @@ def main() -> int:
     args = parser.parse_args()
 
     thesis_root = Path(__file__).resolve().parents[1]
+    notebooks_dir = thesis_root / "notebooks"
     out_dir = thesis_root / "artifacts/executed_notebooks"
     out_dir.mkdir(parents=True, exist_ok=True)
     targets = args.only or NOTEBOOKS
 
     for name in targets:
-        src = thesis_root / "notebooks" / name
+        src = notebooks_dir / name
         nb = nbformat.read(src, as_version=4)
         client = NotebookClient(nb, timeout=args.timeout, kernel_name="python3")
-        client.execute(cwd=str(thesis_root))
+        client.execute(cwd=str(notebooks_dir))
         dst = out_dir / name
         nbformat.write(nb, dst)
         print(dst)

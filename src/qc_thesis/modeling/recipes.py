@@ -8,6 +8,7 @@ import pandas as pd
 from sklearn.metrics import r2_score
 
 from ..artifacts import make_run_artifact_paths, write_manifest
+from ..paths import REDUCED_LATENT_CONTEXT_LABEL, THESIS_ROOT, WAVEFORM_AUGMENTED_LABEL
 from .neural import run_ssl_with_config, run_mmd_with_config
 from .transfer import QCTransferBenchmark
 from .stacking.recipes import STACKING_FAMILIES
@@ -41,14 +42,14 @@ class RecipeResult:
     output_dir: Path
 
 
+DEFAULT_SWEEP_SEEDS = tuple(range(42, 62))
+
+
 FPOS_RECIPE_GROUPS = {
     "source_supervision": [
         "fpos_dummy",
         "fpos_paired_raw",
         "fpos_hybrid_only",
-        "fpos_hybrid_calibrated",
-        "fpos_hybrid_plus_paired",
-        "fpos_hybrid_residual",
     ],
     "context": [
         "fpos_paired_raw",
@@ -58,16 +59,13 @@ FPOS_RECIPE_GROUPS = {
     "unlabeled_paired_structure": [
         "fpos_context_stack",
         "fpos_pre_waveform_unlabeled",
-        "fpos_family_balanced",
     ],
     "waveform_representation": [
         "fpos_pre_waveform_unlabeled",
-        "fpos_family_balanced",
         "fpos_waveform_winner",
     ],
     "robustness": [
         "fpos_pre_waveform_unlabeled",
-        "fpos_family_balanced",
         "fpos_waveform_winner",
     ],
 }
@@ -78,31 +76,36 @@ FMISS_RECIPE_GROUPS = {
         "fmiss_dummy",
         "fmiss_paired_raw",
         "fmiss_hybrid_only",
-        "fmiss_hybrid_calibrated",
-        "fmiss_hybrid_residual",
     ],
     "context": [
         "fmiss_paired_raw",
         "fmiss_paired_context",
-        "fmiss_source_reweighted",
-        "fmiss_embed_nommd",
         "fmiss_reduced_latent",
     ],
     "transfer_family": [
         "fmiss_hybrid_only",
-        "fmiss_hybrid_calibrated",
-        "fmiss_hybrid_residual",
+        "fmiss_paired_context",
         "fmiss_reduced_latent",
     ],
-    "unlabeled_paired_use": [
-        "fmiss_source_reweighted",
-        "fmiss_reduced_latent",
-        "fmiss_transplanted_fpos",
+}
+
+
+CORE_BENCHMARK_RECIPE_IDS = {
+    "fpos": [
+        "fpos_dummy",
+        "fpos_paired_raw",
+        "fpos_hybrid_only",
+        "fpos_paired_context",
+        "fpos_context_stack",
+        "fpos_pre_waveform_unlabeled",
+        "fpos_waveform_winner",
     ],
-    "representation_filtering": [
-        "fmiss_embed_nommd",
+    "fmiss": [
+        "fmiss_dummy",
+        "fmiss_paired_raw",
+        "fmiss_hybrid_only",
+        "fmiss_paired_context",
         "fmiss_reduced_latent",
-        "fmiss_transplanted_fpos",
     ],
 }
 
@@ -112,28 +115,28 @@ def get_recipe_specs() -> list[RecipeSpec]:
         RecipeSpec("fpos_dummy", "Dummy paired mean", "fpos", "recording_disjoint_main", "source_supervision", "none", "dummy", "baseline", "legacy_transfer", "inductive|dummy|paired_mean|none", "qc_thesis.modeling.recipes", (("phase", "final_holdout"),), notes="Sanity floor"),
         RecipeSpec("fpos_paired_raw", "Paired-only raw", "fpos", "recording_disjoint_main", "source_supervision", "unit_raw", "paired_only", "baseline", "legacy_transfer", "inductive|paired_only|lightgbm|unit_raw", "qc_thesis.modeling.recipes", (("phase", "final_holdout"),), notes="Small paired baseline"),
         RecipeSpec("fpos_hybrid_only", "Hybrid-only XGBoost", "fpos", "recording_disjoint_main", "source_supervision", "unit_raw", "hybrid_only", "baseline", "legacy_transfer", "inductive|hybrid_only|xgboost|unit_raw", "qc_thesis.modeling.recipes", (("phase", "final_holdout"),), notes="Pure source failure baseline"),
-        RecipeSpec("fpos_hybrid_calibrated", "Calibrated hybrid XGBoost", "fpos", "recording_disjoint_main", "source_supervision", "unit_raw", "hybrid_calibrated", "baseline", "legacy_transfer", "inductive|hybrid_calibrated|xgboost+isotonic|unit_raw", "qc_thesis.modeling.recipes", (("phase", "final_holdout"),), notes="Simple calibrated transfer"),
-        RecipeSpec("fpos_hybrid_plus_paired", "Hybrid+paired basic XGBoost", "fpos", "recording_disjoint_main", "source_supervision", "unit_raw", "hybrid_plus_paired", "baseline", "legacy_transfer", "inductive|hybrid_plus_paired|xgboost_w25|unit_raw", "qc_thesis.modeling.recipes", (("phase", "final_holdout"),), notes="Basic transfer baseline"),
-        RecipeSpec("fpos_hybrid_residual", "Hybrid stack residual", "fpos", "recording_disjoint_main", "source_supervision", "unit_raw", "hybrid_stack", "baseline", "legacy_transfer", "inductive|hybrid_stack|lightgbm_residual|unit_raw", "qc_thesis.modeling.recipes", (("phase", "final_holdout"),), notes="First nonlinear stack"),
+        RecipeSpec("fpos_hybrid_calibrated", "Calibrated hybrid XGBoost", "fpos", "recording_disjoint_main", "source_supervision", "unit_raw", "hybrid_calibrated", "baseline", "legacy_transfer", "inductive|hybrid_calibrated|xgboost+isotonic|unit_raw", "qc_thesis.modeling.recipes", (("phase", "final_holdout"),), notes="Simple calibrated transfer", main_text=False),
+        RecipeSpec("fpos_hybrid_plus_paired", "Hybrid+paired basic XGBoost", "fpos", "recording_disjoint_main", "source_supervision", "unit_raw", "hybrid_plus_paired", "baseline", "legacy_transfer", "inductive|hybrid_plus_paired|xgboost_w25|unit_raw", "qc_thesis.modeling.recipes", (("phase", "final_holdout"),), notes="Basic transfer baseline", main_text=False),
+        RecipeSpec("fpos_hybrid_residual", "Hybrid stack residual", "fpos", "recording_disjoint_main", "source_supervision", "unit_raw", "hybrid_stack", "baseline", "legacy_transfer", "inductive|hybrid_stack|lightgbm_residual|unit_raw", "qc_thesis.modeling.recipes", (("phase", "final_holdout"),), notes="First nonlinear stack", main_text=False),
         RecipeSpec("fpos_paired_context", "Paired-only context", "fpos", "recording_disjoint_main", "context", "full_context", "context_first", "main_text", "context_stack", "contextual_paired_only_lightgbm", "qc_thesis.modeling.stacking.recipes", notes="Context-only target baseline"),
         RecipeSpec("fpos_context_stack", "Context-first source stack", "fpos", "recording_disjoint_main", "context", "full_context", "context_first", "main_text", "context_stack", "embed_nommd_fullctx_lightgbm", "qc_thesis.modeling.stacking.recipes", notes="Best pre-unlabeled context-first stack"),
-        RecipeSpec("fpos_ssl", "Best SSL neural", "fpos", "recording_disjoint_main", "context", "contextual", "ssl_neural", "main_text", "ssl_neural", "ssl_fpos_contextual", "qc_thesis.modeling.recipes", notes="Best SSL comparison"),
-        RecipeSpec("fpos_mmd", "Best MMD neural", "fpos", "recording_disjoint_main", "context", "contextual", "mmd_neural", "main_text", "mmd_neural", "neural_mmd_finetuned", "qc_thesis.modeling.recipes", notes="Best MMD comparison"),
+        RecipeSpec("fpos_ssl", "Best SSL neural", "fpos", "recording_disjoint_main", "context", "contextual", "ssl_neural", "main_text", "ssl_neural", "ssl_fpos_contextual", "qc_thesis.modeling.recipes", notes="Best SSL comparison", main_text=False),
+        RecipeSpec("fpos_mmd", "Best MMD neural", "fpos", "recording_disjoint_main", "context", "contextual", "mmd_neural", "main_text", "mmd_neural", "neural_mmd_finetuned", "qc_thesis.modeling.recipes", notes="Best MMD comparison", main_text=False),
         RecipeSpec("fpos_pre_waveform_unlabeled", "Pre-waveform unlabeled structure", "fpos", "recording_disjoint_main", "unlabeled_paired_structure", "full_context", "pseudo_anchor", "main_text", "anchor_stack", "source_reweighted_anchor_stack_cluster_trust_pseudo_xgboost_default", "qc_thesis.modeling.stacking.recipes", notes="Strongest positive result before waveform embedding"),
-        RecipeSpec("fpos_family_balanced", "Family-balanced robustness", "fpos", "recording_disjoint_main", "robustness", "full_context", "robustness_weighted", "main_text", "robustness_stack", "family_balanced_strong_xgboost", "qc_thesis.modeling.stacking.recipes", notes="Robustness tradeoff variant"),
-        RecipeSpec("fpos_waveform_winner", "Waveform winner", "fpos", "recording_disjoint_main", "waveform_representation", "waveform_embedding", "signal_embedding", "main_text", "waveform_stack", "wf_embed_anchor_stack_xgboost", "qc_thesis.modeling.stacking.recipes", notes="Final fpos winner"),
+        RecipeSpec("fpos_family_balanced", "Family-balanced robustness", "fpos", "recording_disjoint_main", "robustness", "full_context", "robustness_weighted", "archive_only", "robustness_stack", "family_balanced_strong_xgboost", "qc_thesis.modeling.stacking.recipes", notes="Archived robustness tradeoff variant", main_text=False),
+        RecipeSpec("fpos_waveform_winner", WAVEFORM_AUGMENTED_LABEL, "fpos", "recording_disjoint_main", "waveform_representation", "waveform_embedding", "signal_embedding", "main_text", "waveform_stack", "wf_embed_anchor_stack_xgboost", "qc_thesis.modeling.stacking.recipes", notes="Final fpos waveform-augmented stack"),
         RecipeSpec("fmiss_dummy", "Dummy paired mean", "fmiss", "recording_disjoint_main", "source_target_choice", "none", "dummy", "baseline", "legacy_transfer", "inductive|dummy|paired_mean|none", "qc_thesis.modeling.recipes", (("phase", "final_holdout"),), notes="Sanity floor"),
         RecipeSpec("fmiss_paired_raw", "Paired-only raw", "fmiss", "recording_disjoint_main", "source_target_choice", "shape_only", "paired_only", "baseline", "legacy_transfer", "inductive|paired_only|xgboost|shape_only", "qc_thesis.modeling.recipes", (("phase", "final_holdout"),), notes="Strict paired-only baseline"),
         RecipeSpec("fmiss_hybrid_only", "Hybrid-only XGBoost", "fmiss", "recording_disjoint_main", "source_target_choice", "unit_raw", "hybrid_only", "baseline", "legacy_transfer", "inductive|hybrid_only|xgboost|unit_raw", "qc_thesis.modeling.recipes", (("phase", "final_holdout"),), notes="Pure source failure baseline"),
-        RecipeSpec("fmiss_hybrid_calibrated", "Calibrated hybrid", "fmiss", "recording_disjoint_main", "source_target_choice", "unit_raw", "hybrid_calibrated", "baseline", "legacy_transfer", "inductive|hybrid_calibrated|lightgbm+linear|unit_raw", "qc_thesis.modeling.recipes", (("phase", "final_holdout"),), notes="Simple calibrated transfer"),
-        RecipeSpec("fmiss_hybrid_residual", "Hybrid stack residual", "fmiss", "recording_disjoint_main", "transfer_family", "unit_raw", "hybrid_stack", "baseline", "legacy_transfer", "inductive|hybrid_stack|lightgbm_residual|unit_raw", "qc_thesis.modeling.recipes", (("phase", "final_holdout"),), notes="First positive transfer baseline"),
-        RecipeSpec("fmiss_ssl", "Best SSL neural", "fmiss", "recording_disjoint_main", "transfer_family", "contextual", "ssl_neural", "main_text", "ssl_neural", "ssl_fmiss_contextual", "qc_thesis.modeling.recipes", notes="Best SSL comparison"),
-        RecipeSpec("fmiss_mmd", "Best MMD neural", "fmiss", "recording_disjoint_main", "transfer_family", "contextual", "mmd_neural", "main_text", "mmd_neural", "neural_mmd_finetuned", "qc_thesis.modeling.recipes", notes="Best MMD comparison"),
+        RecipeSpec("fmiss_hybrid_calibrated", "Calibrated hybrid", "fmiss", "recording_disjoint_main", "source_target_choice", "unit_raw", "hybrid_calibrated", "baseline", "legacy_transfer", "inductive|hybrid_calibrated|lightgbm+linear|unit_raw", "qc_thesis.modeling.recipes", (("phase", "final_holdout"),), notes="Simple calibrated transfer", main_text=False),
+        RecipeSpec("fmiss_hybrid_residual", "Hybrid stack residual", "fmiss", "recording_disjoint_main", "transfer_family", "unit_raw", "hybrid_stack", "baseline", "legacy_transfer", "inductive|hybrid_stack|lightgbm_residual|unit_raw", "qc_thesis.modeling.recipes", (("phase", "final_holdout"),), notes="First positive transfer baseline", main_text=False),
+        RecipeSpec("fmiss_ssl", "Best SSL neural", "fmiss", "recording_disjoint_main", "transfer_family", "contextual", "ssl_neural", "main_text", "ssl_neural", "ssl_fmiss_contextual", "qc_thesis.modeling.recipes", notes="Best SSL comparison", main_text=False),
+        RecipeSpec("fmiss_mmd", "Best MMD neural", "fmiss", "recording_disjoint_main", "transfer_family", "contextual", "mmd_neural", "main_text", "mmd_neural", "neural_mmd_finetuned", "qc_thesis.modeling.recipes", notes="Best MMD comparison", main_text=False),
         RecipeSpec("fmiss_paired_context", "Paired-only context", "fmiss", "recording_disjoint_main", "context", "full_context", "context_first", "main_text", "context_stack", "contextual_paired_only_lightgbm", "qc_thesis.modeling.stacking.recipes", notes="Context-only target baseline"),
-        RecipeSpec("fmiss_source_reweighted", "Source-reweighted full context", "fmiss", "recording_disjoint_main", "context", "full_context", "context_first", "main_text", "context_stack", "source_reweighted_fullctx_lightgbm", "qc_thesis.modeling.stacking.recipes", notes="Source-weighted context-first stack"),
-        RecipeSpec("fmiss_embed_nommd", "Embed-nommd full context", "fmiss", "recording_disjoint_main", "representation_filtering", "full_context", "context_first", "main_text", "context_stack", "embed_nommd_fullctx_lightgbm", "qc_thesis.modeling.stacking.recipes", notes="Full latent context-first stack"),
-        RecipeSpec("fmiss_reduced_latent", "Reduced-latent winner", "fmiss", "recording_disjoint_main", "representation_filtering", "reduced_latent", "context_first", "main_text", "context_stack", "source_plus_reduced_latent_fullctx_lightgbm", "qc_thesis.modeling.stacking.recipes", notes="Final fmiss winner"),
-        RecipeSpec("fmiss_transplanted_fpos", "Transplanted fpos waveform recipe", "fmiss", "recording_disjoint_main", "unlabeled_paired_use", "waveform_embedding", "transplant", "main_text", "waveform_transfer", "fmiss_wf_embed_anchor_stack_xgboost", "qc_thesis.modeling.stacking.recipes", notes="Failed fpos transplant"),
+        RecipeSpec("fmiss_source_reweighted", "Source-reweighted full context", "fmiss", "recording_disjoint_main", "context", "full_context", "context_first", "main_text", "context_stack", "source_reweighted_fullctx_lightgbm", "qc_thesis.modeling.stacking.recipes", notes="Source-weighted context-first stack", main_text=False),
+        RecipeSpec("fmiss_embed_nommd", "Embed-nommd full context", "fmiss", "recording_disjoint_main", "representation_filtering", "full_context", "context_first", "main_text", "context_stack", "embed_nommd_fullctx_lightgbm", "qc_thesis.modeling.stacking.recipes", notes="Full latent context-first stack", main_text=False),
+        RecipeSpec("fmiss_reduced_latent", REDUCED_LATENT_CONTEXT_LABEL, "fmiss", "recording_disjoint_main", "representation_filtering", "reduced_latent", "context_first", "main_text", "context_stack", "source_plus_reduced_latent_fullctx_lightgbm", "qc_thesis.modeling.stacking.recipes", notes="Final fmiss reduced-latent context stack"),
+        RecipeSpec("fmiss_transplanted_fpos", "Transplanted fpos waveform recipe", "fmiss", "recording_disjoint_main", "unlabeled_paired_use", "waveform_embedding", "transplant", "main_text", "waveform_transfer", "fmiss_wf_embed_anchor_stack_xgboost", "qc_thesis.modeling.stacking.recipes", notes="Failed fpos transplant", main_text=False),
     ]
 
 
@@ -165,6 +168,13 @@ def get_recipe_groups(target: str) -> dict[str, list[str]]:
 
 def get_main_text_recipe_ids(target: str) -> list[str]:
     return [spec.recipe_id for spec in get_recipes(target=target, protocol="recording_disjoint_main", main_text=True)]
+
+
+def get_core_benchmark_recipe_ids(target: str) -> list[str]:
+    try:
+        return list(CORE_BENCHMARK_RECIPE_IDS[target])
+    except KeyError as exc:
+        raise KeyError(target) from exc
 
 
 _STACKING_ONLY = STACKING_FAMILIES
@@ -213,18 +223,46 @@ def _read_optional_csv(path: Path) -> pd.DataFrame | None:
     return pd.read_csv(path)
 
 
-def _apply_recipe_filters(frame: pd.DataFrame, recipe: RecipeSpec) -> pd.DataFrame:
+def _apply_recipe_filters(frame: pd.DataFrame, recipe: RecipeSpec, *, include_result_key: bool = True) -> pd.DataFrame:
     filtered = frame.copy()
     if "target" in filtered.columns:
         filtered = filtered[filtered["target"] == recipe.target].copy()
     for column, value in recipe.result_filters:
         if column in filtered.columns:
             filtered = filtered[filtered[column].astype(str) == str(value)].copy()
-    for key_column in ("variant_id", "candidate_id", "model_id"):
-        if key_column in filtered.columns:
-            filtered = filtered[filtered[key_column].astype(str) == recipe.result_key].copy()
-            break
+    if include_result_key:
+        for key_column in ("variant_id", "candidate_id", "model_id"):
+            if key_column in filtered.columns:
+                values = filtered[key_column].astype(str)
+                mask = (
+                    (values == recipe.result_key)
+                    | (values == "main_" + recipe.result_key)
+                    | values.str.endswith("|" + recipe.result_key)
+                )
+                filtered = filtered[mask].copy()
+                break
     return filtered.reset_index(drop=True)
+
+
+def _can_accept_relaxed_rows(frame: pd.DataFrame) -> bool:
+    if frame.empty:
+        return False
+    for key_column in ("variant_id", "candidate_id", "model_id"):
+        if key_column in frame.columns:
+            return frame[key_column].astype(str).nunique(dropna=False) == 1
+    return True
+
+
+def _select_recipe_rows(frame: pd.DataFrame, recipe: RecipeSpec, source_path: Path) -> pd.DataFrame:
+    filtered = _apply_recipe_filters(frame, recipe)
+    if not filtered.empty:
+        return filtered
+
+    relaxed = _apply_recipe_filters(frame, recipe, include_result_key=False)
+    if _can_accept_relaxed_rows(relaxed):
+        return relaxed.reset_index(drop=True)
+
+    raise KeyError(f"No rows matched recipe {recipe.recipe_id} in {source_path}")
 
 
 def _maybe_add_recording_key(frame: pd.DataFrame) -> pd.DataFrame:
@@ -263,30 +301,42 @@ def _load_recipe_output(recipe: RecipeSpec, output_dir: Path) -> RecipeResult:
     metrics_path = output_dir / "metrics.csv"
     if not metrics_path.exists():
         raise FileNotFoundError(metrics_path)
-    metrics = _apply_recipe_filters(pd.read_csv(metrics_path), recipe)
-    if metrics.empty:
-        raise KeyError(f"No metrics row matched recipe {recipe.recipe_id} in {metrics_path}")
+    metrics = _select_recipe_rows(pd.read_csv(metrics_path), recipe, metrics_path)
     metrics["recipe_id"] = recipe.recipe_id
     metrics["label"] = recipe.label
     metrics["protocol"] = recipe.protocol
     metrics["notes"] = recipe.notes
 
     predictions = _read_optional_csv(output_dir / "predictions.csv")
-    family_summary = None
-    recording_summary = None
+    family_summary = _read_optional_csv(output_dir / "per_family_summary.csv")
+    recording_summary = _read_optional_csv(output_dir / "per_recording_summary.csv")
     if predictions is not None and not predictions.empty:
-        predictions = _apply_recipe_filters(predictions, recipe)
+        predictions = _select_recipe_rows(predictions, recipe, output_dir / "predictions.csv")
         predictions = _maybe_add_recording_key(predictions)
         predictions["recipe_id"] = recipe.recipe_id
         predictions["label"] = recipe.label
-        if "study_set" in predictions.columns and {"true", "pred"}.issubset(predictions.columns):
-            family_summary = _summarize_predictions(predictions, "study_set")
-            family_summary.insert(0, "recipe_id", recipe.recipe_id)
-            family_summary.insert(1, "label", recipe.label)
-        if "recording_key" in predictions.columns and {"true", "pred"}.issubset(predictions.columns):
-            recording_summary = _summarize_predictions(predictions, "recording_key")
-            recording_summary.insert(0, "recipe_id", recipe.recipe_id)
-            recording_summary.insert(1, "label", recipe.label)
+    if family_summary is not None and not family_summary.empty:
+        family_summary = _select_recipe_rows(family_summary, recipe, output_dir / "per_family_summary.csv")
+        family_summary = family_summary.reset_index(drop=True)
+        family_summary["recipe_id"] = recipe.recipe_id
+        family_summary["label"] = recipe.label
+    elif predictions is not None and not predictions.empty and "study_set" in predictions.columns and {"true", "pred"}.issubset(predictions.columns):
+        family_summary = _summarize_predictions(predictions, "study_set")
+        family_summary.insert(0, "recipe_id", recipe.recipe_id)
+        family_summary.insert(1, "label", recipe.label)
+    else:
+        family_summary = None
+    if recording_summary is not None and not recording_summary.empty:
+        recording_summary = _select_recipe_rows(recording_summary, recipe, output_dir / "per_recording_summary.csv")
+        recording_summary = recording_summary.reset_index(drop=True)
+        recording_summary["recipe_id"] = recipe.recipe_id
+        recording_summary["label"] = recipe.label
+    elif predictions is not None and not predictions.empty and "recording_key" in predictions.columns and {"true", "pred"}.issubset(predictions.columns):
+        recording_summary = _summarize_predictions(predictions, "recording_key")
+        recording_summary.insert(0, "recipe_id", recipe.recipe_id)
+        recording_summary.insert(1, "label", recipe.label)
+    else:
+        recording_summary = None
 
     return RecipeResult(
         recipe=recipe,
@@ -332,56 +382,115 @@ def run_recipe(
     force: bool = False,
     smoke: bool = False,
     parquet_path: Path | None = None,
+    random_state: int | None = None,
 ) -> RecipeResult:
     recipe = get_recipe(recipe_id)
     paths = make_run_artifact_paths(recipe.recipe_id, recipe.target, recipe.protocol, output_dir=output_dir)
     if force or not paths.metrics_path.exists():
         runner = _RUNNERS[recipe.runner_key]
-        runner.run(recipe, paths.root, smoke=smoke, parquet_path=parquet_path)
+        runner.run(recipe, paths.root, smoke=smoke, parquet_path=parquet_path, random_state=random_state)
     result = _load_recipe_output(recipe, paths.root)
     _write_recipe_artifacts(result)
     return result
 
 
-def load_recipe_result(recipe_id: str, output_dir: Path | None = None) -> RecipeResult:
+def load_recipe_result(recipe_id: str, output_dir: Path | None = None, *, run_if_missing: bool = True) -> RecipeResult:
     recipe = get_recipe(recipe_id)
     paths = make_run_artifact_paths(recipe.recipe_id, recipe.target, recipe.protocol, output_dir=output_dir)
     if not paths.metrics_path.exists():
-        return run_recipe(recipe_id, output_dir=output_dir, force=False)
+        if run_if_missing:
+            return run_recipe(recipe_id, output_dir=output_dir, force=False)
+        raise FileNotFoundError(paths.metrics_path)
     return _load_recipe_output(recipe, paths.root)
 
 
-def load_experiment(recipe_id: str, target: str, protocol: str) -> RecipeResult:
+def seed_output_dir(recipe_id: str, target: str, protocol: str, seed: int) -> Path:
+    run_root = THESIS_ROOT / "artifacts" / ("runs" if int(seed) == 42 else f"runs_seed{int(seed)}")
+    return run_root / protocol / target / recipe_id
+
+
+def aggregate_output_dir(recipe_id: str, target: str, protocol: str) -> Path:
+    return THESIS_ROOT / "artifacts" / "runs_aggregate" / protocol / target / recipe_id
+
+
+def materialize_recipe_output(
+    recipe_id: str,
+    source_output_dir: Path,
+    *,
+    dest_output_dir: Path | None = None,
+) -> RecipeResult:
+    recipe = get_recipe(recipe_id)
+    loaded = _load_recipe_output(recipe, source_output_dir)
+    paths = make_run_artifact_paths(recipe.recipe_id, recipe.target, recipe.protocol, output_dir=dest_output_dir)
+    result = RecipeResult(
+        recipe=loaded.recipe,
+        metrics=loaded.metrics.copy(),
+        predictions=loaded.predictions.copy() if loaded.predictions is not None else None,
+        per_family_summary=loaded.per_family_summary.copy() if loaded.per_family_summary is not None else None,
+        per_recording_summary=loaded.per_recording_summary.copy() if loaded.per_recording_summary is not None else None,
+        output_dir=paths.root,
+    )
+    _write_recipe_artifacts(result)
+    return result
+
+
+def load_aggregate_result(recipe_id: str) -> RecipeResult:
+    recipe = get_recipe(recipe_id)
+    output_dir = aggregate_output_dir(recipe.recipe_id, recipe.target, recipe.protocol)
+    if not (output_dir / "metrics.csv").exists():
+        return load_recipe_result(recipe_id)
+    return load_recipe_result(recipe_id, output_dir=output_dir, run_if_missing=False)
+
+
+def load_experiment(recipe_id: str, target: str, protocol: str, *, aggregate: bool = False) -> RecipeResult:
     recipe = get_recipe(recipe_id)
     if recipe.target != target or recipe.protocol != protocol:
         raise ValueError(f"Recipe mismatch for {recipe_id}: expected {(target, protocol)}, got {(recipe.target, recipe.protocol)}")
+    if aggregate:
+        return load_aggregate_result(recipe_id)
     return load_recipe_result(recipe_id)
 
 
-def run_experiment(recipe_id: str, target: str, protocol: str, output_dir: Path | None = None, force: bool = False) -> RecipeResult:
+def run_experiment(
+    recipe_id: str,
+    target: str,
+    protocol: str,
+    output_dir: Path | None = None,
+    force: bool = False,
+    *,
+    random_state: int | None = None,
+) -> RecipeResult:
     recipe = get_recipe(recipe_id)
     if recipe.target != target or recipe.protocol != protocol:
         raise ValueError(f"Recipe mismatch for {recipe_id}: expected {(target, protocol)}, got {(recipe.target, recipe.protocol)}")
-    return run_recipe(recipe_id, output_dir=output_dir, force=force)
+    return run_recipe(recipe_id, output_dir=output_dir, force=force, random_state=random_state)
 
 
-def load_or_run_experiment(recipe_id: str, target: str, protocol: str, output_dir: Path | None = None, force: bool = False) -> RecipeResult:
-    return run_experiment(recipe_id, target, protocol, output_dir=output_dir, force=force)
+def load_or_run_experiment(
+    recipe_id: str,
+    target: str,
+    protocol: str,
+    output_dir: Path | None = None,
+    force: bool = False,
+    *,
+    random_state: int | None = None,
+) -> RecipeResult:
+    return run_experiment(recipe_id, target, protocol, output_dir=output_dir, force=force, random_state=random_state)
 
 
-def build_benchmark_table(target: str, recipe_ids: list[str], protocol: str) -> pd.DataFrame:
-    rows = [load_experiment(recipe_id, target, protocol).metrics.iloc[0] for recipe_id in recipe_ids]
+def build_benchmark_table(target: str, recipe_ids: list[str], protocol: str, *, aggregate: bool = False) -> pd.DataFrame:
+    rows = [load_experiment(recipe_id, target, protocol, aggregate=aggregate).metrics.iloc[0] for recipe_id in recipe_ids]
     df = pd.DataFrame(rows)
     preferred = ["label", "recipe_id", "mae", "rmse", "r2", "bias", "calibration_slope", "notes", "protocol"]
     cols = [c for c in preferred if c in df.columns] + [c for c in df.columns if c not in preferred]
     return df.loc[:, cols]
 
 
-def build_ablation_bundle(target: str, ablation_group: str, protocol: str) -> dict[str, pd.DataFrame]:
+def build_ablation_bundle(target: str, ablation_group: str, protocol: str, *, aggregate: bool = False) -> dict[str, pd.DataFrame]:
     recipe_ids = get_recipe_groups(target)[ablation_group]
-    table = build_benchmark_table(target, recipe_ids, protocol)
-    families = [build_family_summary(recipe_id, target, protocol) for recipe_id in recipe_ids]
-    recordings = [build_recording_summary(recipe_id, target, protocol) for recipe_id in recipe_ids]
+    table = build_benchmark_table(target, recipe_ids, protocol, aggregate=aggregate)
+    families = [build_family_summary(recipe_id, target, protocol, aggregate=aggregate) for recipe_id in recipe_ids]
+    recordings = [build_recording_summary(recipe_id, target, protocol, aggregate=aggregate) for recipe_id in recipe_ids]
     return {
         "benchmark": table,
         "per_family": pd.concat([df for df in families if df is not None], ignore_index=True) if any(df is not None for df in families) else pd.DataFrame(),
@@ -389,19 +498,20 @@ def build_ablation_bundle(target: str, ablation_group: str, protocol: str) -> di
     }
 
 
-def build_recording_summary(recipe_id: str, target: str, protocol: str) -> pd.DataFrame | None:
-    return load_experiment(recipe_id, target, protocol).per_recording_summary
+def build_recording_summary(recipe_id: str, target: str, protocol: str, *, aggregate: bool = False) -> pd.DataFrame | None:
+    return load_experiment(recipe_id, target, protocol, aggregate=aggregate).per_recording_summary
 
 
-def build_family_summary(recipe_id: str, target: str, protocol: str) -> pd.DataFrame | None:
-    return load_experiment(recipe_id, target, protocol).per_family_summary
+def build_family_summary(recipe_id: str, target: str, protocol: str, *, aggregate: bool = False) -> pd.DataFrame | None:
+    return load_experiment(recipe_id, target, protocol, aggregate=aggregate).per_family_summary
 
 
-def get_main_benchmark_table(target: str) -> pd.DataFrame:
-    return build_benchmark_table(target, get_main_text_recipe_ids(target), "recording_disjoint_main")
+def get_main_benchmark_table(target: str, *, aggregate: bool = False) -> pd.DataFrame:
+    return build_benchmark_table(target, get_main_text_recipe_ids(target), "recording_disjoint_main", aggregate=aggregate)
 
 
 __all__ = [
+    "CORE_BENCHMARK_RECIPE_IDS",
     "FMISS_RECIPE_GROUPS",
     "FPOS_RECIPE_GROUPS",
     "RecipeResult",
@@ -411,6 +521,7 @@ __all__ = [
     "build_family_summary",
     "build_recipe_inventory",
     "build_recording_summary",
+    "get_core_benchmark_recipe_ids",
     "get_main_benchmark_table",
     "get_main_text_recipe_ids",
     "get_recipe",
@@ -462,7 +573,15 @@ def _legacy_backend_from_result_key(result_key: str) -> tuple[str, ...]:
 class LegacyTransferFamily:
     implementation_module = "qc_thesis.modeling.recipes"
 
-    def _build_config(self, recipe: Any, output_dir: Path, *, smoke: bool, parquet_path: Path | None) -> Any:
+    def _build_config(
+        self,
+        recipe: Any,
+        output_dir: Path,
+        *,
+        smoke: bool,
+        parquet_path: Path | None,
+        random_state: int | None,
+    ) -> Any:
         from .specs import TransferBenchmarkConfig
         from qc_thesis.paths import THESIS_ROOT
         config = TransferBenchmarkConfig(
@@ -479,6 +598,8 @@ class LegacyTransferFamily:
             verbose=False,
             neural_verbose=False,
         )
+        if random_state is not None:
+            config.random_state = int(random_state)
         if smoke:
             config.paired_final_holdout_rows = 24
             config.model_selection_splits = 2
@@ -488,10 +609,26 @@ class LegacyTransferFamily:
             config.neural_finetune_epochs = 2
         return config
 
-    def run(self, recipe: Any, output_dir: Path, *, smoke: bool = False, parquet_path: Path | None = None) -> Path:
+    def run(
+        self,
+        recipe: Any,
+        output_dir: Path,
+        *,
+        smoke: bool = False,
+        parquet_path: Path | None = None,
+        random_state: int | None = None,
+    ) -> Path:
         import json
         output_dir.mkdir(parents=True, exist_ok=True)
-        benchmark = QCTransferBenchmark(self._build_config(recipe, output_dir, smoke=smoke, parquet_path=parquet_path))
+        benchmark = QCTransferBenchmark(
+            self._build_config(
+                recipe,
+                output_dir,
+                smoke=smoke,
+                parquet_path=parquet_path,
+                random_state=random_state,
+            )
+        )
         artifacts = benchmark.run()
         metrics_df = artifacts.get("final_holdout_results", pd.DataFrame())
         if isinstance(metrics_df, pd.DataFrame) and not metrics_df.empty:
@@ -509,7 +646,15 @@ class LegacyTransferFamily:
 class SSLFamily:
     implementation_module = "qc_thesis.modeling.recipes"
 
-    def run(self, recipe: Any, output_dir: Path, *, smoke: bool = False, parquet_path: Path | None = None) -> Path:
+    def run(
+        self,
+        recipe: Any,
+        output_dir: Path,
+        *,
+        smoke: bool = False,
+        parquet_path: Path | None = None,
+        random_state: int | None = None,
+    ) -> Path:
         from .specs import SSLDomainAdaptationConfig
         from qc_thesis.paths import THESIS_ROOT
         config = SSLDomainAdaptationConfig(
@@ -521,6 +666,8 @@ class SSLFamily:
             run_stress_test=False,
             verbose=False,
         )
+        if random_state is not None:
+            config.random_state = int(random_state)
         if smoke:
             config.paired_final_holdout_rows = 24
             config.ssl_pretrain_epochs = 2
@@ -537,7 +684,15 @@ class SSLFamily:
 class MMDFamily:
     implementation_module = "qc_thesis.modeling.recipes"
 
-    def run(self, recipe: Any, output_dir: Path, *, smoke: bool = False, parquet_path: Path | None = None) -> Path:
+    def run(
+        self,
+        recipe: Any,
+        output_dir: Path,
+        *,
+        smoke: bool = False,
+        parquet_path: Path | None = None,
+        random_state: int | None = None,
+    ) -> Path:
         from .specs import MMDDomainAdaptationConfig
         from qc_thesis.paths import THESIS_ROOT
         config = MMDDomainAdaptationConfig(
@@ -548,6 +703,8 @@ class MMDFamily:
             save_checkpoints=False,
             verbose=False,
         )
+        if random_state is not None:
+            config.random_state = int(random_state)
         if smoke:
             config.paired_final_holdout_rows = 24
             config.lambda_grid = (0.0, 0.05)

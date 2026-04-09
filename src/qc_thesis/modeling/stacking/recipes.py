@@ -45,13 +45,22 @@ def _default_parquet(parquet_path: Path | None) -> Path:
     return parquet_path or (THESIS_ROOT / "data/raw/33000_ROWS.parquet")
 
 
-def _default_output_config(config_cls: type[Any], output_dir: Path, *, parquet_path: Path | None) -> Any:
-    return config_cls(
+def _default_output_config(
+    config_cls: type[Any],
+    output_dir: Path,
+    *,
+    parquet_path: Path | None,
+    random_state: int | None,
+) -> Any:
+    config = config_cls(
         parquet_path=_default_parquet(parquet_path),
         output_root=output_dir.parent,
         run_name=output_dir.name,
         verbose=False,
     )
+    if random_state is not None:
+        config.random_state = int(random_state)
+    return config
 
 
 @dataclass
@@ -618,8 +627,21 @@ def main() -> None:
 class ContextStackFamily:
     implementation_module = MODULE_NAME
 
-    def run(self, recipe: Any, output_dir: Path, *, smoke: bool = False, parquet_path: Path | None = None) -> Path:
-        config = _default_output_config(MLStatisticsWorkbenchConfig, output_dir, parquet_path=parquet_path)
+    def run(
+        self,
+        recipe: Any,
+        output_dir: Path,
+        *,
+        smoke: bool = False,
+        parquet_path: Path | None = None,
+        random_state: int | None = None,
+    ) -> Path:
+        config = _default_output_config(
+            MLStatisticsWorkbenchConfig,
+            output_dir,
+            parquet_path=parquet_path,
+            random_state=random_state,
+        )
         config.targets = (recipe.target,)
         config.save_checkpoints = False
         if smoke:
@@ -636,8 +658,21 @@ class ContextStackFamily:
 class AnchorStackFamily:
     implementation_module = MODULE_NAME
 
-    def run(self, recipe: Any, output_dir: Path, *, smoke: bool = False, parquet_path: Path | None = None) -> Path:
-        config = _default_output_config(FPosBackendSweepConfig, output_dir, parquet_path=parquet_path)
+    def run(
+        self,
+        recipe: Any,
+        output_dir: Path,
+        *,
+        smoke: bool = False,
+        parquet_path: Path | None = None,
+        random_state: int | None = None,
+    ) -> Path:
+        config = _default_output_config(
+            FPosBackendSweepConfig,
+            output_dir,
+            parquet_path=parquet_path,
+            random_state=random_state,
+        )
         if smoke:
             config.paired_final_holdout_rows = 24
             config.max_pseudo_per_recording = 12
@@ -649,8 +684,21 @@ class AnchorStackFamily:
 class WaveformStackFamily:
     implementation_module = MODULE_NAME
 
-    def run(self, recipe: Any, output_dir: Path, *, smoke: bool = False, parquet_path: Path | None = None) -> Path:
-        config = _default_output_config(FPosSignalEmbeddingStackConfig, output_dir, parquet_path=parquet_path)
+    def run(
+        self,
+        recipe: Any,
+        output_dir: Path,
+        *,
+        smoke: bool = False,
+        parquet_path: Path | None = None,
+        random_state: int | None = None,
+    ) -> Path:
+        config = _default_output_config(
+            FPosSignalEmbeddingStackConfig,
+            output_dir,
+            parquet_path=parquet_path,
+            random_state=random_state,
+        )
         if smoke:
             config.paired_final_holdout_rows = 24
             config.ae_epochs = 2
@@ -666,8 +714,21 @@ class WaveformStackFamily:
 class RobustnessStackFamily:
     implementation_module = MODULE_NAME
 
-    def run(self, recipe: Any, output_dir: Path, *, smoke: bool = False, parquet_path: Path | None = None) -> Path:
-        config = _default_output_config(FPosFamilyRobustnessConfig, output_dir, parquet_path=parquet_path)
+    def run(
+        self,
+        recipe: Any,
+        output_dir: Path,
+        *,
+        smoke: bool = False,
+        parquet_path: Path | None = None,
+        random_state: int | None = None,
+    ) -> Path:
+        config = _default_output_config(
+            FPosFamilyRobustnessConfig,
+            output_dir,
+            parquet_path=parquet_path,
+            random_state=random_state,
+        )
         if smoke:
             config.paired_final_holdout_rows = 24
             config.max_pseudo_per_recording = 12
@@ -679,8 +740,21 @@ class RobustnessStackFamily:
 class WaveformTransferFamily:
     implementation_module = MODULE_NAME
 
-    def run(self, recipe: Any, output_dir: Path, *, smoke: bool = False, parquet_path: Path | None = None) -> Path:
-        config = _default_output_config(FMissWaveformTransferConfig, output_dir, parquet_path=parquet_path)
+    def run(
+        self,
+        recipe: Any,
+        output_dir: Path,
+        *,
+        smoke: bool = False,
+        parquet_path: Path | None = None,
+        random_state: int | None = None,
+    ) -> Path:
+        config = _default_output_config(
+            FMissWaveformTransferConfig,
+            output_dir,
+            parquet_path=parquet_path,
+            random_state=random_state,
+        )
         if smoke:
             config.paired_final_holdout_rows = 24
             config.ae_epochs = 2

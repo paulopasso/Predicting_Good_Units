@@ -945,14 +945,14 @@ def _apply_trust_selection(
     return selected_df
 
 
-def build_base_stack_state(*, target: str, config: BaseStackConfig) -> BaseStackState:
+def build_base_stack_state_from_split(
+    *,
+    target: str,
+    prepared: Any,
+    split: Any,
+    config: BaseStackConfig,
+) -> BaseStackState:
     base, pseudo_base, trust_base = _base_configs(config)
-    prepared = prepare_feature_table(config.parquet_path)
-    split = make_main_split(
-        prepared.df,
-        paired_final_holdout_rows=config.paired_final_holdout_rows,
-        random_state=config.random_state,
-    )
     unit_drop_cols, context_drop_cols, _ = _build_filtered_drop_cols(
         split=split,
         prepared=prepared,
@@ -1092,6 +1092,21 @@ def build_base_stack_state(*, target: str, config: BaseStackConfig) -> BaseStack
     )
 
 
+def build_base_stack_state(*, target: str, config: BaseStackConfig) -> BaseStackState:
+    prepared = prepare_feature_table(config.parquet_path)
+    split = make_main_split(
+        prepared.df,
+        paired_final_holdout_rows=config.paired_final_holdout_rows,
+        random_state=config.random_state,
+    )
+    return build_base_stack_state_from_split(
+        target=target,
+        prepared=prepared,
+        split=split,
+        config=config,
+    )
+
+
 def build_embedding_universe(
     *,
     split: Any,
@@ -1192,6 +1207,7 @@ __all__ = [
     "BaseStackState",
     "assemble_training_data",
     "build_base_stack_state",
+    "build_base_stack_state_from_split",
     "build_embedding_universe",
     "evaluate_stack_variant",
 ]

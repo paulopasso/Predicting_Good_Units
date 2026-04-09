@@ -9,11 +9,13 @@ from .shared import (
     summarize_feature_groups,
 )
 from .recipes import (
+    CORE_BENCHMARK_RECIPE_IDS,
     ExperimentResult,
     build_ablation_bundle,
     build_benchmark_table,
     build_family_summary,
     build_recording_summary,
+    get_core_benchmark_recipe_ids,
     get_main_benchmark_table,
     load_experiment,
     load_or_run_experiment,
@@ -39,6 +41,7 @@ MODELING_ROOT = THESIS_ROOT / "src" / "qc_thesis" / "modeling"
 
 __all__ = [
     "ExperimentResult",
+    "CORE_BENCHMARK_RECIPE_IDS",
     "FMISS_RECIPE_GROUPS",
     "FPOS_RECIPE_GROUPS",
     "FrameAugmenter",
@@ -54,6 +57,7 @@ __all__ = [
     "build_stack_frame",
     "compute_feature_shift_table",
     "feature_group_for_column",
+    "get_core_benchmark_recipe_ids",
     "get_main_benchmark_table",
     "get_main_text_recipe_ids",
     "get_recipe",

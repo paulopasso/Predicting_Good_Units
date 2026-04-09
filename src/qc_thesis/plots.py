@@ -3,9 +3,15 @@ from __future__ import annotations
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 
-from .paths import THESIS_ROOT
+from .paths import (
+    THESIS_ROOT,
+    WAVEFORM_AUGMENTED_LABEL,
+    REDUCED_LATENT_CONTEXT_LABEL,
+    feature_group_display,
+)
 
 
 PALETTE = {
@@ -14,28 +20,105 @@ PALETTE = {
     "orange": "#d98e04",
     "red": "#b33a3a",
     "slate": "#5b6675",
+    "navy": "#18314f",
+    "purple": "#6c4a9a",
+    "grey": "#9aa5b1",
+    "light_blue": "#9ec5fe",
+    "light_orange": "#f6c177",
+}
+
+FAMILY_COLORS = {
+    "BOYDEN": "#e64b35",
+    "CRCNS_HC1": "#4dbbd5",
+    "ENGLISH": "#00a087",
+    "KAMPFF": "#3c5488",
+    "MEA64C_YGER": "#f39b7f",
+}
+
+THESIS_HIGHLIGHT_FAMILY_COLORS = {
+    "BOYDEN": "#4477AA",
+    "CRCNS_HC1": "#EE6677",
+    "ENGLISH": "#228833",
+    "KAMPFF": "#CCBB44",
+    "MEA64C_YGER": "#AA3377",
+}
+
+THESIS_HIGHLIGHT_MODEL_COLORS = {
+    "Paired-only raw": "#444444",
+    "Paired-only context": "#2E6DA4",
+    "Pre-waveform unlabeled structure": "#44AA99",
+    WAVEFORM_AUGMENTED_LABEL: "#117733",
+    "Waveform winner": "#117733",
+    "Context-first source stack": "#888888",
+}
+
+THESIS_HIGHLIGHT_MODEL_SHORT = {
+    "Paired-only raw": "Raw",
+    "Paired-only context": "Context",
+    "Pre-waveform unlabeled structure": "Pre-wave",
+    WAVEFORM_AUGMENTED_LABEL: "Waveform+",
+    "Waveform winner": "Waveform+",
+    "Context-first source stack": "Ctx-stack",
+}
+
+GROUP_COLORS = {
+    "recording_context": PALETTE["navy"],
+    "spikeinterface_qc": "#2d8b57",
+    "waveform": "#1f7a8c",
+    "source_transfer": PALETTE["purple"],
+    "acg": "#6a3d9a",
+    "amplitude": "#e05c5c",
+    "other": PALETTE["grey"],
 }
 
 
 LABEL_SHORT = {
     "Dummy paired mean": "Dummy",
-    "Paired-only raw": "Paired raw",
-    "Hybrid-only XGBoost": "Hybrid only",
+    "Paired-only raw": "Paired-only raw",
+    "Hybrid-only XGBoost": "Hybrid-only XGBoost",
     "Calibrated hybrid XGBoost": "Hybrid calibrated",
     "Hybrid+paired basic XGBoost": "Hybrid+paired",
     "Hybrid stack residual": "Hybrid residual",
-    "Paired-only context": "Paired context",
+    "Paired-only context": "Paired-only context",
     "Context-first source stack": "Context stack",
     "Best SSL neural": "SSL",
     "Best MMD neural": "MMD",
     "Pre-waveform unlabeled structure": "Pseudo+anchor",
-    "Family-balanced robustness": "Family-balanced",
-    "Waveform winner": "Waveform winner",
+    WAVEFORM_AUGMENTED_LABEL: "Waveform+",
+    "Waveform winner": "Waveform+",
     "Calibrated hybrid": "Hybrid calibrated",
     "Source-reweighted full context": "Source reweighted",
     "Embed-nommd full context": "Embed full ctx",
-    "Reduced-latent winner": "Reduced latent",
+    REDUCED_LATENT_CONTEXT_LABEL: "Reduced-latent context",
+    "Reduced-latent winner": "Reduced-latent context",
     "Transplanted `fpos` waveform recipe": "Transplanted fpos",
+}
+
+
+BENCHMARK_MODEL_COLORS = {
+    "Dummy paired mean": "#7A7A7A",
+    "Paired-only raw": "#2F2F2F",
+    "Hybrid-only XGBoost": "#E07A1F",
+    "Calibrated hybrid XGBoost": "#F2A65A",
+    "Calibrated hybrid": "#F2A65A",
+    "Hybrid+paired basic XGBoost": "#C06C84",
+    "Hybrid stack residual": "#C65D0E",
+    "Paired-only context": "#2F6690",
+    "Context-first source stack": "#4EA1D3",
+    "Source-reweighted full context": "#6BAED6",
+    "Embed-nommd full context": "#1B9E77",
+    "Pre-waveform unlabeled structure": "#2A9D8F",
+    WAVEFORM_AUGMENTED_LABEL: "#1B7F3B",
+    "Waveform winner": "#1B7F3B",
+    REDUCED_LATENT_CONTEXT_LABEL: "#7B61FF",
+    "Reduced-latent winner": "#7B61FF",
+    "Transplanted fpos waveform recipe": "#C9A227",
+    "Transplanted `fpos` waveform recipe": "#C9A227",
+    "Best SSL neural": "#C44E52",
+    "Best MMD neural": "#DD5A8C",
+    "Hybrid residual": "#C65D0E",
+    "Reduced-latent context": "#7B61FF",
+    "Transplanted fpos": "#C9A227",
 }
 
 
@@ -44,13 +127,25 @@ def apply_thesis_style() -> None:
     plt.rcParams.update({
         "figure.dpi": 140,
         "savefig.dpi": 220,
-        "axes.titlesize": 15,
+        "axes.titlesize": 14,
+        "axes.titleweight": "bold",
         "axes.labelsize": 11,
         "xtick.labelsize": 9,
         "ytick.labelsize": 9,
         "legend.fontsize": 9,
         "figure.facecolor": "white",
         "axes.facecolor": "white",
+        "axes.spines.top": False,
+        "axes.spines.right": False,
+        "axes.edgecolor": "#d6dde6",
+        "axes.linewidth": 0.8,
+        "grid.color": "#dce3eb",
+        "grid.linewidth": 0.8,
+        "grid.alpha": 0.7,
+        "axes.grid.axis": "y",
+        "axes.grid.which": "major",
+        "legend.frameon": False,
+        "figure.autolayout": False,
     })
     # Prevent double figure display in Jupyter notebooks.
     # With %matplotlib inline, IPython registers a flush_figures() post-execute hook
@@ -96,7 +191,7 @@ def notebook_output_dirs(notebook_stem: str) -> tuple[Path, Path]:
 
 def save_figure(fig, output_dir: Path, stem: str) -> Path:
     path = output_dir / f"{stem}.png"
-    fig.savefig(path, bbox_inches="tight")
+    fig.savefig(path, bbox_inches="tight", facecolor="white", pad_inches=0.08)
     return path
 
 
@@ -110,15 +205,148 @@ def _shorten(labels: list[str]) -> list[str]:
     return [LABEL_SHORT.get(x, x) for x in labels]
 
 
+def _display_group_label(raw: object) -> str:
+    text = str(raw)
+    if "::" in text:
+        family, *_middle, tail = text.split("::")
+        return f"{family.replace('PAIRED_', '')} · {tail}"
+    return text.replace("PAIRED_", "")
+
+
+def _feature_group(feature: str) -> str:
+    feat = str(feature).lower()
+    if feat == "source_pred":
+        return "source_transfer"
+    if "_recording_" in feat:
+        return "recording_context"
+    if feat.startswith("si_"):
+        return "spikeinterface_qc"
+    if feat.startswith("wf_") or feat in {
+        "peak_to_trough_uv",
+        "post_trough_peak_uv",
+        "pre_trough_peak_uv",
+        "trough_time_ms",
+        "half_width_ms",
+        "repolarization_slope",
+        "wf_pre_trough_slope",
+        "wf_post_peak_slope",
+        "wf_prepeak_ratio",
+        "wf_prepeak_to_trough_ms",
+        "wf_rebound_ratio",
+        "wf_asymmetry",
+        "wf_trough_width_75_ms",
+        "wf_trough_width_50_ms",
+        "wf_trough_width_25_ms",
+        "wf_zero_cross_pre_ms",
+        "wf_pos_area_uv_ms",
+        "wf_neg_area_uv_ms",
+        "wf_pos_neg_area_ratio",
+        "wf_energy",
+        "spread_um",
+        "spread_weighted_um",
+        "center_of_mass_um",
+        "n_active_channels",
+        "n_channels",
+        "peak_channel_depth_um",
+    }:
+        return "waveform"
+    if feat.startswith("acg_") or feat == "burst_index":
+        return "acg"
+    if feat.startswith("amp_"):
+        return "amplitude"
+    return "other"
+
+
+def _benchmark_color(label: str, *, is_best: bool = False) -> str:
+    if label in BENCHMARK_MODEL_COLORS:
+        return BENCHMARK_MODEL_COLORS[label]
+    lowered = label.lower()
+    if "dummy" in lowered:
+        return PALETTE["grey"]
+    if "ssl" in lowered or "mmd" in lowered:
+        return "#cc6677"
+    if "waveform" in lowered or "transplant" in lowered:
+        return PALETTE["purple"]
+    if "family-balanced" in lowered:
+        return PALETTE["orange"]
+    return PALETTE["blue"]
+
+
+def _series_colors(n: int) -> list[str]:
+    base = [
+        PALETTE["blue"],
+        PALETTE["teal"],
+        PALETTE["orange"],
+        PALETTE["red"],
+        PALETTE["purple"],
+        PALETTE["slate"],
+    ]
+    if n <= len(base):
+        return base[:n]
+    repeats = (n // len(base)) + 1
+    return (base * repeats)[:n]
+
+
+def _clean_axes(ax, *, grid_axis: str = "x", zero_line: bool = False) -> None:
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines["left"].set_color("#d6dde6")
+    ax.spines["bottom"].set_color("#d6dde6")
+    ax.grid(axis=grid_axis, color="#dce3eb", linewidth=0.8, alpha=0.9)
+    if grid_axis == "x":
+        ax.grid(axis="y", visible=False)
+    elif grid_axis == "y":
+        ax.grid(axis="x", visible=False)
+    if zero_line:
+        ax.axvline(0, color=PALETTE["slate"], linestyle="--", linewidth=1.0, zorder=1)
+
+
+def _annotate_barh(ax, bars, values: list[float]) -> None:
+    finite = [float(v) for v in values if pd.notna(v)]
+    span = (max(finite) - min(finite)) if finite else 1.0
+    pad = max(span * 0.02, 0.004)
+    for bar, value in zip(bars, values):
+        if pd.isna(value):
+            continue
+        x = float(value)
+        y = bar.get_y() + bar.get_height() / 2
+        if x >= 0:
+            ax.text(x + pad, y, f"{x:.3f}", va="center", ha="left", fontsize=8, color="#334155")
+        else:
+            ax.text(x - pad, y, f"{x:.3f}", va="center", ha="right", fontsize=8, color="#334155")
+
+
+def _category_color(key: object, idx: int) -> str:
+    label = _display_group_label(key)
+    if label in FAMILY_COLORS:
+        return FAMILY_COLORS[label]
+    lowered = str(key).lower()
+    if lowered == "hybrid":
+        return PALETTE["blue"]
+    if lowered == "paired":
+        return PALETTE["orange"]
+    return _series_colors(idx + 1)[idx]
+
+
 def plot_benchmark_metric(table: pd.DataFrame, metric: str = "r2", title: str | None = None):
     df = table.copy()
     df[metric] = pd.to_numeric(df[metric], errors="coerce")
     ascending = metric.lower() == "mae"
-    df = df.sort_values(metric, ascending=ascending)
-    fig, ax = plt.subplots(figsize=(10, max(4, 0.45 * len(df))))
-    color = PALETTE["blue"] if metric.lower() != "mae" else PALETTE["orange"]
-    ax.barh(_shorten(df["label"].tolist()), df[metric], color=color)
-    ax.set_xlabel(metric.upper())
+    df = df.sort_values(metric, ascending=ascending).reset_index(drop=True)
+    fig, ax = plt.subplots(figsize=(10.5, max(4.5, 0.52 * len(df))))
+    best_idx = 0 if not df.empty else -1
+    colors = [
+        _benchmark_color(str(label), is_best=(idx == best_idx))
+        for idx, label in enumerate(df["label"].tolist())
+    ]
+    bars = ax.barh(_shorten(df["label"].tolist()), df[metric].tolist(), color=colors, edgecolor="white", linewidth=0.7)
+    ax.invert_yaxis()
+    _clean_axes(ax, grid_axis="x", zero_line=(metric.lower() != "mae"))
+    _annotate_barh(ax, bars, df[metric].tolist())
+    if metric.lower() == "r2":
+        ax.set_xlabel("R²")
+    else:
+        ax.set_xlabel("MAE")
     ax.set_title(title or f"Benchmark comparison by {metric.upper()}")
     fig.tight_layout()
     return fig, ax
@@ -128,9 +356,69 @@ def plot_group_metric(summary_df: pd.DataFrame, group_col: str, metric: str = "r
     column_col = "label" if "label" in summary_df.columns else "variant_id"
     pivot = summary_df.pivot_table(index=group_col, columns=column_col, values=metric, aggfunc="mean").sort_index()
     pivot = pivot.rename(columns=LABEL_SHORT)
-    fig, ax = plt.subplots(figsize=(12, max(4, 0.35 * len(pivot))))
-    pivot.plot(kind="barh", ax=ax, color=[PALETTE["blue"], PALETTE["teal"], PALETTE["orange"], PALETTE["red"], PALETTE["slate"]][: len(pivot.columns)])
-    ax.set_xlabel(metric.upper())
+    pivot.index = [_display_group_label(x) for x in pivot.index]
+    metric_lower = metric.lower()
+
+    if metric_lower == "mae":
+        ordering = pivot.min(axis=1, skipna=True).sort_values(ascending=True).index
+    else:
+        ordering = pivot.max(axis=1, skipna=True).sort_values(ascending=False).index
+    pivot = pivot.loc[ordering]
+
+    if pivot.shape[1] == 1:
+        series = pd.to_numeric(pivot.iloc[:, 0], errors="coerce")
+        fig, ax = plt.subplots(figsize=(9, max(4, 0.42 * len(series))))
+        labels = list(series.index)
+        colors = [_category_color(label, idx) for idx, label in enumerate(labels)]
+        bars = ax.barh(labels, series.tolist(), color=colors, edgecolor="white", linewidth=0.7)
+        ax.invert_yaxis()
+        _clean_axes(ax, grid_axis="x", zero_line=(metric_lower != "mae"))
+        _annotate_barh(ax, bars, series.tolist())
+    elif len(pivot) > 10:
+        import matplotlib.colors as mcolors
+
+        fig, ax = plt.subplots(figsize=(max(9, 1.6 * len(pivot.columns) + 1.5), max(5, 0.34 * len(pivot) + 1.8)))
+        values = pivot.to_numpy(dtype=float)
+        if metric_lower == "mae":
+            cmap = plt.get_cmap("YlOrBr_r")
+            norm = mcolors.Normalize(vmin=np.nanmin(values), vmax=np.nanmax(values))
+        else:
+            cmap = plt.get_cmap("RdYlGn")
+            limit = np.nanmax(np.abs(values)) if np.isfinite(values).any() else 1.0
+            norm = mcolors.TwoSlopeNorm(vmin=-limit, vcenter=0.0, vmax=limit)
+        im = ax.imshow(values, aspect="auto", cmap=cmap, norm=norm, interpolation="nearest")
+        ax.set_xticks(range(len(pivot.columns)))
+        ax.set_xticklabels(pivot.columns.tolist(), rotation=25, ha="right", fontsize=8)
+        ax.set_yticks(range(len(pivot.index)))
+        ax.set_yticklabels(pivot.index.tolist(), fontsize=8)
+        ax.grid(False)
+        cbar = plt.colorbar(im, ax=ax, shrink=0.82, pad=0.02)
+        cbar.set_label("MAE" if metric_lower == "mae" else "R²")
+        if pivot.shape[0] * pivot.shape[1] <= 80:
+            for row_idx in range(pivot.shape[0]):
+                for col_idx in range(pivot.shape[1]):
+                    value = values[row_idx, col_idx]
+                    if np.isnan(value):
+                        continue
+                    ax.text(col_idx, row_idx, f"{value:.2f}", ha="center", va="center", fontsize=7, color="#111827")
+    else:
+        fig, ax = plt.subplots(figsize=(11, max(4.5, 0.48 * len(pivot))))
+        y = np.arange(len(pivot))
+        offsets = np.linspace(-0.28, 0.28, len(pivot.columns))
+        bar_height = min(0.65 / max(len(pivot.columns), 1), 0.22)
+        colors = _series_colors(len(pivot.columns))
+        for idx, column in enumerate(pivot.columns):
+            values = pd.to_numeric(pivot[column], errors="coerce").tolist()
+            bars = ax.barh(y + offsets[idx], values, height=bar_height, color=colors[idx], edgecolor="white", linewidth=0.6, label=column)
+            if len(pivot) <= 7:
+                _annotate_barh(ax, bars, values)
+        ax.set_yticks(y)
+        ax.set_yticklabels(pivot.index.tolist())
+        ax.invert_yaxis()
+        _clean_axes(ax, grid_axis="x", zero_line=(metric_lower != "mae"))
+        ax.legend(loc="lower right", ncol=min(2, len(pivot.columns)))
+
+    ax.set_xlabel("MAE" if metric_lower == "mae" else "R²")
     ax.set_ylabel(group_col.replace("_", " ").title())
     ax.set_title(title or f"{metric.upper()} by {group_col}")
     fig.tight_layout()
@@ -138,22 +426,26 @@ def plot_group_metric(summary_df: pd.DataFrame, group_col: str, metric: str = "r
 
 
 def plot_domain_shift_separability(df: pd.DataFrame):
-    table = df.copy()
-    table["label"] = table["comparison"] + " | " + table["feature_set"]
-    fig, ax = plt.subplots(figsize=(8, 4))
-    ax.bar(table["label"], table["cv_auc_mean"], color=[PALETTE["blue"], PALETTE["teal"], PALETTE["orange"], PALETTE["red"]][: len(table)])
-    ax.set_ylim(0.0, 1.02)
-    ax.set_ylabel("CV AUC")
-    ax.set_title("Hybrid vs paired separability")
-    ax.tick_params(axis="x", rotation=25)
-    fig.tight_layout()
-    return fig, ax
+    return plot_domain_auc_annotated(df)
 
 
 def plot_top_feature_shift(df: pd.DataFrame, top_n: int = 15):
-    plot_df = df.sort_values("abs_smd", ascending=False).head(top_n).iloc[::-1]
-    fig, ax = plt.subplots(figsize=(9, max(4, 0.35 * len(plot_df))))
-    ax.barh(plot_df["feature"], plot_df["abs_smd"], color=PALETTE["orange"])
+    plot_df = df.sort_values("abs_smd", ascending=False).head(top_n).iloc[::-1].copy()
+    plot_df["feature_group"] = plot_df["feature"].map(_feature_group)
+    colors = [GROUP_COLORS.get(group, PALETTE["grey"]) for group in plot_df["feature_group"]]
+    fig, ax = plt.subplots(figsize=(9.5, max(4.5, 0.4 * len(plot_df))))
+    bars = ax.barh(plot_df["feature"], plot_df["abs_smd"], color=colors, edgecolor="white", linewidth=0.7)
+    _clean_axes(ax, grid_axis="x")
+    _annotate_barh(ax, bars, plot_df["abs_smd"].tolist())
+    present_groups = list(dict.fromkeys(plot_df["feature_group"].tolist()))
+    if present_groups:
+        from matplotlib.patches import Patch
+
+        legend_handles = [
+            Patch(facecolor=GROUP_COLORS[group], label=feature_group_display(group))
+            for group in present_groups
+        ]
+        ax.legend(handles=legend_handles, loc="lower right", fontsize=8, ncol=1)
     ax.set_xlabel("Absolute standardized mean difference")
     ax.set_title("Top shifted features")
     fig.tight_layout()
@@ -161,14 +453,37 @@ def plot_top_feature_shift(df: pd.DataFrame, top_n: int = 15):
 
 
 def plot_pca_projection(df: pd.DataFrame, color_col: str = "dataset_type"):
-    fig, ax = plt.subplots(figsize=(8, 6))
-    colors = [PALETTE["blue"], PALETTE["teal"], PALETTE["orange"], PALETTE["red"], PALETTE["slate"]]
-    for (key, part), color in zip(df.groupby(color_col, dropna=False), colors * 10):
-        ax.scatter(part["pc1"], part["pc2"], s=12, alpha=0.7, label=str(key), color=color)
+    fig, ax = plt.subplots(figsize=(8.5, 6.3))
+    grouped = list(df.groupby(color_col, dropna=False))
+    for idx, (key, part) in enumerate(grouped):
+        color = _category_color(key, idx)
+        label = _display_group_label(key)
+        ax.scatter(
+            part["pc1"],
+            part["pc2"],
+            s=18,
+            alpha=0.68,
+            label=f"{label} (n={len(part)})",
+            color=color,
+            edgecolors="white",
+            linewidths=0.25,
+            rasterized=len(df) > 1500,
+        )
+        ax.scatter(
+            float(part["pc1"].mean()),
+            float(part["pc2"].mean()),
+            marker="X",
+            s=120,
+            color=color,
+            edgecolors="white",
+            linewidths=0.7,
+            zorder=4,
+        )
     ax.set_xlabel("PC1")
     ax.set_ylabel("PC2")
     ax.set_title("PCA projection")
-    ax.legend(frameon=False)
+    ax.grid(True, color="#e8edf3", linewidth=0.8)
+    ax.legend(frameon=False, fontsize=8, loc="upper left", bbox_to_anchor=(1.02, 1.0))
     fig.tight_layout()
     return fig, ax
 
@@ -176,14 +491,15 @@ def plot_pca_projection(df: pd.DataFrame, color_col: str = "dataset_type"):
 def plot_pca_projection_3d(df: pd.DataFrame, color_col: str = "dataset_type"):
     fig = plt.figure(figsize=(9, 7))
     ax = fig.add_subplot(111, projection="3d")
-    colors = [PALETTE["blue"], PALETTE["teal"], PALETTE["orange"], PALETTE["red"], PALETTE["slate"]]
-    for (key, part), color in zip(df.groupby(color_col, dropna=False), colors * 10):
-        ax.scatter(part["pc1"], part["pc2"], part["pc3"], s=10, alpha=0.65, label=str(key), color=color)
+    grouped = list(df.groupby(color_col, dropna=False))
+    for idx, (key, part) in enumerate(grouped):
+        color = _category_color(key, idx)
+        ax.scatter(part["pc1"], part["pc2"], part["pc3"], s=12, alpha=0.62, label=_display_group_label(key), color=color)
     ax.set_xlabel("PC1")
     ax.set_ylabel("PC2")
     ax.set_zlabel("PC3")
     ax.set_title("3D PCA projection")
-    ax.legend(frameon=False)
+    ax.legend(frameon=False, fontsize=8)
     fig.tight_layout()
     return fig, ax
 
@@ -192,49 +508,117 @@ def plot_label_budget(df: pd.DataFrame, target: str = "fpos"):
     plot_df = df[df["target"] == target].copy()
     plot_df["budget_rows"] = pd.to_numeric(plot_df["budget_rows"], errors="coerce")
     plot_df["mean_r2"] = pd.to_numeric(plot_df["mean_r2"], errors="coerce")
-    fig, ax = plt.subplots(figsize=(8, 5))
-    colors = [PALETTE["blue"], PALETTE["teal"], PALETTE["orange"], PALETTE["red"]]
-    for (label, part), color in zip(plot_df.groupby("variant_id"), colors * 10):
+    if "std_r2" in plot_df.columns:
+        plot_df["std_r2"] = pd.to_numeric(plot_df["std_r2"], errors="coerce")
+    fig, ax = plt.subplots(figsize=(8.4, 5.2))
+    colors = _series_colors(plot_df["variant_id"].nunique())
+    current_n = 107 if 107 in plot_df["budget_rows"].dropna().tolist() else None
+    for idx, ((label, part), color) in enumerate(zip(plot_df.groupby("variant_id"), colors * 10)):
         part = part.sort_values("budget_rows")
-        ax.plot(part["budget_rows"], part["mean_r2"], marker="o", label=LABEL_SHORT.get(label, label), color=color)
+        ax.plot(part["budget_rows"], part["mean_r2"], marker="o", linewidth=2.1, markersize=6, label=LABEL_SHORT.get(label, label), color=color)
+        if "std_r2" in part.columns:
+            std = pd.to_numeric(part["std_r2"], errors="coerce")
+            if std.notna().any() and std.fillna(0).gt(0).any():
+                ax.fill_between(part["budget_rows"], part["mean_r2"] - std.fillna(0), part["mean_r2"] + std.fillna(0), color=color, alpha=0.12)
+        end_x = float(part["budget_rows"].iloc[-1])
+        end_y = float(part["mean_r2"].iloc[-1])
+        ax.text(end_x + 1.5, end_y, LABEL_SHORT.get(label, label), color=color, fontsize=8, va="center")
+    _clean_axes(ax, grid_axis="y", zero_line=True)
+    if current_n is not None:
+        ax.axvline(current_n, color=PALETTE["slate"], linestyle=":", linewidth=1.1)
+        ax.text(current_n + 2, ax.get_ylim()[0] + 0.03, "current n", fontsize=8, color=PALETTE["slate"])
     ax.set_xlabel("Paired adaptation rows")
     ax.set_ylabel("Mean R²")
     ax.set_title(f"Label-budget curve: {target}")
-    ax.legend(frameon=False)
     fig.tight_layout()
     return fig, ax
 
 
 def plot_fpos_shap_top(df: pd.DataFrame, top_n: int = 15):
-    plot_df = df.head(top_n).iloc[::-1]
-    fig, ax = plt.subplots(figsize=(8, max(4, 0.35 * len(plot_df))))
-    ax.barh(plot_df["feature"], plot_df["mean_abs_shap"], color=PALETTE["red"])
+    plot_df = df.head(top_n).iloc[::-1].copy()
+    plot_df["feature_group"] = plot_df["feature"].map(_feature_group)
+    colors = [GROUP_COLORS.get(group, PALETTE["grey"]) for group in plot_df["feature_group"]]
+    fig, ax = plt.subplots(figsize=(8.8, max(4.5, 0.38 * len(plot_df))))
+    bars = ax.barh(plot_df["feature"], plot_df["mean_abs_shap"], color=colors, edgecolor="white", linewidth=0.7)
+    _clean_axes(ax, grid_axis="x")
+    _annotate_barh(ax, bars, plot_df["mean_abs_shap"].tolist())
+    present_groups = list(dict.fromkeys(plot_df["feature_group"].tolist()))
+    if present_groups:
+        from matplotlib.patches import Patch
+
+        legend_handles = [
+            Patch(facecolor=GROUP_COLORS[group], label=feature_group_display(group))
+            for group in present_groups
+        ]
+        ax.legend(handles=legend_handles, loc="lower right", fontsize=8)
     ax.set_xlabel("Mean |SHAP|")
-    ax.set_title("Top SHAP features for best `fpos` model")
+    ax.set_title("Top SHAP features\nWaveform-augmented structure (fpos_waveform_winner)")
     fig.tight_layout()
     return fig, ax
 
 
 def plot_target_asymmetry(joined: pd.DataFrame):
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4), sharey=True)
-    plot_df = joined.sort_values("study_set")
-    axes[0].barh(plot_df["study_set"], plot_df["fpos_r2"], color=PALETTE["blue"])
+    fig, axes = plt.subplots(1, 2, figsize=(12.5, 4.8), sharey=True)
+    plot_df = joined.copy()
+    plot_df["family"] = plot_df["study_set"].map(_display_group_label)
+    plot_df["r2_gap"] = pd.to_numeric(plot_df["fpos_r2"], errors="coerce") - pd.to_numeric(plot_df["fmiss_r2"], errors="coerce")
+    plot_df = plot_df.sort_values("r2_gap", ascending=False)
+    family_colors = [FAMILY_COLORS.get(fam, PALETTE["blue"]) for fam in plot_df["family"]]
+    axes[0].barh(plot_df["family"], plot_df["fpos_r2"], color=family_colors, edgecolor="white", linewidth=0.7)
     axes[0].set_title("Best `fpos` R² by family")
     axes[0].set_xlabel("R²")
-    axes[1].barh(plot_df["study_set"], plot_df["fmiss_r2"], color=PALETTE["orange"])
+    axes[1].barh(plot_df["family"], plot_df["fmiss_r2"], color=family_colors, edgecolor="white", linewidth=0.7)
     axes[1].set_title("Best `fmiss` R² by family")
     axes[1].set_xlabel("R²")
+    limits = np.array([
+        pd.to_numeric(plot_df["fpos_r2"], errors="coerce").min(),
+        pd.to_numeric(plot_df["fmiss_r2"], errors="coerce").min(),
+        pd.to_numeric(plot_df["fpos_r2"], errors="coerce").max(),
+        pd.to_numeric(plot_df["fmiss_r2"], errors="coerce").max(),
+    ], dtype=float)
+    limit = max(abs(np.nanmin(limits)), abs(np.nanmax(limits))) if np.isfinite(limits).any() else 1.0
+    for ax in axes:
+        ax.set_xlim(-limit * 1.08, limit * 1.08)
+        _clean_axes(ax, grid_axis="x", zero_line=True)
+    for ax, column in zip(axes, ["fpos_r2", "fmiss_r2"]):
+        for patch, value in zip(ax.patches, pd.to_numeric(plot_df[column], errors="coerce").tolist()):
+            if pd.isna(value):
+                continue
+            y = patch.get_y() + patch.get_height() / 2
+            x = float(value)
+            align = "left" if x >= 0 else "right"
+            offset = 0.015 * limit if limit else 0.01
+            ax.text(x + (offset if x >= 0 else -offset), y, f"{x:.2f}", va="center", ha=align, fontsize=8, color="#334155")
     fig.suptitle("Target asymmetry across paired families")
     fig.tight_layout()
     return fig, axes
 
 
 def plot_prediction_scatter(predictions: pd.DataFrame, *, title: str):
-    fig, ax = plt.subplots(figsize=(6, 6))
-    ax.scatter(predictions["true"], predictions["pred"], s=18, alpha=0.65, color=PALETTE["teal"])
+    fig, ax = plt.subplots(figsize=(6.4, 6.2))
+    ax.scatter(predictions["true"], predictions["pred"], s=28, alpha=0.72, color=PALETTE["teal"], edgecolors="white", linewidths=0.35)
     lo = min(predictions["true"].min(), predictions["pred"].min())
     hi = max(predictions["true"].max(), predictions["pred"].max())
     ax.plot([lo, hi], [lo, hi], linestyle="--", color=PALETTE["slate"])
+    try:
+        coeffs = np.polyfit(pd.to_numeric(predictions["true"], errors="coerce"), pd.to_numeric(predictions["pred"], errors="coerce"), 1)
+        x_line = np.linspace(lo, hi, 100)
+        ax.plot(x_line, coeffs[0] * x_line + coeffs[1], color=PALETTE["orange"], linewidth=1.5, alpha=0.9)
+    except Exception:
+        pass
+    corr = predictions[["true", "pred"]].corr().iloc[0, 1]
+    mae = (predictions["pred"] - predictions["true"]).abs().mean()
+    ax.text(
+        0.03,
+        0.97,
+        f"r = {corr:.3f}\nMAE = {mae:.3f}",
+        transform=ax.transAxes,
+        va="top",
+        ha="left",
+        fontsize=9,
+        bbox={"facecolor": "white", "edgecolor": "#d6dde6", "boxstyle": "round,pad=0.35"},
+    )
+    _clean_axes(ax, grid_axis="both")
     ax.set_xlabel("True")
     ax.set_ylabel("Predicted")
     ax.set_title(title)
@@ -493,6 +877,7 @@ def plot_family_r2_heatmap(
         im = ax.imshow(pivot.values, aspect="auto", cmap=cmap, norm=norm,
                        interpolation="nearest")
         plt.colorbar(im, ax=ax, shrink=0.8, label="R²  (per-family holdout)")
+        ax.grid(False)
 
         ax.set_xticks(range(len(pivot.columns)))
         ax.set_xticklabels(pivot.columns.tolist(), rotation=30, ha="right", fontsize=8)

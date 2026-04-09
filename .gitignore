@@ -33,7 +33,21 @@ artifacts/explainers/
 artifacts/runs_seed*/
 artifacts/seed_sweep_publication*.json
 artifacts/what_if*/
+artifacts/runs_aggregate/
+artifacts/aggregates/
+artifacts/family_holdout_seed_sweep.json
+artifacts/seed_sweep_full.json
+artifacts/full_seed_robustness*.log
+artifacts/finalize_seed_sweep*.log
+artifacts/finalize_seed_sweep_state.json
+artifacts/.finalize_seed_sweep.lock
+artifacts/runs_seed42_recheck/
+artifacts/runs_seed2026/
+artifacts/.DS_Store
 
+# Local working documents (not for version control)
+docs/
+docs
 # Hidden documentation that is not part of the public navigation surface
 FIGURE_INDEX.md
 MANUSCRIPT_PLAN.md
