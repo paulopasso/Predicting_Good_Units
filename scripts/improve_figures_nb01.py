@@ -300,15 +300,16 @@ def fig_dataset_composition() -> None:
     ]
     colors_a = [HYBRID_COLOR, PAIRED_COLOR, "#88BBDD"]
     bars = ax0.bar(labels_a, counts_a, color=colors_a, width=0.55, zorder=2)
-    ax0.set_ylabel("Units (rows)")
-    ax0.set_title("A  –  Operational subset sizes", loc="left", fontsize=11, fontweight="bold")
+    ax0.set_ylabel("Units (rows)", fontsize=12)
+    ax0.set_title("A  –  Operational subset sizes", loc="left", fontsize=12, fontweight="bold")
     ax0.yaxis.grid(True, zorder=0)
     ax0.set_axisbelow(True)
+    ax0.tick_params(axis="y", labelsize=11)
     for bar, n in zip(bars, counts_a):
         ax0.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 200,
-                 f"{n:,}", ha="center", va="bottom", fontsize=9, fontweight="bold")
+                 f"{n:,}", ha="center", va="bottom", fontsize=10, fontweight="bold")
     ax0.set_ylim(0, max(counts_a) * 1.15)
-    ax0.tick_params(axis="x", length=0)
+    ax0.tick_params(axis="x", length=0, labelsize=11)
 
     # --- Panel B: Target label availability ---
     ax1 = fig.add_subplot(gs[1])
@@ -319,17 +320,18 @@ def fig_dataset_composition() -> None:
     pct     = [v / total * 100 for v in avail]
     bar_colors = [FPOS_COLOR, FMISS_COLOR]
     bars2 = ax1.bar(targets, pct, color=bar_colors, width=0.4, zorder=2)
-    ax1.set_ylabel("Available rows (%)")
+    ax1.set_ylabel("Available rows (%)", fontsize=12)
     ax1.set_ylim(0, 115)
-    ax1.set_title("B  –  Target label availability", loc="left", fontsize=11, fontweight="bold")
+    ax1.set_title("B  –  Target label availability", loc="left", fontsize=12, fontweight="bold")
     ax1.yaxis.grid(True, zorder=0)
     ax1.set_axisbelow(True)
     ax1.axhline(100, color="#aaaaaa", lw=0.8, ls="--")
+    ax1.tick_params(axis="y", labelsize=11)
     for bar, p, n in zip(bars2, pct, avail):
         ax1.text(bar.get_x() + bar.get_width() / 2, p + 1.5,
-                 f"{p:.1f}%\n(n={n:,})", ha="center", va="bottom", fontsize=8.5)
+                 f"{p:.1f}%\n(n={n:,})", ha="center", va="bottom", fontsize=9.5)
     ax1.set_xticks(np.arange(len(targets)))
-    ax1.set_xticklabels(["fpos", "fmiss"], fontsize=10)
+    ax1.set_xticklabels(["fpos", "fmiss"], fontsize=11)
     ax1.tick_params(axis="x", length=0)
 
     # --- Panel C: Paired family coverage ---
@@ -345,27 +347,29 @@ def fig_dataset_composition() -> None:
     w = 0.45
     fcolors = [FAMILY_COLORS.get(f, "#999999") for f in fp.index]
     bars3 = ax2.bar(x, fp["rows"], color=fcolors, width=w, zorder=2, label="Total units")
-    ax2.set_ylabel("Total paired units")
-    ax2.set_title("C  –  Paired family coverage", loc="left", fontsize=11, fontweight="bold")
+    ax2.set_ylabel("Total paired units", fontsize=12)
+    ax2.set_title("C  –  Paired family coverage", loc="left", fontsize=12, fontweight="bold")
     ax2.set_xticks(x)
     ax2.set_xticklabels(
         [f.replace("MEA64C_YGER", "MEA64C\nYGER") for f in fp.index],
-        fontsize=8.5,
+        fontsize=9.5,
     )
     ax2.tick_params(axis="x", length=0)
+    ax2.tick_params(axis="y", labelsize=11)
     ax2.yaxis.grid(True, zorder=0)
     ax2.set_axisbelow(True)
 
     ax2r = ax2.twinx()
     ax2r.plot(x, fp["label_rate"], color="#333333", marker="o", ms=6,
               lw=1.5, zorder=3, label="Labeled rate (%)")
-    ax2r.set_ylabel("Labeled rate (%)", fontsize=9)
+    ax2r.set_ylabel("Labeled rate (%)", fontsize=10)
     ax2r.set_ylim(0, fp["label_rate"].max() * 2.2)
     ax2r.spines["right"].set_visible(True)
     ax2r.spines["right"].set_color("#cccccc")
+    ax2r.tick_params(axis="y", labelsize=10)
     for xi, (rate, labeled) in enumerate(zip(fp["label_rate"], fp["labeled"])):
         ax2r.text(xi, rate + 0.3, f"n={int(labeled)}", ha="center", va="bottom",
-                  fontsize=7.5, color="#333333")
+                  fontsize=8.5, color="#333333")
 
     h1 = mpatches.Patch(color=HYBRID_COLOR, label="Hybrid domain")
     h2 = mpatches.Patch(color=PAIRED_COLOR, label="Paired domain")

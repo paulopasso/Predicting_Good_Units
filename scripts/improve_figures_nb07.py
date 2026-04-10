@@ -217,17 +217,6 @@ def plot_label_budget_combined() -> None:
         x_max = float(xs.max()) + 7
         ax.axhline(0, color=C_ZERO, linewidth=1.1, linestyle="--", zorder=1)
         ax.fill_between([x_min, x_max], [0, 0], [-1.2, -1.2], color="#cccccc", alpha=0.25, zorder=0)
-        ax.text(
-            x_min + 2,
-            -0.07,
-            "below chance",
-            fontsize=8,
-            color=C_ZERO,
-            va="top",
-            style="italic",
-            bbox=dict(boxstyle="round,pad=0.18", facecolor="white", edgecolor="none", alpha=0.7),
-        )
-
         final_r2 = float(df.loc[df["budget_rows"] == CURRENT_N, "mean_r2"].iloc[0])
         final_mae = float(df.loc[df["budget_rows"] == CURRENT_N, "mean_mae"].iloc[0])
         ax.axvline(CURRENT_N, color="black", linewidth=1.1, linestyle=":", zorder=3)
@@ -311,16 +300,6 @@ def plot_label_budget_combined() -> None:
         x_max = float(xs.max()) + 7
         ax.axhline(0, color=C_ZERO, linewidth=1.1, linestyle="--", zorder=1)
         ax.fill_between([x_min, x_max], [0, 0], [-1.2, -1.2], color="#cccccc", alpha=0.25, zorder=0)
-        ax.text(
-            x_min + 2,
-            -0.07,
-            "below chance",
-            fontsize=8,
-            color=C_ZERO,
-            va="top",
-            style="italic",
-            bbox=dict(boxstyle="round,pad=0.18", facecolor="white", edgecolor="none", alpha=0.7),
-        )
         final_y = float(ys[-1])
         ax.axvline(CURRENT_N, color="black", linewidth=1.1, linestyle=":", zorder=3)
         ax.text(

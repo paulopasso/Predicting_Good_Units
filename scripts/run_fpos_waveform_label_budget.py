@@ -300,17 +300,6 @@ def _plot_summary(summary_df: pd.DataFrame) -> None:
     x_max = float(xs.max()) + 7
     ax.axhline(0, color="#888888", linewidth=1.1, linestyle="--", zorder=1)
     ax.fill_between([x_min, x_max], [0, 0], [-1.2, -1.2], color="#cccccc", alpha=0.25, zorder=0)
-    ax.text(
-        x_min + 2,
-        -0.07,
-        "below chance",
-        fontsize=8,
-        color="#888888",
-        va="top",
-        style="italic",
-        bbox=dict(boxstyle="round,pad=0.18", facecolor="white", edgecolor="none", alpha=0.7),
-    )
-
     final_r2 = float(plot_df.loc[plot_df["budget_rows"] == 107, "mean_r2"].iloc[0])
     final_mae = float(plot_df.loc[plot_df["budget_rows"] == 107, "mean_mae"].iloc[0])
     ax.axvline(107, color="black", linewidth=1.1, linestyle=":", zorder=3)

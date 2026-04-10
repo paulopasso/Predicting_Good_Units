@@ -511,18 +511,19 @@ def notebook_04():
         im = ax.imshow(rank_pivot.to_numpy(dtype=float), cmap="YlGn_r", vmin=1, vmax=max(len(rank_pivot), 1), aspect="auto")
         ax.grid(False)
         ax.set_xticks(range(rank_pivot.shape[1]))
-        ax.set_xticklabels(rank_pivot.columns.astype(str).tolist(), rotation=0)
+        ax.set_xticklabels(rank_pivot.columns.astype(str).tolist(), rotation=0, fontsize=11)
         ax.set_yticks(range(rank_pivot.shape[0]))
-        ax.set_yticklabels(rank_pivot.index.tolist())
-        ax.set_xlabel("Recording-disjoint seed")
-        ax.set_title("Rank by seed across the five main compared `fpos` models\\n(20 recording-disjoint seeds, 42-61; 1 = best `R²`)", pad=10)
+        ax.set_yticklabels(rank_pivot.index.tolist(), fontsize=11)
+        ax.set_xlabel("Recording-disjoint seed", fontsize=12)
+        ax.set_title("Rank by seed across the five main compared `fpos` models\\n(20 recording-disjoint seeds, 42-61; 1 = best `R²`)", pad=10, fontsize=13)
         for row_idx, row_label in enumerate(rank_pivot.index):
             for col_idx, col_label in enumerate(rank_pivot.columns):
                 value = rank_pivot.loc[row_label, col_label]
                 if pd.notna(value):
-                    ax.text(col_idx, row_idx, int(value), ha="center", va="center", fontsize=8)
+                    ax.text(col_idx, row_idx, int(value), ha="center", va="center", fontsize=9)
         cbar = fig.colorbar(im, ax=ax, fraction=0.03, pad=0.02)
-        cbar.set_label("Rank")
+        cbar.set_label("Rank", fontsize=11)
+        cbar.ax.tick_params(labelsize=10)
         fig.tight_layout()
         save_figure(fig, fig_dir, "fpos_seed_rank_heatmap")
         fig
@@ -854,18 +855,19 @@ def notebook_05():
         im = ax.imshow(rank_pivot.to_numpy(dtype=float), cmap="YlGn_r", vmin=1, vmax=max(len(rank_pivot), 1), aspect="auto")
         ax.grid(False)
         ax.set_xticks(range(rank_pivot.shape[1]))
-        ax.set_xticklabels(rank_pivot.columns.astype(str).tolist(), rotation=0)
+        ax.set_xticklabels(rank_pivot.columns.astype(str).tolist(), rotation=0, fontsize=11)
         ax.set_yticks(range(rank_pivot.shape[0]))
-        ax.set_yticklabels(rank_pivot.index.tolist())
-        ax.set_xlabel("Recording-disjoint seed")
-        ax.set_title("Rank by seed across the three main compared `fmiss` models\\n(20 recording-disjoint seeds, 42-61; 1 = best `R²`)", pad=10)
+        ax.set_yticklabels(rank_pivot.index.tolist(), fontsize=11)
+        ax.set_xlabel("Recording-disjoint seed", fontsize=12)
+        ax.set_title("Rank by seed across the three main compared `fmiss` models\\n(20 recording-disjoint seeds, 42-61; 1 = best `R²`)", pad=10, fontsize=13)
         for row_idx, row_label in enumerate(rank_pivot.index):
             for col_idx, col_label in enumerate(rank_pivot.columns):
                 value = rank_pivot.loc[row_label, col_label]
                 if pd.notna(value):
-                    ax.text(col_idx, row_idx, int(value), ha="center", va="center", fontsize=8)
+                    ax.text(col_idx, row_idx, int(value), ha="center", va="center", fontsize=9)
         cbar = fig.colorbar(im, ax=ax, fraction=0.035, pad=0.02)
-        cbar.set_label("Rank")
+        cbar.set_label("Rank", fontsize=11)
+        cbar.ax.tick_params(labelsize=10)
         fig.tight_layout()
         save_figure(fig, fig_dir, "fmiss_seed_rank_heatmap")
         fig

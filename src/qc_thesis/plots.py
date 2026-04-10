@@ -563,7 +563,7 @@ def plot_fpos_shap_top(df: pd.DataFrame, top_n: int = 15):
             f"{val:.3f}",
             va="center",
             ha="left",
-            fontsize=8.5,
+            fontsize=9.5,
             color="#333333",
         )
     present_groups = list(dict.fromkeys(plot_df["feature_group"].tolist()))
@@ -574,11 +574,12 @@ def plot_fpos_shap_top(df: pd.DataFrame, top_n: int = 15):
             Patch(facecolor=GROUP_COLORS[group], label=feature_group_display(group))
             for group in present_groups
         ]
-        ax.legend(handles=legend_handles, loc="lower right", fontsize=8)
-    ax.set_xlabel("Mean |SHAP| across LOFO runs")
+        ax.legend(handles=legend_handles, loc="lower right", fontsize=9)
+    ax.tick_params(axis="both", labelsize=11)
+    ax.set_xlabel("Mean |SHAP| across LOFO runs", fontsize=12)
     ax.set_title(
         f"Top SHAP features across LOFO runs\n{WAVEFORM_AUGMENTED_LABEL}",
-        fontsize=13,
+        fontsize=14,
         fontweight="bold",
     )
     ax.set_xlim(right=max_x + (4.5 * label_pad))

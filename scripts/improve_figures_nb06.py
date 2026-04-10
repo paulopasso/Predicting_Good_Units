@@ -212,13 +212,14 @@ for idx, (bar, val) in enumerate(zip(bars, plot_shap["mean_abs_shap"])):
         val + err + label_pad_top,
         bar.get_y() + bar.get_height() / 2,
         f"{val:.3f}",
-        va="center", ha="left", fontsize=7.5, color="#444444",
+        va="center", ha="left", fontsize=8.5, color="#444444",
     )
 
-ax.set_xlabel("Mean |SHAP| across LOFO runs", fontsize=11)
+ax.tick_params(axis="both", labelsize=10)
+ax.set_xlabel("Mean |SHAP| across LOFO runs", fontsize=12)
 ax.set_title(
     "Top SHAP features across LOFO runs\nWaveform-augmented stack",
-    fontsize=13,
+    fontsize=14,
     fontweight="bold",
     pad=10,
 )
@@ -233,7 +234,7 @@ legend_patches = [
     if g in present_groups
 ]
 ax.legend(handles=legend_patches, loc="lower right", framealpha=0.9,
-          title="Feature group", title_fontsize=8.5)
+          title="Feature group", title_fontsize=9.5, fontsize=9)
 
 fig.tight_layout()
 out = FIG_DIR / "fpos_shap_top.png"
