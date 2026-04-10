@@ -4,5 +4,5 @@ stage,model,r2,mae
 3  source transfer,Hybrid-only XGBoost,-1.816164839466413,0.2933808211172917
 4  paired context,Paired-only context,0.41875445265987,0.1337293038912158
 5  context stacking,Context-first source stack,0.3972832018566536,0.1328901663272017
-6  + unlabeled paired,Pre-waveform unlabeled structure,0.406761955611441,0.1301866712108471
-7  + waveform embedding,Waveform-augmented structure,0.3906053969147798,0.1316994613076213
+6  + unlabeled paired,Trust-filtered unlabeled stack,0.406761955611441,0.1301866712108471
+7  + waveform embedding,Waveform-augmented stack,0.3906053969147798,0.1316994613076213

@@ -1,0 +1,21 @@
+seed,recipe_id,label,r2,mae,rank
+42,fmiss_reduced_latent,Reduced-latent context,0.3764629523481959,0.1719452413726764,1
+43,fmiss_reduced_latent,Reduced-latent context,0.3261527873244186,0.1685984108362593,1
+44,fmiss_reduced_latent,Reduced-latent context,0.5021350796357829,0.1562523941300778,1
+45,fmiss_reduced_latent,Reduced-latent context,-0.2169903084514204,0.2230685941968376,1
+46,fmiss_paired_raw,Paired-only raw,-0.1065120816236628,0.2472760903458684,1
+47,fmiss_reduced_latent,Reduced-latent context,0.2184633161454372,0.1951226372098582,1
+48,fmiss_paired_context,Paired-only context,0.0329256608092823,0.195481034695692,1
+49,fmiss_paired_context,Paired-only context,-0.0553860023887977,0.2188214347103554,1
+50,fmiss_paired_context,Paired-only context,0.0328535898253495,0.2059097880919834,1
+51,fmiss_paired_raw,Paired-only raw,0.1468000941635434,0.2128690630044128,1
+52,fmiss_reduced_latent,Reduced-latent context,-0.0095968832950426,0.2091134070954569,1
+53,fmiss_reduced_latent,Reduced-latent context,-0.0076292465750433,0.2205690126172292,1
+54,fmiss_paired_context,Paired-only context,0.3146234801759164,0.1686272526135345,1
+55,fmiss_reduced_latent,Reduced-latent context,0.0164354471684787,0.1989799280871882,1
+56,fmiss_paired_context,Paired-only context,-0.1441136306106363,0.2172361891520899,1
+57,fmiss_paired_raw,Paired-only raw,-0.1197548257508311,0.2325497523160916,1
+58,fmiss_reduced_latent,Reduced-latent context,-0.0961135364759278,0.2135483061303291,1
+59,fmiss_reduced_latent,Reduced-latent context,0.0086160901141187,0.2087899436907773,1
+60,fmiss_paired_raw,Paired-only raw,-0.1348318695282835,0.2294914206222269,1
+61,fmiss_reduced_latent,Reduced-latent context,0.1868211328639587,0.1871266912135855,1

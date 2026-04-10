@@ -1,6 +1,6 @@
-held_out_family,best_recipe_id,best_label,best_r2,best_mae,family_rank
-PAIRED_BOYDEN,fpos_waveform_winner,Waveform-augmented structure,0.1379733842148397,0.0820648381905657,1
-PAIRED_CRCNS_HC1,fpos_paired_context,Paired-only context,0.4487131786300233,0.1859902096712997,1
-PAIRED_ENGLISH,fpos_context_stack,Context-first source stack,0.3978938868960953,0.1687575128473549,1
-PAIRED_KAMPFF,fpos_waveform_winner,Waveform-augmented structure,0.7124856203631504,0.0911132626220855,1
-PAIRED_MEA64C_YGER,fpos_waveform_winner,Waveform-augmented structure,0.3321424764370461,0.071282893620574,1
+held_out_family,best_recipe_id,best_label,best_r2,best_r2_std,best_mae,best_mae_std,family_rank
+PAIRED_BOYDEN,fpos_waveform_winner,Waveform-augmented stack,0.1379733842148397,0.0536260289729538,0.0820648381905657,0.003492954819131,1
+PAIRED_CRCNS_HC1,fpos_paired_context,Paired-only context,0.4487131786300233,0.0369365445483603,0.1859902096712997,0.0065075435277898,1
+PAIRED_ENGLISH,fpos_context_stack,Context-first source stack,0.3978938868960953,0.0652189227228796,0.1687575128473549,0.009971713142422,1
+PAIRED_KAMPFF,fpos_waveform_winner,Waveform-augmented stack,0.7124856203631504,0.0359208259655702,0.0911132626220855,0.0089193308889551,1
+PAIRED_MEA64C_YGER,fpos_waveform_winner,Waveform-augmented stack,0.3321424764370461,0.1091215307226192,0.071282893620574,0.0066291065394761,1

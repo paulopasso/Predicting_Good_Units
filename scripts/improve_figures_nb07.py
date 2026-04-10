@@ -23,6 +23,7 @@ FIG_DIR = REPO / "figures" / "07_limitations_and_data_budget"
 FIG_DIR.mkdir(parents=True, exist_ok=True)
 
 TABLE_DIR = REPO / "tables" / "07_limitations_and_data_budget"
+WAVEFORM_BUDGET_SUMMARY = TABLE_DIR / "fpos_waveform_label_budget_summary.csv"
 
 # ---------------------------------------------------------------------------
 # Load data
@@ -161,128 +162,208 @@ plot_label_budget_single("fmiss", C_FMISS, "label_budget_fmiss")
 
 
 # ---------------------------------------------------------------------------
-# 2. label_budget_combined.png — fpos and fmiss R² on the same axes
+# 2. label_budget_combined.png — fpos label-budget curve on the fixed split
 # ---------------------------------------------------------------------------
 def plot_label_budget_combined() -> None:
-    fig, ax = plt.subplots(figsize=(9.2, 5.4))
+    if WAVEFORM_BUDGET_SUMMARY.exists():
+        df = pd.read_csv(WAVEFORM_BUDGET_SUMMARY).sort_values("budget_rows").reset_index(drop=True)
+        xs = df["budget_rows"].to_numpy(dtype=float)
+        ys_r2 = df["mean_r2"].to_numpy(dtype=float)
+        sds_r2 = df["std_r2"].to_numpy(dtype=float)
+        ys_mae = df["mean_mae"].to_numpy(dtype=float)
 
-    cfg = [
-        ("fpos",  C_FPOS,  "contextual_paired_only_lightgbm",     "fpos (paired-only context)"),
-        ("fmiss", C_FMISS, "contextual_paired_only_lightgbm",     "fmiss (paired-only context)"),
-    ]
+        fig, ax = plt.subplots(figsize=(9.4, 5.6))
+        ax_mae = ax.twinx()
+        color_r2 = "#1B7F3B"
+        color_mae = C_FMISS
 
-    all_xs = []
-    endpoint_meta = []
-    point_label_offsets = {
-        "fpos": {20: 0.05, 60: 0.04, 107: 0.0},
-        "fmiss": {20: 0.05, 60: 0.04, 107: 0.0},
-    }
-
-    for target, color, vid, label in cfg:
-        df = budget[(budget["target"] == target) & (budget["variant_id"] == vid)].copy()
-        df = df.sort_values("budget_rows")
-        xs  = df["budget_rows"].values.astype(float)
-        ys  = df["mean_r2"].values
-        sds = df["std_r2"].values
-        all_xs.extend(xs.tolist())
-
-        ax.plot(xs, ys, marker="o", linewidth=2.2, markersize=7, color=color, label=label)
-        mask = sds > 0
+        r2_line = ax.plot(xs, ys_r2, marker="o", linewidth=2.4, markersize=7, color=color_r2, label="Mean R²")[0]
+        mae_line = ax_mae.plot(xs, ys_mae, marker="s", linewidth=2.1, markersize=6, color=color_mae, linestyle="--", label="Mean MAE")[0]
+        mask = sds_r2 > 0
         if mask.any():
-            ax.fill_between(xs[mask], ys[mask] - sds[mask], ys[mask] + sds[mask],
-                            color=color, alpha=0.15)
-        for x, y in zip(xs, ys):
+            ax.fill_between(xs[mask], ys_r2[mask] - sds_r2[mask], ys_r2[mask] + sds_r2[mask], color=color_r2, alpha=0.15)
+
+        r2_offsets = {20: 0.05, 60: 0.04, 107: 0.0}
+        mae_offsets = {20: -0.010, 60: -0.008, 107: 0.008}
+        for x, y in zip(xs, ys_r2):
             if int(x) == CURRENT_N:
                 continue
-            dy = point_label_offsets.get(target, {}).get(int(x), 0.04)
             ax.text(
                 x,
-                y + dy,
+                y + r2_offsets.get(int(x), 0.04),
                 f"{y:.2f}",
-                color=color,
+                color=color_r2,
                 fontsize=8,
                 ha="center",
                 va="bottom",
                 bbox=dict(boxstyle="round,pad=0.18", facecolor="white", edgecolor="none", alpha=0.75),
             )
-        endpoint_meta.append({"target": target, "color": color, "label": label, "x": xs[-1], "y": ys[-1]})
+        for x, y in zip(xs, ys_mae):
+            if int(x) == CURRENT_N:
+                continue
+            delta = mae_offsets.get(int(x), -0.008)
+            ax_mae.text(
+                x,
+                y + delta,
+                f"{y:.3f}",
+                color=color_mae,
+                fontsize=8,
+                ha="center",
+                va="top" if delta < 0 else "bottom",
+                bbox=dict(boxstyle="round,pad=0.18", facecolor="white", edgecolor="none", alpha=0.75),
+            )
 
-    x_min = min(all_xs) - 3
-    x_max = max(all_xs) + 7
+        x_min = float(xs.min()) - 3
+        x_max = float(xs.max()) + 7
+        ax.axhline(0, color=C_ZERO, linewidth=1.1, linestyle="--", zorder=1)
+        ax.fill_between([x_min, x_max], [0, 0], [-1.2, -1.2], color="#cccccc", alpha=0.25, zorder=0)
+        ax.text(
+            x_min + 2,
+            -0.07,
+            "below chance",
+            fontsize=8,
+            color=C_ZERO,
+            va="top",
+            style="italic",
+            bbox=dict(boxstyle="round,pad=0.18", facecolor="white", edgecolor="none", alpha=0.7),
+        )
 
-    # Below-zero shading
-    ax.axhline(0, color=C_ZERO, linewidth=1.1, linestyle="--", zorder=1)
-    ax.fill_between([x_min, x_max], [0, 0], [-1.2, -1.2],
-                    color="#cccccc", alpha=0.25, zorder=0, label="Below chance (R² < 0)")
-    ax.text(
-        x_min + 2,
-        -0.07,
-        "below chance",
-        fontsize=8,
-        color=C_ZERO,
-        va="top",
-        style="italic",
-        bbox=dict(boxstyle="round,pad=0.18", facecolor="white", edgecolor="none", alpha=0.7),
-    )
-
-    # Current operating point
-    ax.axvline(CURRENT_N, color="black", linewidth=1.1, linestyle=":", zorder=3)
-    ax.text(
-        CURRENT_N - 0.8,
-        0.565,
-        f"canonical split\nn={CURRENT_N}",
-        fontsize=8.2,
-        va="top",
-        ha="right",
-        color="black",
-        bbox=dict(boxstyle="round,pad=0.22", facecolor="white", edgecolor="#d0d0d0", alpha=0.9),
-    )
-
-    endpoint_offsets = {
-        "fpos": (1.8, 0.04),
-        "fmiss": (1.8, -0.02),
-    }
-    endpoint_align = {
-        "fpos": ("left", "bottom"),
-        "fmiss": ("left", "top"),
-    }
-    for meta in endpoint_meta:
-        dx, dy = endpoint_offsets.get(meta["target"], (1.8, 0.0))
-        ha, va = endpoint_align.get(meta["target"], ("left", "center"))
+        final_r2 = float(df.loc[df["budget_rows"] == CURRENT_N, "mean_r2"].iloc[0])
+        final_mae = float(df.loc[df["budget_rows"] == CURRENT_N, "mean_mae"].iloc[0])
+        ax.axvline(CURRENT_N, color="black", linewidth=1.1, linestyle=":", zorder=3)
+        ax.text(
+            CURRENT_N - 0.8,
+            max(0.565, final_r2 + 0.08),
+            f"fixed split\nseed 42\nn={CURRENT_N}",
+            fontsize=8.2,
+            va="top",
+            ha="right",
+            color="black",
+            bbox=dict(boxstyle="round,pad=0.22", facecolor="white", edgecolor="#d0d0d0", alpha=0.9),
+        )
         ax.annotate(
-            f"{meta['label']}\nR²={meta['y']:.2f}",
-            xy=(meta["x"], meta["y"]),
-            xytext=(meta["x"] + dx, meta["y"] + dy),
+            f"Waveform-augmented stack\nR²={final_r2:.2f}",
+            xy=(CURRENT_N, final_r2),
+            xytext=(CURRENT_N + 1.4, final_r2 + 0.04),
             textcoords="data",
             fontsize=8.5,
             fontweight="bold",
-            color=meta["color"],
-            ha=ha,
-            va=va,
-            bbox=dict(boxstyle="round,pad=0.22", facecolor="white", edgecolor=meta["color"], alpha=0.92),
-            arrowprops=dict(arrowstyle="-", color=meta["color"], lw=1.0, shrinkA=0, shrinkB=4),
+            color=color_r2,
+            ha="left",
+            va="bottom",
+            bbox=dict(boxstyle="round,pad=0.22", facecolor="white", edgecolor=color_r2, alpha=0.92),
+        )
+        ax_mae.annotate(
+            f"MAE={final_mae:.3f}",
+            xy=(CURRENT_N, final_mae),
+            xytext=(CURRENT_N + 1.4, final_mae - 0.004),
+            textcoords="data",
+            fontsize=8.3,
+            fontweight="bold",
+            color=color_mae,
+            ha="left",
+            va="top",
+            bbox=dict(boxstyle="round,pad=0.22", facecolor="white", edgecolor=color_mae, alpha=0.92),
         )
 
-    ax.set_xlim(x_min, x_max)
-    ax.set_xticks(sorted(set(all_xs)))
-    ax.set_ylim(-1.22, 0.58)
-    ax.set_xlabel("Number of labeled paired training rows", fontsize=11)
-    ax.set_ylabel("Mean R²", fontsize=11)
-    ax.set_title("Label efficiency of paired-only context models", fontsize=13, fontweight="bold")
-    ax.text(
-        0.02,
-        0.03,
-        "Low-budget points are 2-repeat means; n=107 is the canonical full-budget split.",
-        transform=ax.transAxes,
-        fontsize=7.5,
-        color="#666666",
-        ha="left",
-        va="bottom",
-    )
-    ax.legend(frameon=True, framealpha=0.88, loc="upper left")
+        ax.set_xlim(x_min, x_max)
+        ax.set_xticks(sorted(set(int(x) for x in xs.tolist())))
+        ax.set_ylim(-1.22, max(0.58, final_r2 + 0.12))
+        ax.set_xlabel("Number of labeled paired training rows", fontsize=11)
+        ax.set_ylabel("Mean R²", fontsize=11)
+        ax_mae.set_ylabel("Mean MAE", fontsize=11, color=color_mae)
+        ax_mae.tick_params(axis="y", colors=color_mae)
+        ax.set_title("Label efficiency of the fpos waveform-augmented stack", fontsize=13, fontweight="bold")
+        ax.legend(
+            handles=[r2_line, mae_line],
+            loc="lower left",
+            bbox_to_anchor=(0.015, 0.02),
+            ncol=2,
+            frameon=True,
+            framealpha=0.9,
+            borderaxespad=0.2,
+        )
+    else:
+        fig, ax = plt.subplots(figsize=(9.2, 5.4))
+        df = budget[(budget["target"] == "fpos") & (budget["variant_id"] == "contextual_paired_only_lightgbm")].copy().sort_values("budget_rows")
+        xs = df["budget_rows"].values.astype(float)
+        ys = df["mean_r2"].values
+        sds = df["std_r2"].values
+
+        ax.plot(xs, ys, marker="o", linewidth=2.2, markersize=7, color=C_FPOS, label="fpos (paired-only context)")
+        mask = sds > 0
+        if mask.any():
+            ax.fill_between(xs[mask], ys[mask] - sds[mask], ys[mask] + sds[mask], color=C_FPOS, alpha=0.15)
+        for x, y in zip(xs, ys):
+            if int(x) == CURRENT_N:
+                continue
+            ax.text(
+                x,
+                y + {20: 0.05, 60: 0.04, 107: 0.0}.get(int(x), 0.04),
+                f"{y:.2f}",
+                color=C_FPOS,
+                fontsize=8,
+                ha="center",
+                va="bottom",
+                bbox=dict(boxstyle="round,pad=0.18", facecolor="white", edgecolor="none", alpha=0.75),
+            )
+        x_min = float(xs.min()) - 3
+        x_max = float(xs.max()) + 7
+        ax.axhline(0, color=C_ZERO, linewidth=1.1, linestyle="--", zorder=1)
+        ax.fill_between([x_min, x_max], [0, 0], [-1.2, -1.2], color="#cccccc", alpha=0.25, zorder=0)
+        ax.text(
+            x_min + 2,
+            -0.07,
+            "below chance",
+            fontsize=8,
+            color=C_ZERO,
+            va="top",
+            style="italic",
+            bbox=dict(boxstyle="round,pad=0.18", facecolor="white", edgecolor="none", alpha=0.7),
+        )
+        final_y = float(ys[-1])
+        ax.axvline(CURRENT_N, color="black", linewidth=1.1, linestyle=":", zorder=3)
+        ax.text(
+            CURRENT_N - 0.8,
+            0.565,
+            f"fixed split\nseed 42\nn={CURRENT_N}",
+            fontsize=8.2,
+            va="top",
+            ha="right",
+            color="black",
+            bbox=dict(boxstyle="round,pad=0.22", facecolor="white", edgecolor="#d0d0d0", alpha=0.9),
+        )
+        ax.annotate(
+            f"fpos (paired-only context)\nR²={final_y:.2f}",
+            xy=(CURRENT_N, final_y),
+            xytext=(CURRENT_N + 1.8, final_y + 0.04),
+            textcoords="data",
+            fontsize=8.5,
+            fontweight="bold",
+            color=C_FPOS,
+            ha="left",
+            va="bottom",
+            bbox=dict(boxstyle="round,pad=0.22", facecolor="white", edgecolor=C_FPOS, alpha=0.92),
+            arrowprops=dict(arrowstyle="-", color=C_FPOS, lw=1.0, shrinkA=0, shrinkB=4),
+        )
+        ax.set_xlim(x_min, x_max)
+        ax.set_xticks(sorted(set(xs)))
+        ax.set_ylim(-1.22, 0.58)
+        ax.set_xlabel("Number of labeled paired training rows", fontsize=11)
+        ax.set_ylabel("Mean R²", fontsize=11)
+        ax.set_title("Label efficiency of the fpos paired-only context model", fontsize=13, fontweight="bold")
+        ax.text(
+            0.02,
+            0.03,
+            "Fixed recording-disjoint split: seed 42. Low-budget points are 2-repeat subset means; n=107 is the full paired budget.",
+            transform=ax.transAxes,
+            fontsize=7.5,
+            color="#666666",
+            ha="left",
+            va="bottom",
+        )
 
     fig.tight_layout()
-
     out = FIG_DIR / "label_budget_combined.png"
     fig.savefig(out, dpi=200, bbox_inches="tight")
     plt.close(fig)

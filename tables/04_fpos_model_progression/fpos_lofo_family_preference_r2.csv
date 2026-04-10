@@ -1,4 +1,4 @@
-held_out_family,Paired-only raw,Paired-only context,Context-first source stack,Pre-waveform unlabeled structure,Waveform-augmented structure
+held_out_family,Paired-only raw,Paired-only context,Context-first source stack,Trust-filtered unlabeled stack,Waveform-augmented stack
 PAIRED_BOYDEN,0.002850434478905,-0.1658746148395879,0.1114478300432314,0.097686792145223,0.1379733842148397
 PAIRED_CRCNS_HC1,0.4333857872350893,0.4487131786300233,0.4249232101660216,0.4371736933969622,0.4275923287150074
 PAIRED_ENGLISH,0.2036131880937694,0.3086208609311038,0.3978938868960953,0.3878626572528211,0.3774252161234454

@@ -7,7 +7,7 @@ Some readers may notice that the canonical single-split \fmiss{} results look mu
 
 \section{Packaged Structure of the Paired Families}
 
-For convenience, \cref{tab:appendix-family-structure} restates the local structural summary of the paired families that underlies the family-preference discussion in the main text.
+For convenience, \cref{tab:appendix-family-structure} restates the local structural summary of the paired families that underlies the family-preference discussion in the main text. The packaged benchmark only retains a subset of the broader SpikeForest recordings available for each paired family, which is why the recording counts in the table are relatively low. In practice, only a subset of the available recordings had usable sorter outputs after extraction and audit, so the table reports the packaged benchmark structure rather than the full upstream family size.
 
 \begin{table}[htbp]
     \centering
@@ -15,20 +15,16 @@ For convenience, \cref{tab:appendix-family-structure} restates the local structu
     \label{tab:appendix-family-structure}
     \small
     \resizebox{\textwidth}{!}{
-    \begin{tabular}{@{}p{3.1cm}rrrrp{7.6cm}@{}}
+    \begin{tabular}{@{}p{2.8cm}rrrrrrp{4.4cm}p{5.7cm}@{}}
         \toprule
-        Family & Rows & Recordings & Labeled rows & PCA distance from hybrid & Context summary \\
+        Family & Rows & Available recordings & Packaged recordings & Sorters & Labeled rows & PCA distance from hybrid & Setting & Context summary \\
         \midrule
-        BOYDEN & 907 & 4 & 43 & 12.14 & 32-channel cortical subset, short recordings, moderate shift and low target mean. \\
-        CRCNS\_HC1 & 184 & 4 & 22 & 10.48 & Rat hippocampus, tiny labeled set, highest target variance in the package. \\
-        ENGLISH & 3,151 & 15 & 71 & 11.78 & Broadest packaged family, multiple regions and acquisition settings. \\
-        KAMPFF & 1,743 & 4 & 35 & 20.55 & Cortical subset with the largest centroid distance from hybrid and strongest waveform gain. \\
-        MEA64C\_YGER & 2,997 & 4 & 36 & 5.23 & Short retina MEA recordings, comparatively compact and homogeneous. \\
+        BOYDEN \parencite{doi:10.1152/jn.00650.2017} & 907 & 19 & 4 & 8 & 43 & 12.14 & Paired ground truth with extracellular recordings, in vivo & 32-channel cortical subset, short recordings, moderate shift and low target mean. \\
+        CRCNS\_HC1 \parencite{doi:10.1152/jn.2000.84.1.401} & 184 & 93 & 4 & 8 & 22 & 10.48 & Paired ground truth with extracellular recordings, in vivo & Rat hippocampus, tiny labeled set, highest target variance in the package. \\
+        ENGLISH \parencite{Magland2020} & 3,151 & 29 & 15 & 7 & 71 & 11.78 & Paired ground truth with extracellular recordings, in vivo & Broadest packaged family, multiple regions and acquisition settings. \\
+        KAMPFF \parencite{Neto2016Paired} & 1,743 & 15 & 4 & 8 & 35 & 20.55 & Paired ground truth with extracellular recordings, in vivo & Cortical subset with the largest centroid distance from hybrid and strongest waveform gain. \\
+        MEA64C\_YGER \parencite{10.7554/eLife.34518} & 2,997 & 18 & 4 & 9 & 36 & 5.23 & Paired ground truth with extracellular recordings, ex vivo & Short retina MEA recordings, comparatively compact and homogeneous. \\
         \bottomrule
     \end{tabular}
     }
 \end{table}
-
-\section{Reproducibility Note}
-
-The thesis figures and tables are generated from frozen notebook outputs and tracked CSV files in the repository. The manuscript deliberately cites those frozen outputs rather than rerunning exploratory experiments during writing. This keeps the document aligned with the packaged state of the project and ensures that the narrative remains reproducible even when the repository evolves later.

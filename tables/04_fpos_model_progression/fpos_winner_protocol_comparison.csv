@@ -1,3 +1,3 @@
 model,protocol,r2,mae,delta_r2_vs_recording,delta_mae_vs_recording
-Waveform-augmented structure,recording_disjoint_main,0.3906053969147798,0.1316994613076213,0.0,0.0
-Waveform-augmented structure,family_disjoint_lofo,0.3975238051706978,0.1198672161323783,0.006918408255917996,-0.011832245175243006
+Waveform-augmented stack,recording_disjoint_main,0.3906053969147798,0.1316994613076213,0.0,0.0
+Waveform-augmented stack,family_disjoint_lofo,0.3975238051706978,0.1198672161323783,0.006918408255917996,-0.011832245175243006

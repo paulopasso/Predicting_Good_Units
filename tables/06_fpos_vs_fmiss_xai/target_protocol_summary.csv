@@ -1,5 +1,5 @@
 target,protocol,label,r2,mae
 fpos,recording_disjoint,Paired-only raw,0.4208807903133641,0.130419819739609
-fpos,family_held_out,Waveform-augmented structure,0.3975238051706978,0.1198672161323782
+fpos,family_held_out,Waveform-augmented stack,0.3975238051706978,0.1198672161323782
 fmiss,recording_disjoint,Reduced-latent context,-0.0128119712077846,0.2101363445110688
 fmiss,family_held_out,Paired-only raw,-0.3672797072300944,0.2396808708669718

@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 
 from .paths import (
+    PRE_WAVEFORM_LABEL,
     THESIS_ROOT,
     WAVEFORM_AUGMENTED_LABEL,
     REDUCED_LATENT_CONTEXT_LABEL,
@@ -46,7 +47,7 @@ THESIS_HIGHLIGHT_FAMILY_COLORS = {
 THESIS_HIGHLIGHT_MODEL_COLORS = {
     "Paired-only raw": "#444444",
     "Paired-only context": "#2E6DA4",
-    "Pre-waveform unlabeled structure": "#44AA99",
+    PRE_WAVEFORM_LABEL: "#44AA99",
     WAVEFORM_AUGMENTED_LABEL: "#117733",
     "Waveform winner": "#117733",
     "Context-first source stack": "#888888",
@@ -55,7 +56,7 @@ THESIS_HIGHLIGHT_MODEL_COLORS = {
 THESIS_HIGHLIGHT_MODEL_SHORT = {
     "Paired-only raw": "Raw",
     "Paired-only context": "Context",
-    "Pre-waveform unlabeled structure": "Pre-wave",
+    PRE_WAVEFORM_LABEL: "Trust-filtered",
     WAVEFORM_AUGMENTED_LABEL: "Waveform+",
     "Waveform winner": "Waveform+",
     "Context-first source stack": "Ctx-stack",
@@ -83,7 +84,7 @@ LABEL_SHORT = {
     "Context-first source stack": "Context stack",
     "Best SSL neural": "SSL",
     "Best MMD neural": "MMD",
-    "Pre-waveform unlabeled structure": "Pseudo+anchor",
+    PRE_WAVEFORM_LABEL: "Trust-filtered",
     WAVEFORM_AUGMENTED_LABEL: "Waveform+",
     "Waveform winner": "Waveform+",
     "Calibrated hybrid": "Hybrid calibrated",
@@ -107,7 +108,7 @@ BENCHMARK_MODEL_COLORS = {
     "Context-first source stack": "#4EA1D3",
     "Source-reweighted full context": "#6BAED6",
     "Embed-nommd full context": "#1B9E77",
-    "Pre-waveform unlabeled structure": "#2A9D8F",
+    PRE_WAVEFORM_LABEL: "#2A9D8F",
     WAVEFORM_AUGMENTED_LABEL: "#1B7F3B",
     "Waveform winner": "#1B7F3B",
     REDUCED_LATENT_CONTEXT_LABEL: "#7B61FF",
@@ -539,9 +540,32 @@ def plot_fpos_shap_top(df: pd.DataFrame, top_n: int = 15):
     plot_df["feature_group"] = plot_df["feature"].map(_feature_group)
     colors = [GROUP_COLORS.get(group, PALETTE["grey"]) for group in plot_df["feature_group"]]
     fig, ax = plt.subplots(figsize=(8.8, max(4.5, 0.38 * len(plot_df))))
-    bars = ax.barh(plot_df["feature"], plot_df["mean_abs_shap"], color=colors, edgecolor="white", linewidth=0.7)
+    xerr = plot_df["std_abs_shap"].to_numpy(dtype=float) if "std_abs_shap" in plot_df.columns else None
+    max_x = float(np.max(plot_df["mean_abs_shap"] + (plot_df["std_abs_shap"] if "std_abs_shap" in plot_df.columns else 0.0)))
+    label_pad = max(max_x * 0.015, 0.004)
+    bars = ax.barh(
+        plot_df["feature"],
+        plot_df["mean_abs_shap"],
+        xerr=xerr,
+        color=colors,
+        edgecolor="white",
+        linewidth=0.7,
+        error_kw={"ecolor": "#444444", "elinewidth": 0.8, "capsize": 2.0},
+    )
     _clean_axes(ax, grid_axis="x")
-    _annotate_barh(ax, bars, plot_df["mean_abs_shap"].tolist())
+    label_positions = plot_df["mean_abs_shap"].to_numpy(dtype=float)
+    if xerr is not None:
+        label_positions = label_positions + xerr
+    for bar, xpos, val in zip(bars, label_positions, plot_df["mean_abs_shap"].tolist()):
+        ax.text(
+            float(xpos) + label_pad,
+            bar.get_y() + bar.get_height() / 2,
+            f"{val:.3f}",
+            va="center",
+            ha="left",
+            fontsize=8.5,
+            color="#333333",
+        )
     present_groups = list(dict.fromkeys(plot_df["feature_group"].tolist()))
     if present_groups:
         from matplotlib.patches import Patch
@@ -551,8 +575,13 @@ def plot_fpos_shap_top(df: pd.DataFrame, top_n: int = 15):
             for group in present_groups
         ]
         ax.legend(handles=legend_handles, loc="lower right", fontsize=8)
-    ax.set_xlabel("Mean |SHAP|")
-    ax.set_title("Top SHAP features\nWaveform-augmented structure (fpos_waveform_winner)")
+    ax.set_xlabel("Mean |SHAP| across LOFO runs")
+    ax.set_title(
+        f"Top SHAP features across LOFO runs\n{WAVEFORM_AUGMENTED_LABEL}",
+        fontsize=13,
+        fontweight="bold",
+    )
+    ax.set_xlim(right=max_x + (4.5 * label_pad))
     fig.tight_layout()
     return fig, ax
 
@@ -565,10 +594,10 @@ def plot_target_asymmetry(joined: pd.DataFrame):
     plot_df = plot_df.sort_values("r2_gap", ascending=False)
     family_colors = [FAMILY_COLORS.get(fam, PALETTE["blue"]) for fam in plot_df["family"]]
     axes[0].barh(plot_df["family"], plot_df["fpos_r2"], color=family_colors, edgecolor="white", linewidth=0.7)
-    axes[0].set_title("Best `fpos` R² by family")
+    axes[0].set_title("`fpos` R² by held-out family")
     axes[0].set_xlabel("R²")
     axes[1].barh(plot_df["family"], plot_df["fmiss_r2"], color=family_colors, edgecolor="white", linewidth=0.7)
-    axes[1].set_title("Best `fmiss` R² by family")
+    axes[1].set_title("`fmiss` R² by held-out family")
     axes[1].set_xlabel("R²")
     limits = np.array([
         pd.to_numeric(plot_df["fpos_r2"], errors="coerce").min(),
@@ -589,7 +618,7 @@ def plot_target_asymmetry(joined: pd.DataFrame):
             align = "left" if x >= 0 else "right"
             offset = 0.015 * limit if limit else 0.01
             ax.text(x + (offset if x >= 0 else -offset), y, f"{x:.2f}", va="center", ha=align, fontsize=8, color="#334155")
-    fig.suptitle("Target asymmetry across paired families")
+    fig.suptitle("Target asymmetry under unseen-family extrapolation")
     fig.tight_layout()
     return fig, axes
 

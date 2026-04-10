@@ -16,7 +16,7 @@ if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
 from qc_thesis.highlight_figures import build_highlight_figures
-from qc_thesis.paths import REDUCED_LATENT_CONTEXT_LABEL, WAVEFORM_AUGMENTED_LABEL
+from qc_thesis.paths import PRE_WAVEFORM_LABEL, REDUCED_LATENT_CONTEXT_LABEL, WAVEFORM_AUGMENTED_LABEL
 
 
 def md(text: str):
@@ -462,8 +462,8 @@ def notebook_04():
             {"stage": "3  source transfer", "model": "Hybrid-only XGBoost", "r2": float(benchmark.loc[benchmark["recipe_id"] == "fpos_hybrid_only", "r2"].iloc[0]), "mae": float(benchmark.loc[benchmark["recipe_id"] == "fpos_hybrid_only", "mae"].iloc[0])},
             {"stage": "4  paired context", "model": "Paired-only context", "r2": float(benchmark.loc[benchmark["recipe_id"] == "fpos_paired_context", "r2"].iloc[0]), "mae": float(benchmark.loc[benchmark["recipe_id"] == "fpos_paired_context", "mae"].iloc[0])},
             {"stage": "5  context stacking", "model": "Context-first source stack", "r2": float(benchmark.loc[benchmark["recipe_id"] == "fpos_context_stack", "r2"].iloc[0]), "mae": float(benchmark.loc[benchmark["recipe_id"] == "fpos_context_stack", "mae"].iloc[0])},
-            {"stage": "6  + unlabeled paired", "model": "Pre-waveform unlabeled structure", "r2": float(benchmark.loc[benchmark["recipe_id"] == "fpos_pre_waveform_unlabeled", "r2"].iloc[0]), "mae": float(benchmark.loc[benchmark["recipe_id"] == "fpos_pre_waveform_unlabeled", "mae"].iloc[0])},
-            {"stage": "7  + waveform embedding", "model": "Waveform-augmented structure", "r2": float(benchmark.loc[benchmark["recipe_id"] == "fpos_waveform_winner", "r2"].iloc[0]), "mae": float(benchmark.loc[benchmark["recipe_id"] == "fpos_waveform_winner", "mae"].iloc[0])},
+            {"stage": "6  + unlabeled paired", "model": "Trust-filtered unlabeled stack", "r2": float(benchmark.loc[benchmark["recipe_id"] == "fpos_pre_waveform_unlabeled", "r2"].iloc[0]), "mae": float(benchmark.loc[benchmark["recipe_id"] == "fpos_pre_waveform_unlabeled", "mae"].iloc[0])},
+            {"stage": "7  + waveform embedding", "model": "Waveform-augmented stack", "r2": float(benchmark.loc[benchmark["recipe_id"] == "fpos_waveform_winner", "r2"].iloc[0]), "mae": float(benchmark.loc[benchmark["recipe_id"] == "fpos_waveform_winner", "mae"].iloc[0])},
         ])
         display(milestone)
         save_table(milestone, table_dir, "fpos_milestone_trajectory")
@@ -490,7 +490,7 @@ def notebook_04():
         - The source-only transfer baseline reaches **R² {source_only_row['r2']:.4f}**.
         - The best **mean R²** in the full ladder is **{top_mean_row['label']}** at **{top_mean_row['r2']:.4f}**.
         - Across the competitive late-wave recipes, the best **mean seed rank** is **{best_rank_row['label']}** (mean rank **{best_rank_row['mean_rank']:.2f}**, **{int(best_rank_row['winner_count'])}** seed wins).
-        - The recipe named **`Waveform-augmented structure`** is still competitive (mean rank **{waveform_rank_row['mean_rank']:.2f}**, **{int(waveform_rank_row['winner_count'])}** seed wins), but the 20-seed sweep says the story is **regime-dependent rather than dominated by one universally best recipe**.
+        - The recipe named **`Waveform-augmented stack`** is still competitive (mean rank **{waveform_rank_row['mean_rank']:.2f}**, **{int(waveform_rank_row['winner_count'])}** seed wins), but the 20-seed sweep says the story is **regime-dependent rather than dominated by one universally best recipe**.
         \"\"\"
         ))
         """),
@@ -515,7 +515,7 @@ def notebook_04():
         ax.set_yticks(range(rank_pivot.shape[0]))
         ax.set_yticklabels(rank_pivot.index.tolist())
         ax.set_xlabel("Recording-disjoint seed")
-        ax.set_title("Rank by seed across the five main compared `fpos` models\n(20 recording-disjoint seeds, 42-61; 1 = best `R²`)", pad=10)
+        ax.set_title("Rank by seed across the five main compared `fpos` models\\n(20 recording-disjoint seeds, 42-61; 1 = best `R²`)", pad=10)
         for row_idx, row_label in enumerate(rank_pivot.index):
             for col_idx, col_label in enumerate(rank_pivot.columns):
                 value = rank_pivot.loc[row_label, col_label]
@@ -573,7 +573,7 @@ def notebook_04():
         _Provenance._ These figures are thesis synthesis artifacts regenerated from frozen tables and aggregated seed metrics. They intentionally sit on top of the notebook analysis rather than replacing the exploratory cells above.
 
         - **Split regime map:** Seeds are ordered by clustered family-share composition rather than by one hand-picked family. The second panel now shows the leading-recipe `R²` together with target difficulty on the same seed order.
-        - **Raw vs waveform complementarity:** This figure compares `Paired-only raw` against `Waveform-augmented structure` directly at the seed level. The claim is intentionally narrow: waveform gains are regime-dependent and modestly associated with slightly higher KAMPFF share, slightly lower ENGLISH share, and lower target `IQR` rather than with one absolute “waveform-friendly family”.
+        - **Raw vs waveform complementarity:** This figure compares `Paired-only raw` against `Waveform-augmented stack` directly at the seed level. The claim is intentionally narrow: waveform gains are regime-dependent and modestly associated with slightly higher KAMPFF share, slightly lower ENGLISH share, and lower target `IQR` rather than with one absolute “waveform-friendly family”.
         """),
         code("""
         show_saved_figure(
@@ -613,27 +613,27 @@ def notebook_04():
         save_table(family_preference["r2_pivot"].reset_index(), table_dir, "fpos_lofo_family_preference_r2")
         """),
         code("""
-import matplotlib.pyplot as plt
+        import matplotlib.pyplot as plt
 
-family_r2 = family_preference["r2_pivot"].copy()
-fig, ax = plt.subplots(figsize=(8.4, 3.8))
-im = ax.imshow(family_r2.to_numpy(dtype=float), cmap="RdYlGn", vmin=-0.25, vmax=0.85, aspect="auto")
-ax.grid(False)
-ax.set_xticks(range(family_r2.shape[1]))
-ax.set_xticklabels(family_r2.columns.tolist(), rotation=24, ha="right")
-ax.set_yticks(range(family_r2.shape[0]))
-ax.set_yticklabels([name.replace("PAIRED_", "") for name in family_r2.index.tolist()])
-ax.set_title("Mean held-out-family `R²` across the five main compared `fpos` models\\n(20-seed leave-one-family-out aggregate)", pad=10)
-for row_idx, family_name in enumerate(family_r2.index):
-    for col_idx, label in enumerate(family_r2.columns):
-        value = family_r2.loc[family_name, label]
-        if pd.notna(value):
-            ax.text(col_idx, row_idx, f"{value:.2f}", ha="center", va="center", fontsize=8)
-cbar = fig.colorbar(im, ax=ax, fraction=0.03, pad=0.02)
-cbar.set_label("Mean R²")
-fig.tight_layout()
-save_figure(fig, fig_dir, "fpos_lofo_family_heatmap")
-fig
+        family_r2 = family_preference["r2_pivot"].copy()
+        fig, ax = plt.subplots(figsize=(8.4, 3.8))
+        im = ax.imshow(family_r2.to_numpy(dtype=float), cmap="RdYlGn", vmin=-0.25, vmax=0.85, aspect="auto")
+        ax.grid(False)
+        ax.set_xticks(range(family_r2.shape[1]))
+        ax.set_xticklabels(family_r2.columns.tolist(), rotation=24, ha="right")
+        ax.set_yticks(range(family_r2.shape[0]))
+        ax.set_yticklabels([name.replace("PAIRED_", "") for name in family_r2.index.tolist()])
+        ax.set_title("Mean held-out-family `R²` across the five main compared `fpos` models\\n(20-seed leave-one-family-out aggregate)", pad=10)
+        for row_idx, family_name in enumerate(family_r2.index):
+            for col_idx, label in enumerate(family_r2.columns):
+                value = family_r2.loc[family_name, label]
+                if pd.notna(value):
+                    ax.text(col_idx, row_idx, f"{value:.2f}", ha="center", va="center", fontsize=8)
+        cbar = fig.colorbar(im, ax=ax, fraction=0.03, pad=0.02)
+        cbar.set_label("Mean R²")
+        fig.tight_layout()
+        save_figure(fig, fig_dir, "fpos_lofo_family_heatmap")
+        fig
         """),
         code("""
         display(Markdown(
@@ -679,22 +679,22 @@ fig
         fig
         """),
         code("""
-recording_mean = (
-    waves["recording"]
-    .groupby(["label", "recording_key"], as_index=False)["r2"]
-    .mean()
-)
-top_rec, bottom_rec = build_extreme_groups_table(recording_mean[recording_mean["label"] == WAVEFORM_AUGMENTED_LABEL], group_col="recording_key", metric="r2", top_n=12)
-focus_recordings = pd.concat([top_rec, bottom_rec], ignore_index=True)["recording_key"].drop_duplicates().tolist()
-recording_focus = waves["recording"][waves["recording"]["recording_key"].isin(focus_recordings)].copy()
-display(top_rec)
-display(bottom_rec)
-save_table(top_rec, table_dir, "fpos_top_recordings")
-save_table(bottom_rec, table_dir, "fpos_worst_recordings")
-fig, _, rec_pivot = plot_group_metric(recording_focus, group_col="recording_key", metric="r2", title="`fpos` recording R² by model wave\\n(top/bottom recordings from 20 recording-disjoint seeds)")
-save_figure(fig, fig_dir, "fpos_top_recording_r2_by_wave")
-save_table(rec_pivot, table_dir, "fpos_recording_r2_pivot")
-fig
+        recording_mean = (
+            waves["recording"]
+            .groupby(["label", "recording_key"], as_index=False)["r2"]
+            .mean()
+        )
+        top_rec, bottom_rec = build_extreme_groups_table(recording_mean[recording_mean["label"] == WAVEFORM_AUGMENTED_LABEL], group_col="recording_key", metric="r2", top_n=12)
+        focus_recordings = pd.concat([top_rec, bottom_rec], ignore_index=True)["recording_key"].drop_duplicates().tolist()
+        recording_focus = waves["recording"][waves["recording"]["recording_key"].isin(focus_recordings)].copy()
+        display(top_rec)
+        display(bottom_rec)
+        save_table(top_rec, table_dir, "fpos_top_recordings")
+        save_table(bottom_rec, table_dir, "fpos_worst_recordings")
+        fig, _, rec_pivot = plot_group_metric(recording_focus, group_col="recording_key", metric="r2", title="`fpos` recording R² by model wave\\n(top/bottom recordings from 20 recording-disjoint seeds)")
+        save_figure(fig, fig_dir, "fpos_top_recording_r2_by_wave")
+        save_table(rec_pivot, table_dir, "fpos_recording_r2_pivot")
+        fig
         """),
         md("""
         ## 6. Split-specific robustness and diagnostics
@@ -780,7 +780,7 @@ fig
 
         - The 20-seed sweep does **not** support one universal `fpos` best recipe. The strongest late-wave recipe by mean seed rank is **{best_rank_row['label']}**, and several recipes lead on multiple individual seeds.
         - Family structure explains part of that instability: **English dominates local coverage, CRCNS_HC1 is tiny and high-variance, and the packaged subset is an uneven slice of the larger SpikeForest study sets**.
-        - On the harsher family-held-out protocol, the retained comparison shifts slightly toward **`Waveform-augmented structure`**, even though **{best_rank_row['label']}** remains the stronger robust reference on the recording-disjoint benchmark.
+        - On the harsher family-held-out protocol, the retained comparison shifts slightly toward **`Waveform-augmented stack`**, even though **{best_rank_row['label']}** remains the stronger robust reference on the recording-disjoint benchmark.
         - The waveform-augmented recipe still tracks the target reasonably on pooled holdout predictions (**MAE {winner_diag['mae']:.4f}**, correlation **{winner_diag['correlation']:.3f}**), but it should now be presented as a **regime-specific headline model**, not as an unconditional best recipe.
         \"\"\"
         ))
@@ -807,6 +807,8 @@ def notebook_05():
         fig_dir, table_dir = notebook_output_dirs("{stem}")
         benchmark = build_benchmark_progress_table("fmiss", scope="core")
         ablation_winners = build_ablation_winner_table("fmiss")
+        seed_ids = ["fmiss_paired_raw", "fmiss_paired_context", "fmiss_reduced_latent"]
+        seed_story = build_seed_rank_bundle("fmiss", seed_ids)
         wave_ids = ["fmiss_paired_raw", "fmiss_hybrid_only", "fmiss_paired_context", "fmiss_reduced_latent"]
         waves = build_main_wave_summary("fmiss", wave_ids)
         lofo_family = build_fmiss_lofo_main_family_preference_table()
@@ -834,6 +836,39 @@ def notebook_05():
             fig_dir / "fmiss_seed_stability.png",
             "The `fmiss` stability view shows why this target is the weaker transfer story: the central tendency stays much closer to break-even and the split-to-split variance is much larger.",
         )
+        show_saved_figure(
+            fig_dir / "fmiss_seed_rank_heatmap.png",
+            "This rank heatmap complements the violin plot by showing which of the three main compared `fmiss` models actually wins each of the 20 recording-disjoint seeds.",
+        )
+        """),
+        code("""
+        display(seed_story["summary"])
+        save_table(seed_story["summary"], table_dir, "fmiss_seed_rank_summary")
+        save_table(seed_story["winner_rows"], table_dir, "fmiss_seed_winner_by_split")
+        """),
+        code("""
+        import matplotlib.pyplot as plt
+
+        rank_pivot = seed_story["rank_pivot"].copy()
+        fig, ax = plt.subplots(figsize=(8.6, 2.9))
+        im = ax.imshow(rank_pivot.to_numpy(dtype=float), cmap="YlGn_r", vmin=1, vmax=max(len(rank_pivot), 1), aspect="auto")
+        ax.grid(False)
+        ax.set_xticks(range(rank_pivot.shape[1]))
+        ax.set_xticklabels(rank_pivot.columns.astype(str).tolist(), rotation=0)
+        ax.set_yticks(range(rank_pivot.shape[0]))
+        ax.set_yticklabels(rank_pivot.index.tolist())
+        ax.set_xlabel("Recording-disjoint seed")
+        ax.set_title("Rank by seed across the three main compared `fmiss` models\\n(20 recording-disjoint seeds, 42-61; 1 = best `R²`)", pad=10)
+        for row_idx, row_label in enumerate(rank_pivot.index):
+            for col_idx, col_label in enumerate(rank_pivot.columns):
+                value = rank_pivot.loc[row_label, col_label]
+                if pd.notna(value):
+                    ax.text(col_idx, row_idx, int(value), ha="center", va="center", fontsize=8)
+        cbar = fig.colorbar(im, ax=ax, fraction=0.035, pad=0.02)
+        cbar.set_label("Rank")
+        fig.tight_layout()
+        save_figure(fig, fig_dir, "fmiss_seed_rank_heatmap")
+        fig
         """),
         code("""
         winner_row = benchmark.sort_values("r2", ascending=False).iloc[0]
@@ -875,30 +910,30 @@ save_table(lofo_family["best"], table_dir, "fmiss_lofo_family_preference_best")
 save_table(lofo_family["r2_pivot"].reset_index(), table_dir, "fmiss_lofo_family_preference_r2")
         """),
         code("""
-import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
+        import matplotlib.pyplot as plt
+        import matplotlib.colors as mcolors
 
-family_r2 = lofo_family["r2_pivot"].copy()
-fig, ax = plt.subplots(figsize=(7.2, 3.8))
-norm = mcolors.TwoSlopeNorm(vmin=-1.10, vcenter=0.0, vmax=0.85)
-im = ax.imshow(family_r2.to_numpy(dtype=float), cmap="RdYlGn", norm=norm, aspect="auto")
-ax.grid(False)
-ax.set_xticks(range(family_r2.shape[1]))
-ax.set_xticklabels(family_r2.columns.tolist(), rotation=24, ha="right")
-ax.set_yticks(range(family_r2.shape[0]))
-ax.set_yticklabels([name.replace("PAIRED_", "") for name in family_r2.index.tolist()])
-ax.set_title("Mean held-out-family `R²` across the main compared `fmiss` models\\n(20-seed leave-one-family-out aggregate)", pad=10)
-for row_idx, family_name in enumerate(family_r2.index):
-    for col_idx, label in enumerate(family_r2.columns):
-        value = family_r2.loc[family_name, label]
-        if pd.notna(value):
-            text_color = "white" if abs(value) >= 0.72 else "black"
-            ax.text(col_idx, row_idx, f"{value:.2f}", ha="center", va="center", fontsize=8, color=text_color)
-cbar = fig.colorbar(im, ax=ax, fraction=0.035, pad=0.02)
-cbar.set_label("Mean R²")
-fig.tight_layout()
-save_figure(fig, fig_dir, "fmiss_lofo_family_heatmap")
-fig
+        family_r2 = lofo_family["r2_pivot"].copy()
+        fig, ax = plt.subplots(figsize=(7.2, 3.8))
+        norm = mcolors.TwoSlopeNorm(vmin=-1.10, vcenter=0.0, vmax=0.85)
+        im = ax.imshow(family_r2.to_numpy(dtype=float), cmap="RdYlGn", norm=norm, aspect="auto")
+        ax.grid(False)
+        ax.set_xticks(range(family_r2.shape[1]))
+        ax.set_xticklabels(family_r2.columns.tolist(), rotation=24, ha="right")
+        ax.set_yticks(range(family_r2.shape[0]))
+        ax.set_yticklabels([name.replace("PAIRED_", "") for name in family_r2.index.tolist()])
+        ax.set_title("Mean held-out-family `R²` across the main compared `fmiss` models\\n(20-seed leave-one-family-out aggregate)", pad=10)
+        for row_idx, family_name in enumerate(family_r2.index):
+            for col_idx, label in enumerate(family_r2.columns):
+                value = family_r2.loc[family_name, label]
+                if pd.notna(value):
+                    text_color = "white" if abs(value) >= 0.72 else "black"
+                    ax.text(col_idx, row_idx, f"{value:.2f}", ha="center", va="center", fontsize=8, color=text_color)
+        cbar = fig.colorbar(im, ax=ax, fraction=0.035, pad=0.02)
+        cbar.set_label("Mean R²")
+        fig.tight_layout()
+        save_figure(fig, fig_dir, "fmiss_lofo_family_heatmap")
+        fig
         """),
         md("""
         ### Additional recording-disjoint diagnostics
@@ -916,22 +951,22 @@ save_table(family_pivot, table_dir, "fmiss_family_r2_pivot")
 fig
         """),
         code("""
-recording_mean = (
-    waves["recording"]
-    .groupby(["label", "recording_key"], as_index=False)["r2"]
-    .mean()
-)
-top_rec, bottom_rec = build_extreme_groups_table(recording_mean[recording_mean["label"] == REDUCED_LATENT_CONTEXT_LABEL], group_col="recording_key", metric="r2", top_n=12)
-focus_recordings = pd.concat([top_rec, bottom_rec], ignore_index=True)["recording_key"].drop_duplicates().tolist()
-recording_focus = waves["recording"][waves["recording"]["recording_key"].isin(focus_recordings)].copy()
-display(top_rec)
-display(bottom_rec)
-save_table(top_rec, table_dir, "fmiss_top_recordings")
-save_table(bottom_rec, table_dir, "fmiss_worst_recordings")
-fig, _, rec_pivot = plot_group_metric(recording_focus, group_col="recording_key", metric="r2", title="`fmiss` recording R² by model wave\\n(top/bottom recordings from 20 recording-disjoint seeds)")
-save_figure(fig, fig_dir, "fmiss_top_recording_r2_by_wave")
-save_table(rec_pivot, table_dir, "fmiss_recording_r2_pivot")
-fig
+        recording_mean = (
+            waves["recording"]
+            .groupby(["label", "recording_key"], as_index=False)["r2"]
+            .mean()
+        )
+        top_rec, bottom_rec = build_extreme_groups_table(recording_mean[recording_mean["label"] == REDUCED_LATENT_CONTEXT_LABEL], group_col="recording_key", metric="r2", top_n=12)
+        focus_recordings = pd.concat([top_rec, bottom_rec], ignore_index=True)["recording_key"].drop_duplicates().tolist()
+        recording_focus = waves["recording"][waves["recording"]["recording_key"].isin(focus_recordings)].copy()
+        display(top_rec)
+        display(bottom_rec)
+        save_table(top_rec, table_dir, "fmiss_top_recordings")
+        save_table(bottom_rec, table_dir, "fmiss_worst_recordings")
+        fig, _, rec_pivot = plot_group_metric(recording_focus, group_col="recording_key", metric="r2", title="`fmiss` recording R² by model wave\\n(top/bottom recordings from 20 recording-disjoint seeds)")
+        save_figure(fig, fig_dir, "fmiss_top_recording_r2_by_wave")
+        save_table(rec_pivot, table_dir, "fmiss_recording_r2_pivot")
+        fig
         """),
         md("""
         ## 4. Dedicated reduced-latent context stack diagnostics
@@ -999,8 +1034,18 @@ def notebook_06():
         fig_dir, table_dir = notebook_output_dirs("{stem}")
         shap_df = load_fpos_shap_importance()
         shap_group_df = build_shap_group_summary()
-        fpos_family = build_family_summary("fpos_waveform_winner", "fpos", "recording_disjoint_main")
-        fmiss_family = build_family_summary("fmiss_reduced_latent", "fmiss", "recording_disjoint_main")
+        fpos_family = (
+            pd.read_csv(ROOT / "artifacts" / "aggregates" / "family_held_out" / "fpos" / "leave_one_family_main5_by_family.csv")
+            .query("recipe_id == 'fpos_waveform_winner'")
+            .rename(columns={"held_out_family": "study_set"})
+            .reset_index(drop=True)
+        )
+        fmiss_family = (
+            pd.read_csv(ROOT / "artifacts" / "aggregates" / "family_held_out" / "fmiss" / "leave_one_family_main3_by_family.csv")
+            .query("recipe_id == 'fmiss_paired_raw'")
+            .rename(columns={"held_out_family": "study_set"})
+            .reset_index(drop=True)
+        )
         asymmetry = build_target_asymmetry_table()
         fpos_progress = build_benchmark_progress_table("fpos", scope="core")
         fmiss_progress = build_benchmark_progress_table("fmiss", scope="core")
@@ -1015,7 +1060,7 @@ def notebook_06():
         display(shap_group_df)
         save_table(shap_df, table_dir, "fpos_shap_importance")
         save_table(shap_group_df, table_dir, "fpos_shap_group_summary")
-        fig, _ = plot_fpos_shap_top(shap_df, top_n=15)
+        fig, _ = plot_fpos_shap_top(shap_df, top_n=14)
         save_figure(fig, fig_dir, "fpos_shap_top")
         fig
         """),
@@ -1039,12 +1084,12 @@ def notebook_06():
         save_table(asymmetry, table_dir, "fpos_vs_fmiss_family_comparison")
         """),
         code("""
-        fig, _, _ = plot_group_metric(fpos_family, group_col="study_set", metric="r2", title="Best `fpos` family behavior")
+        fig, _, _ = plot_group_metric(fpos_family, group_col="study_set", metric="r2", title="Held-out-family `fpos` behavior")
         save_figure(fig, fig_dir, "fpos_family_behavior")
         fig
         """),
         code("""
-        fig, _, _ = plot_group_metric(fmiss_family, group_col="study_set", metric="r2", title="Best `fmiss` family behavior")
+        fig, _, _ = plot_group_metric(fmiss_family, group_col="study_set", metric="r2", title="Held-out-family `fmiss` behavior")
         save_figure(fig, fig_dir, "fmiss_family_behavior")
         fig
         """),
@@ -1132,7 +1177,7 @@ def notebook_07():
         code("""
         show_saved_figure(
             fig_dir / "label_budget_combined.png",
-            "The combined label-budget figure is the cleanest way to show both targets in the same small-data frame instead of reading two separate panels in isolation.",
+            "This label-budget figure isolates the `fpos` waveform-augmented stack on the fixed recording-disjoint split (seed 42), with `R²` on the left axis and `MAE` on the right; the `20` and `60` row points are two grouped-recording subset repeats.",
         )
         """),
         md("""

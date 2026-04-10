@@ -183,39 +183,46 @@ fmiss_fam  = pd.read_csv(TABLE_DIR / "fmiss_family_summary.csv")
 # ---------------------------------------------------------------------------
 # Figure 1: fpos_shap_top.png — top-20 features colored by group
 # ---------------------------------------------------------------------------
-TOP_N = 20
+TOP_N = 14
 plot_shap = shap_df.head(TOP_N).copy()
 plot_shap["group"] = plot_shap["feature"].apply(_assign_group)
 # Reverse so best feature is at top
 plot_shap = plot_shap.iloc[::-1].reset_index(drop=True)
 
 bar_colors = [GROUP_COLORS[g] for g in plot_shap["group"]]
+xerr_top = plot_shap["std_abs_shap"] if "std_abs_shap" in plot_shap.columns else None
+max_top_x = float((plot_shap["mean_abs_shap"] + (plot_shap["std_abs_shap"] if "std_abs_shap" in plot_shap.columns else 0.0)).max())
+label_pad_top = max(max_top_x * 0.015, 0.004)
 
 fig, ax = plt.subplots(figsize=(9, 7))
 bars = ax.barh(
     plot_shap["feature"],
     plot_shap["mean_abs_shap"],
+    xerr=xerr_top,
     color=bar_colors,
     edgecolor="white",
     linewidth=0.4,
+    error_kw={"ecolor": "#444444", "elinewidth": 0.8, "capsize": 2.0},
 )
 
 # Value labels on bars
-for bar, val in zip(bars, plot_shap["mean_abs_shap"]):
+for idx, (bar, val) in enumerate(zip(bars, plot_shap["mean_abs_shap"])):
+    err = float(xerr_top.iloc[idx]) if xerr_top is not None else 0.0
     ax.text(
-        val + 0.0002, bar.get_y() + bar.get_height() / 2,
-        f"{val:.4f}",
+        val + err + label_pad_top,
+        bar.get_y() + bar.get_height() / 2,
+        f"{val:.3f}",
         va="center", ha="left", fontsize=7.5, color="#444444",
     )
 
-ax.set_xlabel("Mean |SHAP| value (fpos prediction)", fontsize=11)
+ax.set_xlabel("Mean |SHAP| across LOFO runs", fontsize=11)
 ax.set_title(
-    "Top 20 SHAP features\nWaveform-augmented structure (fpos_waveform_winner)",
+    "Top SHAP features across LOFO runs\nWaveform-augmented stack",
     fontsize=13,
     fontweight="bold",
     pad=10,
 )
-ax.set_xlim(right=plot_shap["mean_abs_shap"].max() * 1.25)
+ax.set_xlim(right=max_top_x + (4.5 * label_pad_top))
 
 # Legend for feature groups — only show groups actually present
 present_groups = plot_shap["group"].unique()
@@ -241,54 +248,54 @@ print(f"Saved: {out}")
 group_plot = group_df.sort_values("mean_abs_shap", ascending=True).copy()
 group_plot["label"] = group_plot["feature_group"].map(GROUP_LABELS).fillna(group_plot["feature_group"])
 bar_colors_g = [GROUP_COLORS.get(g, "#888888") for g in group_plot["feature_group"]]
+xerr_group = group_plot["std_abs_shap"] if "std_abs_shap" in group_plot.columns else None
+max_group_x = float((group_plot["mean_abs_shap"] + (group_plot["std_abs_shap"] if "std_abs_shap" in group_plot.columns else 0.0)).max())
+label_pad_group = max(max_group_x * 0.015, 0.01)
 
 fig, ax = plt.subplots(figsize=(8, 4.5))
 bars = ax.barh(
     group_plot["label"],
     group_plot["mean_abs_shap"],
+    xerr=xerr_group,
     color=bar_colors_g,
     edgecolor="white",
     linewidth=0.4,
+    error_kw={"ecolor": "#444444", "elinewidth": 0.8, "capsize": 2.0},
 )
 
 # Value labels
-for bar, val in zip(bars, group_plot["mean_abs_shap"]):
+for idx, (bar, val) in enumerate(zip(bars, group_plot["mean_abs_shap"])):
+    err = float(xerr_group.iloc[idx]) if xerr_group is not None else 0.0
     ax.text(
-        val + 0.001, bar.get_y() + bar.get_height() / 2,
+        val + err + label_pad_group, bar.get_y() + bar.get_height() / 2,
         f"{val:.3f}",
         va="center", ha="left", fontsize=9, color="#333333",
     )
 
 # Feature count annotations inside bars
 for bar, (_, row) in zip(bars, group_plot.iterrows()):
-    cnt = int(row["feature_count"])
+    if "feature_count" in row.index:
+        cnt_label = f"n={int(row['feature_count'])}"
+    elif "mean_feature_count" in row.index:
+        cnt_label = f"n≈{int(round(float(row['mean_feature_count'])))}"
+    else:
+        cnt_label = None
+    if cnt_label is None:
+        continue
     ax.text(
         0.001, bar.get_y() + bar.get_height() / 2,
-        f"n={cnt}",
+        cnt_label,
         va="center", ha="left", fontsize=7.5, color="white", fontweight="bold",
     )
 
-ax.set_xlabel("Aggregate mean |SHAP| (fpos prediction)", fontsize=11)
+ax.set_xlabel("Aggregate mean |SHAP| across LOFO runs", fontsize=11)
 ax.set_title(
-    "Feature group importance\nWaveform-augmented structure (fpos_waveform_winner)",
+    "Feature group importance across LOFO runs\nWaveform-augmented stack",
     fontsize=13,
     fontweight="bold",
     pad=10,
 )
-ax.set_xlim(right=group_plot["mean_abs_shap"].max() * 1.22)
-
-# Annotation: recording context dominates
-ctx_val = group_df.loc[group_df["feature_group"] == "recording_context", "mean_abs_shap"].values
-si_val  = group_df.loc[group_df["feature_group"] == "spikeinterface_qc", "mean_abs_shap"].values
-if len(ctx_val) and len(si_val):
-    ratio = ctx_val[0] / si_val[0]
-    ax.annotate(
-        f"Context = {ratio:.1f}× SpikeInterface QC",
-        xy=(ctx_val[0], len(group_plot) - 1),
-        xytext=(ctx_val[0] * 0.6, len(group_plot) - 0.4),
-        fontsize=8.5, color="#1B3A6B",
-        arrowprops=dict(arrowstyle="->", color="#1B3A6B", lw=1.2),
-    )
+ax.set_xlim(right=max_group_x + (4.5 * label_pad_group))
 
 fig.tight_layout()
 out = FIG_DIR / "fpos_shap_group_summary.png"
@@ -323,7 +330,7 @@ for bar, val in zip(bars, fpos_fam_plot["r2"]):
 
 ax.axvline(0, color="#aaaaaa", linewidth=0.8)
 ax.set_xlabel("R²  (recording-disjoint holdout)", fontsize=11)
-ax.set_title("fpos prediction: per-family R²\n(Waveform-augmented structure model)", fontsize=12, fontweight="bold", pad=8)
+ax.set_title("fpos prediction: per-family R²\n(Waveform-augmented stack model)", fontsize=12, fontweight="bold", pad=8)
 ax.set_xlim(left=-0.1, right=fpos_fam_plot["r2"].max() * 1.22)
 
 # Family color legend
@@ -420,7 +427,7 @@ fam_colors = [FAMILY_COLORS.get(f, "#888888") for f in fam_names]
 bars_fp = axes[0].barh(fam_names, cmp["fpos_r2"], color=fam_colors, edgecolor="white", linewidth=0.4)
 axes[0].axvline(0, color="#999999", linewidth=0.8)
 axes[0].set_xlabel("R²  (recording-disjoint holdout)", fontsize=10)
-axes[0].set_title("fpos (Waveform-augmented structure)", fontsize=11, fontweight="bold", color=FPOS_COLOR)
+axes[0].set_title("fpos (Waveform-augmented stack)", fontsize=11, fontweight="bold", color=FPOS_COLOR)
 axes[0].set_xlim(-0.1, 0.85)
 for bar, val in zip(bars_fp, cmp["fpos_r2"]):
     axes[0].text(val + 0.01, bar.get_y() + bar.get_height() / 2,
@@ -527,7 +534,7 @@ ax.text(0.68, -0.2, "Good fpos\nPoor fmiss", fontsize=7.5,
 ax.text(0.37, 0.7, "Good fmiss\nPoor fpos", fontsize=7.5,
         color=FPOS_COLOR, alpha=0.75, style="italic", ha="center")
 
-ax.set_xlabel("fpos R²  (Waveform-augmented structure)", fontsize=11)
+ax.set_xlabel("fpos R²  (Waveform-augmented stack)", fontsize=11)
 ax.set_ylabel("fmiss R²  (Reduced-latent context)", fontsize=11)
 ax.set_title(
     "Per-family predictability: fpos vs fmiss\nKAMPFF shows strong target asymmetry",

@@ -3,15 +3,15 @@
 
 \section{The Transfer Problem Is Real}
 
-The primary finding of the thesis is that the domain shift from hybrid simulation data to paired juxtacellular recording is significant. In fact, the two domains are easily separable: a domain classifier trained to differentiate source data from target data achieves an area under the curve of 0.9765 without recording-context features and 0.9997 with them. This indicates that the source and target domains are almost linearly separable based on the features available to the model.
+The primary finding of the thesis is that the domain shift from hybrid simulation data to paired juxtacellular and intracellular ground-truth data is significant. In fact, the two datasets are easily separable: a domain classifier trained to differentiate hybrid simulation data from paired juxtacellular and intracellular ground-truth data achieves an area under the curve of 0.9765 without recording-context features and 0.9997 with them, as reported in \cref{tab:domain-separability}. This indicates that hybrid simulation data and paired juxtacellular and intracellular ground-truth data are almost linearly separable based on the features available to the model.
 
 \begin{table}[H]
     \centering
-    \caption{Domain separability between hybrid and paired data.}
+    \caption{Domain separability between hybrid simulation data and paired juxtacellular and intracellular ground-truth data.}
     \label{tab:domain-separability}
     \begin{tabular}{llrr}
         \toprule
-        Comparison & Feature set & Mean AUC & Std. dev. \\
+        Comparison & Feature set & Mean AUC & Std. dev. AUC \\
         \midrule
         Hybrid vs paired (all) & Unit & 0.9765 & 0.0463 \\
         Hybrid vs paired (all) & Full context & 0.9997 & 0.0005 \\
@@ -21,7 +21,7 @@ The primary finding of the thesis is that the domain shift from hybrid simulatio
 
 This separability is supported by the broader distribution shift. Recording-context variables show a mean absolute standardized mean difference of about 0.518, waveform bins about 0.711, and the broader other-unit block about 0.734. This again highlights the complexity of paired recordings, which exhibit higher noise, contamination, and instability. H1 is therefore directly supported.
 
-The two-dimensional principal-component projection confirms a similar pattern.
+The two-dimensional principal-component projection confirms a similar pattern, in \cref{fig:pca-domain-family}.
 
 \begin{figure}[H]
     \centering
@@ -36,19 +36,19 @@ The two-dimensional principal-component projection confirms a similar pattern.
         \includegraphics[width=\textwidth]{pca_2d_by_domain.png}
         \caption{Hybrid vs paired.}
     \end{subfigure}
-    \caption{Two-dimensional PCA views of the benchmark feature space. The target domain is internally heterogeneous rather than being a single compact cluster.}
+    \caption{Two-dimensional PCA views of the benchmark feature space. Paired ground-truth data are internally heterogeneous rather than being a single compact cluster.}
     \label{fig:pca-domain-family}
 \end{figure}
 
-The paired target domain should therefore be thought of as a set of related sub-regimes rather than a compact distribution. ENGLISH spreads across most of the local PCA view, which is consistent with its biological diversity, as its recordings target three different brain regions: hippocampus, neocortex, and thalamus. KAMPFF occupies a more displaced region, highlighting a structural difference from other paired families. Finally, MEA64C\_YGER is relatively compact.
+Paired ground-truth data should therefore be thought of as a set of related sub-regimes rather than a compact distribution. ENGLISH \parencite{Magland2020} spreads across most of the local PCA view, which is consistent with its biological diversity, as its recordings target three different brain regions: hippocampus, neocortex, and thalamus. KAMPFF \parencite{Neto2016Paired} occupies a more displaced region, highlighting a structural difference from other paired families. Finally, MEA64C\_YGER \parencite{10.7554/eLife.34518} is relatively compact.
 
 \section{\fpos{}: Positive Transfer Stories Exist}
 
 \subsection{Twenty Recording-Disjoint Core Benchmark}
 
-The main \fpos{} benchmark using the retained models was assessed using the recording-disjoint protocol across 20 seeds from 42 to 61. As expected, the dummy floor remains very close to zero at -0.0569 \rsq{}. The highest overall mean \rsq{} is achieved by the paired-only raw model with 0.4209. The hybrid-only source-transfer baseline drops to -1.8162, as anticipated following the significant domain shift identified above. The paired domain therefore contains notable predictive signal, but naive source transfer is unsafe.
+The main \fpos{} benchmark using the retained models was assessed using the recording-disjoint protocol across 20 seeds from 42 to 61. As expected, the dummy floor remains very close to zero at -0.0569 \rsq{}. The highest overall mean \rsq{} is achieved by the paired-only raw model with 0.4209. The hybrid-only transfer baseline drops to -1.8162, as anticipated following the significant domain shift identified above. Paired ground-truth data therefore contain notable predictive signal, but naive transfer from hybrid simulation data is unsafe.
 
-Among the models combining source-side information, several closely match the paired-only raw \rsq{}, indicating effective transfer. However, while the score does not collapse, it does not deliver a universal improvement either. Paired-only context reaches 0.4188 \rsq{}, the context-first source stack 0.3973, the pre-waveform unlabeled structure stack 0.4068, and waveform-augmented structure 0.3906.
+Among the models combining information transferred from hybrid simulation data, several closely match the paired-only raw \rsq{}, indicating effective transfer. However, while the score does not collapse, it does not deliver a universal improvement either. Paired-only context reaches 0.4188 \rsq{}, the context-first source stack 0.3973, the Trust-filtered unlabeled stack 0.4068, and the Waveform-augmented stack 0.3906, as shown in \cref{tab:fpos-core-benchmark}.
 
 \begin{table}[H]
     \centering
@@ -60,16 +60,16 @@ Among the models combining source-side information, several closely match the pa
         \midrule
         Dummy paired mean & -0.0569 & 0.1967 \\
         Paired-only raw & 0.4209 & 0.1304 \\
-        Hybrid-only XGBoost & -1.8162 & 0.2934 \\
+        Hybrid-only XGBoost \parencite{ChenGuestrin2016} & -1.8162 & 0.2934 \\
         Paired-only context & 0.4188 & 0.1337 \\
         Context-first source stack & 0.3973 & 0.1329 \\
-        Pre-waveform unlabeled structure & 0.4068 & 0.1302 \\
-        Waveform-augmented structure & 0.3906 & 0.1317 \\
+        Trust-filtered unlabeled stack & 0.4068 & 0.1302 \\
+        Waveform-augmented stack & 0.3906 & 0.1317 \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-Mean \rsq{}, however, does not show the full picture. Looking at \mae{}, the pre-waveform unlabeled structure stack is the best-performing one with 0.1302. The story is similar for \mae{} overall: most of the retained models extract a real signal in the low 0.13 range rather than yielding one clear best performer. Additionally, the pre-waveform unlabeled structure stack has the strongest mean rank at 2.40 and the highest number of seed wins, with 5 out of 20.
+Mean \rsq{}, however, does not show the full picture. Looking at \mae{}, the Trust-filtered unlabeled stack is the best-performing one with 0.1302. The story is similar for \mae{} overall: most of the retained models extract a real signal in the low 0.13 range rather than yielding one clear best performer. Additionally, the Trust-filtered unlabeled stack has the strongest mean rank at 2.40 and the highest number of seed wins, with 5 out of 20, as summarised in \cref{tab:fpos-robustness}.
 
 \begin{table}[H]
     \centering
@@ -79,10 +79,10 @@ Mean \rsq{}, however, does not show the full picture. Looking at \mae{}, the pre
         \toprule
         Model & Mean \rsq{} & Mean \mae{} & Mean rank & Seed wins \\
         \midrule
-        Pre-waveform unlabeled structure & 0.4068 & 0.1302 & 2.40 & 5 \\
+        Trust-filtered unlabeled stack & 0.4068 & 0.1302 & 2.40 & 5 \\
         Context-first source stack & 0.3973 & 0.1329 & 2.85 & 4 \\
         Paired-only context & 0.4188 & 0.1337 & 3.15 & 3 \\
-        Waveform-augmented structure & 0.3906 & 0.1317 & 3.25 & 4 \\
+        Waveform-augmented stack & 0.3906 & 0.1317 & 3.25 & 4 \\
         Paired-only raw & 0.4209 & 0.1304 & 3.35 & 4 \\
         \bottomrule
     \end{tabular}
@@ -101,15 +101,15 @@ Mean \rsq{}, however, does not show the full picture. Looking at \mae{}, the pre
         \includegraphics[width=\textwidth]{fpos_seed_rank_heatmap.png}
         \caption{Rank distribution across seeds.}
     \end{subfigure}
-    \caption{\fpos{} robustness across held-out recordings. Robustness does not imply that the strongest average model is always the strongest model on a specific split.}
+    \caption{\fpos{} robustness across held-out recordings. Robustness does not imply that the strongest model on average is always the strongest model on a specific split.}
     \label{fig:fpos-stability}
 \end{figure}
 
-Taken together, these results support a positive transfer narrative for \fpos{} without indicating a universal model winner. Split-averaged stability matters as much as the strongest single split, because it conveys whether a recipe is robust. Even though the paired-only raw model has the highest mean \rsq{} and the second-lowest mean \mae{}, it has the weakest mean rank among the five main compared models. The meta-features therefore do matter, but in a regime-dependent way.
+Taken together, these results support a positive transfer narrative for \fpos{}, as models leveraging transfer learning did not collapse in the way the Hybrid-only model did and even ranked as the best model in a considerable number of seeds. However, our results indicate that there is no universal model winner. In other words, no model performs better than all the others across every split. In these results, split-averaged stability across seeds, as highlighted by \cref{fig:fpos-stability}, matters as much as the strongest single split, because it conveys whether a model configuration is robust. Even though the paired-only raw model has the highest mean \rsq{} and the second-lowest mean \mae{}, it has the weakest mean rank among the five main compared models. The meta-features therefore do matter, but in a regime-dependent way.
 
 \subsection{Family Preferences Explain Part of the Instability}
 
-Analysing model performance across different families using the leave-one-family-out protocol, in which no data from the held-out family are seen during training and the entire family is evaluated during testing, is the most rigorous way to assess cross-family generalisation.
+Analysing model performance across different families using the leave-one-family-out protocol, in which no data from the held-out family are seen during training and the entire family is evaluated during testing, is a rigorous way to assess cross-family generalisation.
 
 \begin{figure}[H]
     \centering
@@ -118,57 +118,59 @@ Analysing model performance across different families using the leave-one-family
     \label{fig:fpos-family-heatmap}
 \end{figure}
 
-Under that held-out-family benchmark, BOYDEN, KAMPFF, and MEA64C\_YGER prefer the waveform-augmented structure model; CRCNS\_HC1 prefers the paired-only context model; and ENGLISH slightly prefers the context-first source stack. The waveform-augmented structure model nevertheless performs best overall under LOFO, ranking first across three of the five families.
+Under that leave-one-family-out benchmark, in \cref{fig:fpos-family-heatmap}, BOYDEN \parencite{doi:10.1152/jn.00650.2017}, KAMPFF \parencite{Neto2016Paired}, and MEA64C\_YGER \parencite{10.7554/eLife.34518} achieve best performance with the Waveform-augmented stack; CRCNS\_HC1 \parencite{doi:10.1152/jn.2000.84.1.401} achieves best performance with the paired-only context model; and ENGLISH \parencite{Magland2020} achieves best performance with the context-first source stack. The Waveform-augmented stack nevertheless performs best overall under leave-one-family-out evaluation, ranking first across three of the five families.
 
 \begin{table}[H]
     \centering
-    \caption{Best held-out-family \fpos{} \rsq{} within the twenty-seed leave-one-family-out comparison across the five main compared models, with the corresponding \mae{} reported for the same winning model-family pair.}
+    \caption{Best leave-one-family-out \fpos{} average \rsq{} within the twenty-seed comparison across the five main compared models, with the corresponding standard deviation of \rsq{}, average \mae{}, and standard deviation of \mae{} reported for the same winning model-family pair.}
     \label{tab:fpos-family-preference}
     \small
     \resizebox{\textwidth}{!}{
-    \begin{tabular}{lrrr}
+    \begin{tabular}{lrrrrr}
         \toprule
-        Family & Best recipe & Best \rsq{} & Best \mae{} \\
+        Family & Best configuration & Best \rsq{} & Std. dev. \rsq{} & Best \mae{} & Std. dev. \mae{} \\
         \midrule
-        PAIRED\_BOYDEN & Waveform-augmented structure & 0.1380 & 0.0821 \\
-        PAIRED\_CRCNS\_HC1 & Paired-only context & 0.4487 & 0.1860 \\
-        PAIRED\_ENGLISH & Context-first source stack & 0.3979 & 0.1688 \\
-        PAIRED\_KAMPFF & Waveform-augmented structure & 0.7125 & 0.0911 \\
-        PAIRED\_MEA64C\_YGER & Waveform-augmented structure & 0.3321 & 0.0713 \\
+        PAIRED\_BOYDEN \parencite{doi:10.1152/jn.00650.2017} & Waveform-augmented stack & 0.1380 & 0.0536 & 0.0821 & 0.0035 \\
+        PAIRED\_CRCNS\_HC1 \parencite{doi:10.1152/jn.2000.84.1.401} & Paired-only context & 0.4487 & 0.0369 & 0.1860 & 0.0065 \\
+        PAIRED\_ENGLISH \parencite{Magland2020} & Context-first source stack & 0.3979 & 0.0652 & 0.1688 & 0.0100 \\
+        PAIRED\_KAMPFF \parencite{Neto2016Paired} & Waveform-augmented stack & 0.7125 & 0.0359 & 0.0911 & 0.0089 \\
+        PAIRED\_MEA64C\_YGER \parencite{10.7554/eLife.34518} & Waveform-augmented stack & 0.3321 & 0.1091 & 0.0713 & 0.0066 \\
         \bottomrule
     \end{tabular}
     }
 \end{table}
 
-These preferences give relevant information and should be read carefully, taking into account the nature of the datasets as well as their biological context. The performance differences between families are striking. KAMPFF's best model, waveform-augmented structure, achieves an average \rsq{} of 0.7125 across 20 seeds. This strongly suggests that the model captures stable and informative structure in that family. By contrast, BOYDEN's best model, also waveform-augmented structure, only reaches 0.1380. Family identity therefore changes not only which model wins, but also how much headroom the task actually contains.
+These preferences, in \cref{tab:fpos-family-preference}, give relevant information and should be read carefully, taking into account the nature of the datasets as well as their biological context. The performance differences between families are striking. KAMPFF's best model \parencite{Neto2016Paired}, the Waveform-augmented stack, achieves an average \rsq{} of 0.7125 across 20 seeds. This strongly suggests that the model captures stable and informative structure in that family. By contrast, BOYDEN's best model \parencite{doi:10.1152/jn.00650.2017}, also the Waveform-augmented stack, only reaches 0.1380. Family identity therefore changes not only which model wins, but also how much headroom the task actually contains, as the aggregate leave-one-family-out summary in \cref{tab:fpos-lofo-summary} makes clear.
 
 \begin{table}[H]
     \centering
-    \caption{LOFO summary across held-out families for the five main compared \fpos{} models. Mean and standard deviation are computed across the five held-out family \rsq{} values, and mean rank is computed within-family with rank 1 denoting the strongest model.}
+    \caption{Leave-one-family-out summary across families for the five main compared \fpos{} models. Mean and standard deviation are computed across the five family \rsq{} values, and mean rank is computed within-family with rank 1 denoting the strongest model.}
     \label{tab:fpos-lofo-summary}
     \small
     \resizebox{\textwidth}{!}{
     \begin{tabular}{lrrrrr}
         \toprule
-        Model & Mean \rsq{} (LOFO) & Std \rsq{} & Mean rank & Worst-family \rsq{} & Best-family \rsq{} \\
+        Model & Mean \rsq{} (Leave-one-family-out) & Std. dev. \rsq{} & Mean rank & Worst-family \rsq{} & Best-family \rsq{} \\
         \midrule
         Paired-only raw & 0.2834 & 0.2195 & 4.40 & 0.0029 & 0.5662 \\
         Paired-only context & 0.2994 & 0.2999 & 3.40 & -0.1659 & 0.6448 \\
         Context-first source stack & 0.3807 & 0.2126 & 2.60 & 0.1114 & 0.6900 \\
-        Pre-waveform unlabeled structure & 0.3715 & 0.2316 & 2.60 & 0.0977 & 0.7089 \\
-        Waveform-augmented structure & 0.3975 & 0.2075 & 2.00 & 0.1380 & 0.7125 \\
+        Trust-filtered unlabeled stack & 0.3715 & 0.2316 & 2.60 & 0.0977 & 0.7089 \\
+        Waveform-augmented stack & 0.3975 & 0.2075 & 2.00 & 0.1380 & 0.7125 \\
         \bottomrule
     \end{tabular}
     }
 \end{table}
 
+Based on the results of this section and the results highlighted in \cref{tab:fpos-lofo-summary}, we will use the Waveform-augmented stack as our main model for the rest of the thesis. This choice is justified by its superior performance across the different unseen families, as well as its better stability across seeds. However, this does not mean that the Waveform-augmented stack is superior in every circumstances as we saw earlier.
+
 \section{\fmiss{}: The Retained Models Do Not Yet Deliver a Robust Transfer Story}
 
 \subsection{Twenty Recording-Disjoint Core Benchmark}
 
-The models compared in \fmiss{} differ from those studied in \fpos{}. This is intentional. We tried parallel transfer configurations, but several \fmiss{} variants collapsed or produced noisy predictions and were not informative. \fmiss{} is more global, more tied to the interaction with other putative units, and more dependent on firing dynamics. Using the exact same model family for both targets would therefore lead to non-informative comparisons. Each target is instead evaluated on the models that remained meaningful for it.
+The models compared in \fmiss{} differ from the ones studied in \fpos{}. This is intentional, as we tried using similar models, but \fmiss{} transfer configurations collapsed or produced noisy predictions. Those models were not informative. In fact, \fmiss{} is more global, tied to other putative units, and firing dynamics. Using the same models for both targets would lead to non-informative comparisons. Therefore, each target is instead evaluated on its meaningful models.
 
-The retained \fmiss{} ladder is much weaker than the corresponding \fpos{} benchmark. Across the same twenty recording-disjoint seeds, the dummy floor is -0.0831 \rsq{}, the paired-only raw model is -0.2346, and the hybrid-only source-transfer baseline collapses to -2.2118. Adding paired-domain context partially repairs that failure: paired-only context rises to -0.0462 and reduced-latent context to -0.0128. This is an improvement over pure source transfer, but it is not a robust positive deployment story, because even the best retained mean \rsq{} remains slightly negative.
+The models retained for \fmiss{} performed significantly worse than the models retained for \fpos{}. In fact, across the same twenty recording-disjoint seeds, no model had a positive \rsq{}, as shown in \cref{tab:fmiss-summary}. The baseline models reported an \rsq{} of $-0.0831$ for the dummy floor and $-0.2346$ for the paired-only raw model, while the hybrid-only model collapsed to $-2.2118$, which is even worse than it was for \fpos{}. Adding recording context to the model slightly outperformed the dummy model, with the paired-only context model achieving an \rsq{} of $-0.0462$. Reduced-latent context achieved the highest \rsq{} with $-0.0128$.
 
 \begin{table}[H]
     \centering
@@ -180,14 +182,16 @@ The retained \fmiss{} ladder is much weaker than the corresponding \fpos{} bench
         \midrule
         Dummy paired mean & -0.0831 & 0.2546 \\
         Paired-only raw & -0.2346 & 0.2413 \\
-        Hybrid-only XGBoost & -2.2118 & 0.3898 \\
+        Hybrid-only XGBoost \parencite{ChenGuestrin2016} & -2.2118 & 0.3898 \\
         Paired-only context & -0.0462 & 0.2147 \\
         Reduced-latent context & -0.0128 & 0.2101 \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-Mean \rsq{} again does not tell the whole story. Looking at \mae{}, reduced-latent context is also the strongest of the retained compared models at 0.2101, followed closely by paired-only context at 0.2147. The same model also has the strongest mean rank at 1.70 and wins 11 of the 20 seeds, whereas paired-only context wins 5 and paired-only raw wins 4. The `fmiss` story is therefore more internally consistent than the `fpos` story, but it is consistent around a near-break-even regime rather than around a clearly positive one.
+As shown in \cref{tab:fmiss-summary}, the reduced-latent context model and paired-only context attain the highest performance, with \mae{} values of $0.2101$ and $0.2147$, respectively. This emphasises the unreliability of \fmiss{}, as it was, on average, more than $0.21$ away from the true false negative rate.
+
+Reduced-latent context also seems to have the strongest mean rank across seeds, with an average rank of $1.70$, ranking first $11$ times out of $20$ seeds, as shown in \cref{tab:fmiss-robustness}. Nevertheless, paired-only context and paired-only raw ranked first $5$ and $4$ times, respectively, showing that, even among \fmiss{}, no model outperforms the others on every split.
 
 \begin{table}[H]
     \centering
@@ -206,16 +210,26 @@ Mean \rsq{} again does not tell the whole story. Looking at \mae{}, reduced-late
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.84\textwidth]{fmiss_seed_stability.png}
-    \caption{\fmiss{} robustness across held-out recordings. As in the \fpos{} section, the violin plot summarises the seed-level spread; here it shows that context repairs part of the source-only collapse without producing a stable positive regime.}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{fmiss_seed_stability.png}
+        \caption{Performance spread across seeds.}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{fmiss_seed_rank_heatmap.png}
+        \caption{Rank distribution across seeds.}
+    \end{subfigure}
+    \caption{\fmiss{} robustness across held-out recordings. As in the \fpos{} section, the left panel summarises the seed-level spread and the right panel shows the rank distribution across seeds; together they show that context repairs part of the hybrid-only collapse without producing a stable positive regime.}
     \label{fig:fmiss-benchmark-stability}
 \end{figure}
 
-This is the opposite of the \fpos{} pattern. For \fpos{}, multiple context-aware stacks cluster in a clearly useful regime around 0.39--0.42 mean \rsq{}. For \fmiss{}, the same design philosophy only moves the problem from severe failure toward break-even. The main \fmiss{} figure should therefore be read as a negative result with structure, not as a near-miss positive benchmark.
+The violin plot in \cref{fig:fmiss-benchmark-stability}, which highlights the \rsq{} performance of the retained models, appears to indicate that some models performed well under a specific seed. In particular, Reduced-latent context achieved an \rsq{} of $0.5021$ on seed $44$. While there are some promising runs, the model's average performance is closer to break-even than to being truly effective, emphasising the importance of evaluating performance across multiple seeds. \Cref{fig:fmiss-benchmark-stability} should consequently be read as a failure to predict the \fmiss{} target.
 
 \subsection{Family Behaviour Confirms That \fmiss{} Is Structurally Harder}
 
-The held-out-family view makes the negative \fmiss{} story sharper, not weaker. Under the leave-one-family-out protocol averaged across twenty seeds, the least-bad aggregate recipe is no longer the reduced-latent context model but the simpler paired-only raw baseline, with macro \rsq{} -0.3673. Paired-only context reaches -0.5544 and reduced-latent context falls further to -0.5733. In other words, the small recording-disjoint gain of the reduced-latent stack does not survive extrapolation to entirely unseen families.
+The performance of the models under the leave-one-family-out protocol, averaged across 20 seeds, is displayed in \cref{fig:fmiss-family-heatmap,tab:fmiss-family-preference}. It highlights the baseline paired-only raw model as the best, with an \rsq{} value of $-0.3673$, while paired-only context and reduced-latent context reach $-0.5544$ and $-0.5733$, respectively. But this in reality simply reveals that every model fails when faced with unseen data, demonstrating their inability to generalise to new paired families.
 
 \begin{figure}[H]
     \centering
@@ -226,35 +240,35 @@ The held-out-family view makes the negative \fmiss{} story sharper, not weaker. 
 
 \begin{table}[H]
     \centering
-    \caption{Best held-out-family \fmiss{} \rsq{} within the twenty-seed leave-one-family-out comparison across the main compared \fmiss{} models, with the corresponding \mae{} reported for the same winning model-family pair.}
+    \caption{Best leave-one-family-out \fmiss{} \rsq{} within the twenty-seed comparison across the main compared \fmiss{} models, with the corresponding \mae{} reported for the same winning model-family pair.}
     \label{tab:fmiss-family-preference}
     \small
     \resizebox{\textwidth}{!}{
     \begin{tabular}{lrrr}
         \toprule
-        Family & Best recipe & Best \rsq{} & Best \mae{} \\
+        Family & Best configuration & Best \rsq{} & Best \mae{} \\
         \midrule
-        PAIRED\_BOYDEN & Paired-only raw & -0.4012 & 0.2460 \\
-        PAIRED\_CRCNS\_HC1 & Paired-only raw & -0.2999 & 0.1718 \\
-        PAIRED\_ENGLISH & Paired-only context & -0.6507 & 0.2917 \\
-        PAIRED\_KAMPFF & Paired-only raw & -0.2069 & 0.2306 \\
-        PAIRED\_MEA64C\_YGER & Reduced-latent context & 0.4462 & 0.1777 \\
+        PAIRED\_BOYDEN \parencite{doi:10.1152/jn.00650.2017} & Paired-only raw & -0.4012 & 0.2460 \\
+        PAIRED\_CRCNS\_HC1 \parencite{doi:10.1152/jn.2000.84.1.401} & Paired-only raw & -0.2999 & 0.1718 \\
+        PAIRED\_ENGLISH \parencite{Magland2020} & Paired-only context & -0.6507 & 0.2917 \\
+        PAIRED\_KAMPFF \parencite{Neto2016Paired} & Paired-only raw & -0.2069 & 0.2306 \\
+        PAIRED\_MEA64C\_YGER \parencite{10.7554/eLife.34518} & Reduced-latent context & 0.4462 & 0.1777 \\
         \bottomrule
     \end{tabular}
     }
 \end{table}
 
-The family pattern is also qualitatively different from \fpos{}. For \fmiss{}, no aggregate model is positive overall under LOFO, and four of the five held-out families remain negative even for the locally best recipe. Only MEA64C\_YGER becomes clearly positive, where reduced-latent context reaches 0.4462 \rsq{} and paired-only context also crosses zero. BOYDEN, CRCNS\_HC1, ENGLISH, and KAMPFF all remain negative, which means the target is not merely noisy but structurally unstable across family regimes.
+Nonetheless, Reduced-latent context averages an \rsq{} of $0.4462$ for PAIRED\_MEA64C\_YGER \parencite{10.7554/eLife.34518}. This is promising, as it explains nearly half of the target variance, but it does not overshadow the overall poor generalisation performance of all models for the \fmiss{} target. The more complexity was added to the model, the higher the standard deviation of its \rsq{} was, indicating greater variability in both good and bad results, as shown in \cref{tab:fmiss-lofo-summary}, which highlights the double-edged nature of this added complexity for the \fmiss{} target.
 
 \begin{table}[H]
     \centering
-    \caption{LOFO summary across held-out families for the main compared \fmiss{} models. Mean and standard deviation are computed across the five held-out family \rsq{} values, and mean rank is computed within-family with rank 1 denoting the strongest model.}
+    \caption{Leave-one-family-out summary across families for the main compared \fmiss{} models. Mean and standard deviation are computed across the five family \rsq{} values, and mean rank is computed within-family with rank 1 denoting the strongest model.}
     \label{tab:fmiss-lofo-summary}
     \small
     \resizebox{\textwidth}{!}{%
     \begin{tabular}{lrrrrr}
         \toprule
-        Model & Mean \rsq{} (LOFO) & Std \rsq{} & Mean rank & Worst-family \rsq{} & Best-family \rsq{} \\
+        Model & Mean \rsq{} (Leave-one-family-out) & Std. dev. \rsq{} & Mean rank & Worst-family \rsq{} & Best-family \rsq{} \\
         \midrule
         Paired-only raw & -0.3673 & 0.2644 & 1.80 & -0.8029 & -0.1255 \\
         Paired-only context & -0.5544 & 0.4383 & 2.00 & -0.8951 & 0.1874 \\
@@ -264,17 +278,15 @@ The family pattern is also qualitatively different from \fpos{}. For \fmiss{}, n
     }
 \end{table}
 
+Based on the results of this section and the results highlighted in \cref{tab:fmiss-lofo-summary}, we will use the paired-only raw model as our main model for the rest of the analysis. This choice is simply made based on the fact that it is the most stable and least-bad model for the \fmiss{} target under the leave-one-family-out protocol. However, we do not qualify it as the best model in general for predicting \fmiss{}, it capture little to no variance and has been outperformed by other model in multiple conditions as seen earlier.
+
 \section{Cross-Target Asymmetry}
 
-When the benchmark is summarised jointly across targets and protocols, the asymmetry becomes unmistakable. Under recording-disjoint evaluation, the best retained \fpos{} row is the paired-only raw baseline at 0.4209 \rsq{}, while the best retained \fmiss{} row is reduced-latent context at only -0.0128. Under leave-one-family-out evaluation, \fpos{} remains strongly positive, with the waveform-augmented structure model reaching macro \rsq{} 0.3975, whereas the least-bad aggregate \fmiss{} recipe falls to -0.3673. The gap between the two targets therefore widens under the harsher family-unseen protocol rather than narrowing.
-
-This asymmetry is not only a leaderboard observation. The target-label structure is already different: \fpos{} is available for all packaged rows, while \fmiss{} is only defined when a valid ground-truth match exists. The biological information exposed by the current feature package is also different. Features such as contamination-like waveform irregularity, spread, and recording-relative context map more naturally onto \fpos{} than onto the mechanisms driving missed spikes. The benchmark therefore does not suggest one shared deployment story. It suggests two different problems.
-
-The family-level comparison shows that this is not driven by a single outlier family. The same benchmark that yields broadly positive recording-disjoint \fpos{} performance still leaves the winning \fmiss{} line close to zero or negative on most families, while MEA64C\_YGER remains the clearest exception.
+When summarising the benchmark results across targets and protocols, the asymmetry between the two targets, \fpos{} and \fmiss{}, is evident. Under recording-disjoint evaluation, the best-performing \fpos{} model is Paired-only raw, with an average \rsq{} of $0.4209$ across 20 seeds, while the best \fmiss{} model, Reduced-latent context, only breaks even with an average \rsq{} of $-0.0128$. Additionally, \fpos{}'s best model, Waveform-augmented stack, under leave-one-family-out evaluation achieved an average \rsq{} of $0.3975$ across the 20 seeds, whereas the best \fmiss{} model, Paired-only raw, collapses with an average \rsq{} of $-0.3673$, as summarised in \cref{tab:target-protocol-summary}. As protocols become more rigorous, the performance gap between the two targets widens rather than narrows.
 
 \begin{table}[H]
     \centering
-    \caption{Best retained model by target and evaluation protocol. Recording-disjoint values are mean holdout scores across twenty seeds; family-held-out values are twenty-seed LOFO macro averages.}
+    \caption{Best retained model by target and evaluation protocol. Recording-disjoint values are mean holdout scores across twenty seeds; leave-one-family-out values are twenty-seed macro averages.}
     \label{tab:target-protocol-summary}
     \small
     \begin{tabular}{lllr}
@@ -282,9 +294,9 @@ The family-level comparison shows that this is not driven by a single outlier fa
         Target & Protocol & Best model & \rsq{} \\
         \midrule
         \fpos{} & Recording-disjoint & Paired-only raw & 0.4209 \\
-        \fpos{} & Family-held-out & Waveform-augmented structure & 0.3975 \\
+        \fpos{} & Leave-one-family-out & Waveform-augmented stack & 0.3975 \\
         \fmiss{} & Recording-disjoint & Reduced-latent context & -0.0128 \\
-        \fmiss{} & Family-held-out & Paired-only raw & -0.3673 \\
+        \fmiss{} & Leave-one-family-out & Paired-only raw & -0.3673 \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -292,67 +304,50 @@ The family-level comparison shows that this is not driven by a single outlier fa
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.92\textwidth]{target_asymmetry_combined.png}
-    \caption{Family-level target asymmetry under the lead recording-disjoint models. The \fpos{} winner remains broadly positive across families, whereas the \fmiss{} winner is far less stable and requires axis clipping to keep the most negative family visible.}
+    \caption{Target asymmetry under unseen-family extrapolation, comparing the best leave-one-family-out \fpos{} configuration, Waveform-augmented stack, against the least-bad leave-one-family-out \fmiss{} configuration, Paired-only raw. Values are mean family \rsq{} across twenty leave-one-family-out seeds. \fpos{} remains positive across all five families, whereas \fmiss{} remains negative across all five.}
     \label{fig:target-asymmetry}
 \end{figure}
 
+\Cref{fig:target-asymmetry} visually emphasises this asymmetry. The \rsq{} of \fpos{}'s best model, Waveform-augmented stack, is positive across every family, while \fmiss{}'s best model, Paired-only raw, is negative across all families for the leave-one-family-out protocol.
+
+Additionally, as seen in \cref{fig:target-asymmetry}, the strongest-performing family for \fmiss{}'s best model, MEA64C\_YGER \parencite{10.7554/eLife.34518}, is only the second-worst-performing family for \fpos{}'s best model.
+
 \section{Interpretability Supports the Context Story}
 
-The explainability summary for the canonical waveform-augmented \fpos{} stack is consistent with the ablation results. Recording-context features contribute the largest mean absolute SHAP magnitude (0.1884), followed by SpikeInterface quality-control features (0.0928). Waveform features contribute 0.0341, source-transfer features 0.0318, autocorrelogram features 0.0276, and amplitude features 0.0161. Context is therefore not merely helping a little; it is the dominant explanatory block in the strongest canonical \fpos{} model.
+A good way to validate whether context features were relevant and whether transfer learning provided real value is to explore which features the model used to make its prediction. Evaluating the mean absolute SHAP value \parencite{lundberg2017unifiedapproachinterpretingmodel} of each feature for the Waveform-augmented stack model across the 20 seeds under the LOFO protocol allows us to identify which features contribute most consistently to prediction under unseen-family evaluation.
+
+Plot (a) of \cref{fig:shap} proves that the Waveform-augmented stack model relies heavily on transfer learning, as the metadata \texttt{source\_pred}, see \cref{sec:first-stage-signals}, is the feature with the highest average absolute SHAP value \parencite{lundberg2017unifiedapproachinterpretingmodel}, with 0.452. Moreover, most of the other features with the highest SHAP values are contamination features, such as the \texttt{isi\_violation\_rate} or the ACG value in the refractory period, which is around the 20th bin. This makes sense because, apart from specific cases such as a missing neuron, a neuron cannot fire faster than its refractory period, the necessary biological time for a neuron to be able to fire again. Therefore, if it does, it must mean that one of the two spikes is a false positive.
+
+Additionally, as seen in plot (b) of \cref{fig:shap}, the recording context feature family has the highest total SHAP value, at 1.327. But this is also mitigated by the many features the family has.
 
 \begin{figure}[H]
     \centering
     \begin{subfigure}[t]{0.49\textwidth}
         \centering
         \includegraphics[width=\textwidth]{fpos_shap_top.png}
-        \caption{Top individual features for Waveform-augmented structure (\texttt{fpos\_waveform\_winner}).}
+        \caption{Top individual features for Waveform-augmented stack.}
     \end{subfigure}
     \hfill
     \begin{subfigure}[t]{0.49\textwidth}
         \centering
         \includegraphics[width=\textwidth]{fpos_shap_group_summary.png}
-        \caption{Grouped feature importance for Waveform-augmented structure (\texttt{fpos\_waveform\_winner}).}
+        \caption{Grouped feature importance for Waveform-augmented stack.}
     \end{subfigure}
-    \caption{Explainability diagnostics for the canonical waveform-augmented \fpos{} model, Waveform-augmented structure (\texttt{fpos\_waveform\_winner}). Recording context dominates the grouped importance summary, supporting H2.}
+    \caption{Explainability diagnostics based on SHAP values \parencite{lundberg2017unifiedapproachinterpretingmodel} for the waveform-augmented \fpos{} model, Waveform-augmented stack, aggregated across twenty leave-one-family-out seeds and five held-out families. Horizontal error bars show the standard deviation of the per-run mean absolute SHAP value across the 100 leave-one-family-out runs (\(20 \times 5\)). Recording context dominates the grouped importance summary, supporting H2.}
     \label{fig:shap}
 \end{figure}
 
-There is no parallel frozen \fmiss{} SHAP export in the current manuscript assets. The \fmiss{} side of the asymmetry comparison is therefore represented by the reduced-latent context winner (\texttt{fmiss\_reduced\_latent}) in the family-behaviour and target-asymmetry figures rather than by a feature-level SHAP summary.
-
-This matters because it shows that the model is not succeeding because one local waveform statistic suddenly becomes perfect. It succeeds because quality is partly a relational property: the same unit-level feature can mean different things depending on the statistics of the recording around it.
-
 \section{Label Budget and Headroom}
 
-The label-budget analysis confirms how constrained the problem is. With only 20 labeled target rows, \fpos{} performance is deeply unstable: the paired-context model averages -1.0124 \rsq{}, and the filtered context stack shows similar behaviour. At 60 rows, \fpos{} recovers to around 0.19 \rsq{}, and at the full 107-row canonical training budget it reaches 0.4873 for the paired-context model. \fmiss{} behaves similarly in terms of improvement with more labels, but its final robustness remains weaker despite some favourable canonical-fit numbers.
+\cref{fig:label-budget} shows the impact that paired juxtacelluar data scarcity has on our fpos model,  waveform-augmented stack, under recording disjoint protocol and using seed 42 as an example. This figure simply shows the rate at which increasing the training data improves our model's performance on both R-squared and MAE. 
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}[t]{0.48\textwidth}
+   
         \centering
         \includegraphics[width=\textwidth]{label_budget_combined.png}
-        \caption{Label-budget sensitivity.}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{0.48\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{headroom_summary.png}
-        \caption{Improvement beyond the baseline floor by target.}
-    \end{subfigure}
-    \caption{The benchmark is label-starved, and improvement beyond the baseline floor differs sharply between targets. \fpos{} benefits more clearly from the current modelling toolbox than \fmiss{}.}
+        \caption{Label-budget sensitivity for the \fpos{} Waveform-augmented stack on the fixed recording-disjoint split (seed 42), with \rsq{} on the left axis and \mae{} on the right.}
     \label{fig:label-budget}
 \end{figure}
 
-Relative to the dummy baseline, the strongest retained \fpos{} model gains 0.478 \rsq{} points, moving from -0.0569 to 0.4209. The strongest retained \fmiss{} model gains only 0.070, moving from -0.0831 to -0.0128. There is still room for improvement in both targets, but the \fmiss{} gap is qualitatively different because the target remains near break-even even after the strongest retained stack is applied.
-
-\section{Interim Resolution of the Hypotheses}
-
-At the end of the Results chapter, all four hypotheses already have provisional answers.
-
-\begin{itemize}
-    \item \textbf{H1 supported.} Source and target domains are strongly shifted, and pure source transfer fails.
-    \item \textbf{H2 supported.} Recording context consistently improves \fpos{} prediction and dominates the explainability summary.
-    \item \textbf{H3 supported.} \fpos{} and \fmiss{} do not share one stable final modelling story.
-    \item \textbf{H4 supported.} Family preference and evaluation regime both change the preferred \fpos{} recipe.
-\end{itemize}
-
-The next chapter turns these empirical observations into interpretation. Rather than repeating the numbers, it asks why the asymmetry appears, why waveform helps only in some regimes, and what can responsibly be claimed from a benchmark built on only 207 paired labels.
+The pace of improvement shown in Figure 3.8 indicates that increasing the amount of data remains one of the most promising directions for improving the model's robustness and predictive power.

@@ -1,0 +1,32 @@
+{
+  "protocol": "recording_disjoint_budget_waveform",
+  "hybrid_source_rows": 24211,
+  "paired_test_rows": 100,
+  "paired_finetune_rows": 20,
+  "paired_non_test_rows": 5070,
+  "ssl_pool_rows": 4963,
+  "paired_test_recordings": 15,
+  "paired_finetune_recordings": 3,
+  "ssl_pool_recordings": 16,
+  "holdout_recordings": [
+    "PAIRED_BOYDEN::paired_boyden32c::1103_1_1",
+    "PAIRED_BOYDEN::paired_boyden32c::419_1_8",
+    "PAIRED_CRCNS_HC1::paired_crcns::d11221_d11221.001",
+    "PAIRED_CRCNS_HC1::paired_crcns::d11222_d11222.002",
+    "PAIRED_ENGLISH::paired_english::m139_200114_191955",
+    "PAIRED_ENGLISH::paired_english::m139_200114_222743",
+    "PAIRED_ENGLISH::paired_english::m14_190326_155432",
+    "PAIRED_ENGLISH::paired_english::m15_190315_142052_cell1",
+    "PAIRED_ENGLISH::paired_english::m15_190315_152315_cell1",
+    "PAIRED_ENGLISH::paired_english::m26_190524_100859_cell1",
+    "PAIRED_ENGLISH::paired_english::m57_191105_141906",
+    "PAIRED_ENGLISH::paired_english::m57_191105_160026",
+    "PAIRED_KAMPFF::paired_kampff::c14",
+    "PAIRED_MEA64C_YGER::paired_mea64c::20170622_patch1",
+    "PAIRED_MEA64C_YGER::paired_mea64c::20170622_patch2"
+  ],
+  "allow_test_time_unlabeled_context": true,
+  "base_random_state": 42,
+  "label_budget_rows_target": 20,
+  "label_budget_subset_seed": 42
+}

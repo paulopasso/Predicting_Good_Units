@@ -1,4 +1,4 @@
-study_set,Pre-waveform unlabeled structure,Waveform-augmented structure,Context-first source stack,Paired-only context,Paired-only raw
+study_set,Trust-filtered unlabeled stack,Waveform-augmented stack,Context-first source stack,Paired-only context,Paired-only raw
 PAIRED_BOYDEN,0.2727052031327051,0.2108141940480667,0.0288051918074804,-0.4225359065114049,-0.8065302411898462
 PAIRED_CRCNS_HC1,-0.1412091107199359,-0.1544396840301518,0.0193548715424217,0.0411412752951081,-0.1224848711851436
 PAIRED_ENGLISH,0.18534369854702,0.1587686865560151,0.1421225668870382,0.1469742512945317,0.2499944280907294

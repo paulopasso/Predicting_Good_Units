@@ -26,8 +26,8 @@ BENCHMARK_MODEL_COLORS = {
     "Hybrid-only XGBoost": "#E07A1F",
     "Paired-only context": "#2F6690",
     "Context-first source stack": "#4EA1D3",
-    "Pre-waveform unlabeled structure": "#2A9D8F",
-    "Waveform-augmented structure": "#1B7F3B",
+    "Trust-filtered unlabeled stack": "#2A9D8F",
+    "Waveform-augmented stack": "#1B7F3B",
     "Reduced-latent context": "#7B61FF",
 }
 
@@ -36,8 +36,8 @@ TARGET_SPECS = {
         "table": ROOT / "tables" / "04_fpos_model_progression" / "fpos_benchmark_ladder.csv",
         "figure_dir": ROOT / "figures" / "04_fpos_model_progression",
         "order": [
-            "Waveform-augmented structure",
-            "Pre-waveform unlabeled structure",
+            "Waveform-augmented stack",
+            "Trust-filtered unlabeled stack",
             "Context-first source stack",
             "Paired-only context",
             "Paired-only raw",

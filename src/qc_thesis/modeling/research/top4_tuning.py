@@ -31,7 +31,7 @@ from qc_thesis.modeling.stacking.recipes import (
     _context_columns,
     _subset_stack,
 )
-from qc_thesis.paths import THESIS_ROOT
+from qc_thesis.paths import PRE_WAVEFORM_LABEL, THESIS_ROOT, WAVEFORM_AUGMENTED_LABEL
 
 
 BASELINE_RECIPE_MAP = {
@@ -44,8 +44,8 @@ BASELINE_RECIPE_MAP = {
 FAMILY_LABELS = {
     "paired_raw": "Paired-only raw",
     "paired_context": "Paired-only context",
-    "pre_waveform": "Pre-waveform unlabeled structure",
-    "waveform_augmented": "Waveform-augmented structure",
+    "pre_waveform": PRE_WAVEFORM_LABEL,
+    "waveform_augmented": WAVEFORM_AUGMENTED_LABEL,
 }
 
 

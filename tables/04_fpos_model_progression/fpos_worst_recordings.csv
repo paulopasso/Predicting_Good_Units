@@ -1,13 +1,13 @@
 label,recording_key,r2
-Waveform-augmented structure,PAIRED_ENGLISH::paired_english::m57_191105_161455,-167.4430894952463
-Waveform-augmented structure,PAIRED_ENGLISH::paired_english::m15_190315_150831_cell1,-89.75415138581435
-Waveform-augmented structure,PAIRED_ENGLISH::paired_english::m139_200114_191955,-7.069909848476704
-Waveform-augmented structure,PAIRED_ENGLISH::paired_english::m14_190326_155432,-4.593256790726185
-Waveform-augmented structure,PAIRED_ENGLISH::paired_english::m108_191125_171427,-3.1833152450027993
-Waveform-augmented structure,PAIRED_ENGLISH::paired_english::m57_191105_141906,-3.0485905422338724
-Waveform-augmented structure,PAIRED_MEA64C_YGER::paired_mea64c::20160415_patch2,-1.8219514743208924
-Waveform-augmented structure,PAIRED_ENGLISH::paired_english::m113_191125_204935,-1.188618939629355
-Waveform-augmented structure,PAIRED_ENGLISH::paired_english::m139_200114_222743,-0.7157098262668666
-Waveform-augmented structure,PAIRED_CRCNS_HC1::paired_crcns::d11221_d11221.002,-0.5788235804032201
-Waveform-augmented structure,PAIRED_ENGLISH::paired_english::m26_190524_100859_cell1,-0.3982682021507108
-Waveform-augmented structure,PAIRED_CRCNS_HC1::paired_crcns::d11222_d11222.002,-0.1566448391100488
+Waveform-augmented stack,PAIRED_ENGLISH::paired_english::m57_191105_161455,-167.4430894952463
+Waveform-augmented stack,PAIRED_ENGLISH::paired_english::m15_190315_150831_cell1,-89.75415138581435
+Waveform-augmented stack,PAIRED_ENGLISH::paired_english::m139_200114_191955,-7.069909848476704
+Waveform-augmented stack,PAIRED_ENGLISH::paired_english::m14_190326_155432,-4.593256790726185
+Waveform-augmented stack,PAIRED_ENGLISH::paired_english::m108_191125_171427,-3.1833152450027993
+Waveform-augmented stack,PAIRED_ENGLISH::paired_english::m57_191105_141906,-3.0485905422338724
+Waveform-augmented stack,PAIRED_MEA64C_YGER::paired_mea64c::20160415_patch2,-1.8219514743208924
+Waveform-augmented stack,PAIRED_ENGLISH::paired_english::m113_191125_204935,-1.188618939629355
+Waveform-augmented stack,PAIRED_ENGLISH::paired_english::m139_200114_222743,-0.7157098262668666
+Waveform-augmented stack,PAIRED_CRCNS_HC1::paired_crcns::d11221_d11221.002,-0.5788235804032201
+Waveform-augmented stack,PAIRED_ENGLISH::paired_english::m26_190524_100859_cell1,-0.3982682021507108
+Waveform-augmented stack,PAIRED_CRCNS_HC1::paired_crcns::d11222_d11222.002,-0.1566448391100488

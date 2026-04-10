@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from .paths import THESIS_ROOT, WAVEFORM_AUGMENTED_LABEL, feature_group_display, normalize_model_label
+from .paths import PRE_WAVEFORM_LABEL, THESIS_ROOT, WAVEFORM_AUGMENTED_LABEL, feature_group_display, normalize_model_label
 from .plots import (
     THESIS_HIGHLIGHT_FAMILY_COLORS,
     THESIS_HIGHLIGHT_MODEL_COLORS,
@@ -697,18 +697,29 @@ def _build_raw_vs_waveform_complementarity(data: HighlightFigureData) -> dict[st
 
 
 def _build_recording_performance_landscape(data: HighlightFigureData) -> dict[str, str]:
-    preferred_cols = [
-        ("Paired-only raw", "Paired raw"),
-        ("Pseudo+anchor", "Pre-waveform"),
-        ("Waveform+", "Waveform+"),
+    def _first_present(*candidates: str) -> str | None:
+        for candidate in candidates:
+            if candidate in data.rec_pivot.columns:
+                return candidate
+        return None
+
+    preferred_specs = [
+        (("Paired-only raw", "Paired raw"), "Paired raw"),
+        (("Trust-filtered",), "Trust-filtered"),
+        (("Waveform+",), "Waveform+"),
     ]
-    fallback_cols = [
-        ("Pseudo+anchor", "Pre-waveform"),
-        ("Waveform+", "Waveform+"),
-        ("Paired context", "Paired context"),
+    fallback_specs = [
+        (("Trust-filtered",), "Trust-filtered"),
+        (("Waveform+",), "Waveform+"),
+        (("Paired context", "Paired-only context"), "Paired context"),
     ]
-    selected = preferred_cols if all(col in data.rec_pivot.columns for col, _ in preferred_cols) else fallback_cols
-    df = data.rec_pivot[[col for col, _ in selected]].rename(columns=dict(selected)).copy()
+    active_specs = preferred_specs if all(_first_present(*candidates) is not None for candidates, _ in preferred_specs) else fallback_specs
+    resolved = [(_first_present(*candidates), display) for candidates, display in active_specs]
+    missing = [display for source, display in resolved if source is None]
+    if missing:
+        raise KeyError(f"Missing expected recording-performance columns: {missing}")
+    column_map = {source: display for source, display in resolved if source is not None}
+    df = data.rec_pivot[list(column_map)].rename(columns=column_map).copy()
     clip_low = -2.0
     clipped = df.clip(lower=clip_low)
     clipped["family"] = [_family_from_key(index) for index in clipped.index]
@@ -717,15 +728,16 @@ def _build_recording_performance_landscape(data: HighlightFigureData) -> dict[st
 
     model_color_lookup = {
         "Paired raw": THESIS_HIGHLIGHT_MODEL_COLORS["Paired-only raw"],
-        "Pre-waveform": THESIS_HIGHLIGHT_MODEL_COLORS["Pre-waveform unlabeled structure"],
+        "Trust-filtered": THESIS_HIGHLIGHT_MODEL_COLORS[PRE_WAVEFORM_LABEL],
         "Waveform+": THESIS_HIGHLIGHT_MODEL_COLORS[WAVEFORM_AUGMENTED_LABEL],
         "Paired context": THESIS_HIGHLIGHT_MODEL_COLORS["Paired-only context"],
     }
 
     fig, ax = plt.subplots(figsize=(8.7, 6.5))
     y_positions = np.arange(len(clipped))
-    offsets = np.linspace(-0.22, 0.22, len(selected))
-    for offset, label in zip(offsets, [short for _, short in selected]):
+    display_labels = list(column_map.values())
+    offsets = np.linspace(-0.22, 0.22, len(display_labels))
+    for offset, label in zip(offsets, display_labels):
         ax.scatter(
             clipped[label],
             y_positions + offset,

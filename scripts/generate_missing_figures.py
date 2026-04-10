@@ -26,6 +26,7 @@ SRC_DIR = ROOT / "src"
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
+from qc_thesis.paths import PRE_WAVEFORM_LABEL, WAVEFORM_AUGMENTED_LABEL
 from qc_thesis.plots import BENCHMARK_MODEL_COLORS
 
 # ── colour palette ────────────────────────────────────────────────────────────
@@ -48,8 +49,8 @@ def plot_fpos_seed_stability():
         "Paired-only raw": "fpos_paired_raw",
         "Paired-only context": "fpos_paired_context",
         "Context-first source stack": "fpos_context_stack",
-        "Pre-waveform unlabeled structure": "fpos_pre_waveform_unlabeled",
-        "Waveform-augmented structure": "fpos_waveform_winner",
+        PRE_WAVEFORM_LABEL: "fpos_pre_waveform_unlabeled",
+        WAVEFORM_AUGMENTED_LABEL: "fpos_waveform_winner",
     }
 
     rows = []
@@ -77,8 +78,8 @@ def plot_fpos_seed_stability():
         "Paired-only raw",
         "Paired-only context",
         "Context-first source stack",
-        "Pre-waveform unlabeled structure",
-        "Waveform-augmented structure",
+        PRE_WAVEFORM_LABEL,
+        WAVEFORM_AUGMENTED_LABEL,
     ]
     display_labels = model_order
     colors = [BENCHMARK_MODEL_COLORS.get(label, GREY) for label in model_order]
@@ -196,7 +197,7 @@ def plot_milestone_trajectory():
 # ─────────────────────────────────────────────────────────────────────────────
 def plot_disjoint_gap():
     protocol = pd.read_csv(TABLES / "04_fpos_model_progression" / "fpos_protocol_regime_preference.csv")
-    wave_row = protocol.loc[protocol["label"] == "Waveform-augmented structure"].iloc[0]
+    wave_row = protocol.loc[protocol["label"] == WAVEFORM_AUGMENTED_LABEL].iloc[0]
     winner_rd = float(wave_row["recording_disjoint_r2"])
     winner_fd = float(wave_row["macro_r2"])
 
@@ -219,7 +220,7 @@ def plot_disjoint_gap():
     ax.text(1.27, (winner_rd + winner_fd) / 2,
             f"Δ = {winner_rd - winner_fd:.3f}", color=RED, fontsize=9, va="center")
 
-    ax.set_ylabel("R²  (waveform-augmented structure)")
+    ax.set_ylabel(f"R²  ({WAVEFORM_AUGMENTED_LABEL.lower()})")
     ax.set_title("Generalization gap: recording-disjoint vs family-disjoint\n(20 recording-disjoint seeds vs LOFO family-held-out)", fontsize=10)
     ax.set_ylim(0, winner_rd + 0.12)
     ax.yaxis.grid(True, linestyle="--", alpha=0.4)

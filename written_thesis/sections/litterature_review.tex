@@ -1,27 +1,27 @@
-\chapter{Background}
-\label{chap:background}
+\section{Background}
+\label{sec:background}
 
-\section{History of Spike Sorting}
+\subsection{History of Spike Sorting}
 
 Monitoring the activity of specific neurons has been an area of research for over half a century. The first neuron activity was recorded using glass micropipettes and metal electrodes \parencite{Hubel1962}. At the time, identifying single spikes was a manual job performed by expert operators \parencite{Hubel1962}. Single-neuron activity can be detected with a single electrode and a simple threshold detector built into the hardware. However, the high level of background noise from other neurons in the local area, with action potentials of similar shape and size, made it challenging to isolate a specific neuron's activity \parencite{Lewicki1998}. The introduction of principal component analysis established it as the standard method for feature extraction in spike sorting. It marked the transition from manual methods to a software pipeline composed of four steps: detection, feature extraction, clustering, and evaluation \parencite{Lewicki1998}.
 
 Since the beginning of extracellular recordings, our capacity to monitor multiple neurons simultaneously has doubled every seven years \parencite{Stevenson2011}. To capture more and more neural activity, the hardware had to evolve, starting from micropipettes and a singular metal electrode \parencite{Hubel1962} to modern high-density probes \parencite{Jun2017}. For the new generation of probes to achieve its full potential, it must be accompanied by the development of adapted spike-sorting algorithms and quality metrics \parencite{EINEVOLL201211}. With more neuronal activity recorded, additional challenges emerged: the signal became harder to parse, and classic sorting algorithms had to evolve to leverage the quantity of information provided by the new hardware.
 
-\section{Post Hoc Analysis in Spike Sorting}
+\subsection{Post Hoc Analysis in Spike Sorting}
 
-\subsection{Manual Sorting}
+\subsubsection{Manual Sorting}
 
 Spike sorting has traditionally depended on manual intervention and often still does. Experts inspect waveform clusters one channel at a time, in a two-dimensional PCA projection, and manually define cluster boundaries \parencite{Wood2004}. In an experiment led by \textcite{Wood2004}, five sorting experts were asked to perform manual spike sorting on 20 real motor-cortex channels and five realistic synthetic channels that experts could barely differentiate. The sorting experts agreed only 25\% of the time on the number of units in the real channel and had an average error rate of 23\% for false positives and 30\% for false negatives in synthetic channels \parencite{Wood2004}.
 
 This experience demonstrated that manual spike sorting is highly variable, even amongst expert researchers, making it more difficult to draw conclusions from such data.
 
-\subsection{Manual Curation}
+\subsubsection{Manual Curation}
 
 As spike sorting became more automated, manual sorting disappeared. However, experts still perform manual curation tasks to improve performance, such as correcting the putative units identified by the sorters by merging split clusters, verifying cluster assignments, or rejecting poor-quality units \parencite{Rossant2016}.
 
 However, manual curation is viewed as a limitation. It is not a scalable solution and it creates major reproducibility issues in the field \parencite{Rossant2016,Buccino2020SpikeInterface}. Recently, Fehér et al. (2025) proposed to automate unit curation using \emph{AECuration}, an autoencoder-based approach trained to separate true neural events from non-neural detections. Furthermore, Jain et al. (2025) introduced \emph{UnitRefine}, a community toolbox that uses supervised learning to classify putative units into three categories: noise, single-unit activity, and multi-unit activity. They trained the model using labels assigned by expert curators, whose predictions can vary and may deviate from the ground truth.
 
-\subsection{Quality Metrics}
+\subsubsection{Quality Metrics}
 
 Robust quality metrics are vital for determining whether a unit identified by a spike-sorting algorithm corresponds to a single neuron. They are used by manual curators and scientists to assess the reliability of putative units. Quality metrics in spike sorting can be stratified into five categories: isolation, completeness, contamination, stability, and additional metrics.
 
@@ -35,23 +35,23 @@ Drift metrics, such as drift peak-to-peak, drift standard deviation, and drift m
 
 Quality metrics are insightful but not sufficient to distinguish with perfect precision which putative units are accurate. In fact, they are proxies while the goal is to estimate the ground-truth error rate itself.
 
-\section{Different Spike-Sorting Algorithms}
+\subsection{Different Spike-Sorting Algorithms}
 
 Spike-sorter families differ in their structure and in what they optimise for. Template-based methods are among the most popular: they use spike waveforms, which serve as the signature of a neuron, to determine the unit to which a spike belongs. From this group, we evaluate KiloSort \parencite{Pachitariu2016}, KiloSort2, SpyKING CIRCUS \parencite{10.7554/eLife.34518}, and Klusta \parencite{Rossant2016}. This approach particularly excels at resolving overlapping spikes and scales effectively to high-dimensional probes.
 
 Similarly, JRClust \parencite{Jun2017} and its extension, IronClust, were designed for high-density probes, and their algorithms account for potential probe drift to prevent assignment errors. HerdingSpikes2, MountainSort4, and Tridesclous represent other important design choices, differing in their handling of dense arrays, automation, and practical integration. These spike sorters differ in terms of the probes they are designed for, the edge cases they consider, their robustness, their need for manual curation, and how they handle overlapping spikes. All of these factors influence how they sort spikes across different units. Therefore, a recording sorted by different sorters might yield different numbers of detected spikes or neurons.
 
-\section{Machine Learning}
+\subsection{Machine Learning}
 
-\subsection{Transfer Learning and Domain Shift}
+\subsubsection{Transfer Learning and Domain Shift}
 
 Transfer learning is a machine-learning approach where knowledge gained from one task or domain is reused to enhance performance on a different, yet related, task or domain \parencite{PanYang2010}. When data are limited, transfer learning offers an excellent way to train a model on synthetic data and subsequently adapt it to real-world data. For instance, \textcite{Zhang2022-wg} describe their sim-to-real setting as related to supervised domain adaptation for few-shot learning, where only very few labelled target samples are available, and report strong performance. This motivates the idea that applying a similar transfer logic from synthetic spike-sorting data to real paired recordings could improve our model.
 
-\subsection{Tabular Data Regression}
+\subsubsection{Tabular Data Regression}
 
 For small to medium tabular datasets, tree-based methods often outperform neural networks. \textcite{Grinsztajn2022} demonstrated that tree-based models remain state of the art on typical tabular datasets of this scale. XGBoost, introduced by \textcite{ChenGuestrin2016}, is particularly effective for small datasets because of its sparsity-aware algorithm, and LightGBM provides a similarly strong gradient-boosted-tree framework \parencite{Ke2017}.
 
-\section{Research Gap}
+\subsection{Research Gap}
 
 Extensive research has been carried out to improve sorters and benchmark their performance. Meanwhile, we continue to assess the quality of putative units using proxy metrics. Some experiments have been conducted to identify noise units and multi-unit activity through human-curation data. However, classification does not fully capture small variations in unit quality, and even expert curators sometimes make mistakes, which can make the labels unreliable.
 

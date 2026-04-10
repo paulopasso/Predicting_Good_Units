@@ -16,11 +16,18 @@ def get_thesis_root(start: Path | None = None) -> Path:
 
 THESIS_ROOT = Path(__file__).resolve().parents[2]
 
-WAVEFORM_AUGMENTED_LABEL = "Waveform-augmented structure"
+PRE_WAVEFORM_LABEL = "Trust-filtered unlabeled stack"
+WAVEFORM_AUGMENTED_LABEL = "Waveform-augmented stack"
 REDUCED_LATENT_CONTEXT_LABEL = "Reduced-latent context"
 
 LEGACY_MODEL_LABELS = {
+    "Pre-waveform unlabeled structure": PRE_WAVEFORM_LABEL,
+    "Pre-waveform unlabeled stack": PRE_WAVEFORM_LABEL,
+    "Pseudo+anchor": "Trust-filtered",
+    "Pre-wave": "Trust-filtered",
+    "Pre-waveform": "Trust-filtered",
     "Waveform winner": WAVEFORM_AUGMENTED_LABEL,
+    "Waveform-augmented structure": WAVEFORM_AUGMENTED_LABEL,
     "Reduced-latent winner": REDUCED_LATENT_CONTEXT_LABEL,
 }
 

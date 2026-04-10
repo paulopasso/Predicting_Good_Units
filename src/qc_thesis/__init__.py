@@ -57,6 +57,7 @@ from .modeling import (
 from .paths import (
     FEATURE_GROUP_DISPLAY,
     FEATURE_GROUP_SHORT,
+    PRE_WAVEFORM_LABEL,
     REDUCED_LATENT_CONTEXT_LABEL,
     THESIS_ROOT,
     WAVEFORM_AUGMENTED_LABEL,
@@ -129,6 +130,7 @@ __all__ = [
     "FEATURE_GROUP_SHORT",
     "LimitationsBundle",
     "MODELING_ROOT",
+    "PRE_WAVEFORM_LABEL",
     "RAW_PARQUET_PATH",
     "REDUCED_LATENT_CONTEXT_LABEL",
     "RecipeSpec",

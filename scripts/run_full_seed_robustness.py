@@ -380,7 +380,7 @@ def run_family_holdout_seed(seed: int, *, force: bool) -> list[dict[str, Any]]:
             StackVariantSpec(
                 variant_id="wf_embed_anchor_stack_xgboost",
                 stack=state.base_stack.apply(wf_bundle.as_augmenter()),
-                notes="family-held-out waveform-augmented structure variant",
+                notes="family-held-out waveform-augmented stack variant",
                 backend_id="xgboost_default",
                 family_alpha=1.0,
             ),

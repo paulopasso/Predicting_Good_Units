@@ -1,6 +1,6 @@
 ablation_group,best_label,best_recipe_id,best_r2,best_mae,notes
 source_supervision,Paired-only raw,fpos_paired_raw,0.4208807903133641,0.130419819739609,Small paired baseline
 context,Paired-only raw,fpos_paired_raw,0.4208807903133641,0.130419819739609,Small paired baseline
-unlabeled_paired_structure,Pre-waveform unlabeled structure,fpos_pre_waveform_unlabeled,0.406761955611441,0.1301866712108471,Strongest positive result before waveform embedding
-waveform_representation,Pre-waveform unlabeled structure,fpos_pre_waveform_unlabeled,0.406761955611441,0.1301866712108471,Strongest positive result before waveform embedding
-robustness,Pre-waveform unlabeled structure,fpos_pre_waveform_unlabeled,0.406761955611441,0.1301866712108471,Strongest positive result before waveform embedding
+unlabeled_paired_structure,Trust-filtered unlabeled stack,fpos_pre_waveform_unlabeled,0.406761955611441,0.1301866712108471,Strongest positive result before waveform embedding
+waveform_representation,Trust-filtered unlabeled stack,fpos_pre_waveform_unlabeled,0.406761955611441,0.1301866712108471,Strongest positive result before waveform embedding
+robustness,Trust-filtered unlabeled stack,fpos_pre_waveform_unlabeled,0.406761955611441,0.1301866712108471,Strongest positive result before waveform embedding

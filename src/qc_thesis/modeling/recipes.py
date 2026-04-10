@@ -8,7 +8,7 @@ import pandas as pd
 from sklearn.metrics import r2_score
 
 from ..artifacts import make_run_artifact_paths, write_manifest
-from ..paths import REDUCED_LATENT_CONTEXT_LABEL, THESIS_ROOT, WAVEFORM_AUGMENTED_LABEL
+from ..paths import PRE_WAVEFORM_LABEL, REDUCED_LATENT_CONTEXT_LABEL, THESIS_ROOT, WAVEFORM_AUGMENTED_LABEL
 from .neural import run_ssl_with_config, run_mmd_with_config
 from .transfer import QCTransferBenchmark
 from .stacking.recipes import STACKING_FAMILIES
@@ -122,7 +122,7 @@ def get_recipe_specs() -> list[RecipeSpec]:
         RecipeSpec("fpos_context_stack", "Context-first source stack", "fpos", "recording_disjoint_main", "context", "full_context", "context_first", "main_text", "context_stack", "embed_nommd_fullctx_lightgbm", "qc_thesis.modeling.stacking.recipes", notes="Best pre-unlabeled context-first stack"),
         RecipeSpec("fpos_ssl", "Best SSL neural", "fpos", "recording_disjoint_main", "context", "contextual", "ssl_neural", "main_text", "ssl_neural", "ssl_fpos_contextual", "qc_thesis.modeling.recipes", notes="Best SSL comparison", main_text=False),
         RecipeSpec("fpos_mmd", "Best MMD neural", "fpos", "recording_disjoint_main", "context", "contextual", "mmd_neural", "main_text", "mmd_neural", "neural_mmd_finetuned", "qc_thesis.modeling.recipes", notes="Best MMD comparison", main_text=False),
-        RecipeSpec("fpos_pre_waveform_unlabeled", "Pre-waveform unlabeled structure", "fpos", "recording_disjoint_main", "unlabeled_paired_structure", "full_context", "pseudo_anchor", "main_text", "anchor_stack", "source_reweighted_anchor_stack_cluster_trust_pseudo_xgboost_default", "qc_thesis.modeling.stacking.recipes", notes="Strongest positive result before waveform embedding"),
+        RecipeSpec("fpos_pre_waveform_unlabeled", PRE_WAVEFORM_LABEL, "fpos", "recording_disjoint_main", "unlabeled_paired_structure", "full_context", "pseudo_anchor", "main_text", "anchor_stack", "source_reweighted_anchor_stack_cluster_trust_pseudo_xgboost_default", "qc_thesis.modeling.stacking.recipes", notes="Strongest positive result before waveform embedding"),
         RecipeSpec("fpos_family_balanced", "Family-balanced robustness", "fpos", "recording_disjoint_main", "robustness", "full_context", "robustness_weighted", "archive_only", "robustness_stack", "family_balanced_strong_xgboost", "qc_thesis.modeling.stacking.recipes", notes="Archived robustness tradeoff variant", main_text=False),
         RecipeSpec("fpos_waveform_winner", WAVEFORM_AUGMENTED_LABEL, "fpos", "recording_disjoint_main", "waveform_representation", "waveform_embedding", "signal_embedding", "main_text", "waveform_stack", "wf_embed_anchor_stack_xgboost", "qc_thesis.modeling.stacking.recipes", notes="Final fpos waveform-augmented stack"),
         RecipeSpec("fmiss_dummy", "Dummy paired mean", "fmiss", "recording_disjoint_main", "source_target_choice", "none", "dummy", "baseline", "legacy_transfer", "inductive|dummy|paired_mean|none", "qc_thesis.modeling.recipes", (("phase", "final_holdout"),), notes="Sanity floor"),

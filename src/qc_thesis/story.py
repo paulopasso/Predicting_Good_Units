@@ -28,8 +28,8 @@ from .modeling.stacking.backends import score_predictions
 from .modeling.stacking.base_stack_runner import build_base_stack_state_from_split, evaluate_stack_variant
 from .modeling.stacking.recipes import MLStatisticsWorkbenchConfig, _variant_specs_for_target
 from .modeling.transfer import QCTransferBenchmark
-from .paths import THESIS_ROOT, WAVEFORM_AUGMENTED_LABEL, feature_group_display, normalize_model_label
-from .xai import load_fpos_shap_importance
+from .paths import PRE_WAVEFORM_LABEL, THESIS_ROOT, WAVEFORM_AUGMENTED_LABEL, feature_group_display, normalize_model_label
+from .xai import load_fpos_shap_group_summary, load_fpos_shap_importance
 
 
 SPIKEFOREST_PAIRED_STUDY_CONTEXT: dict[str, dict[str, object]] = {
@@ -68,7 +68,7 @@ SPIKEFOREST_PAIRED_STUDY_CONTEXT: dict[str, dict[str, object]] = {
 
 
 LOFO_LABELS = {
-    "reference_anchor_stack_xgboost": "Pre-waveform unlabeled structure",
+    "reference_anchor_stack_xgboost": PRE_WAVEFORM_LABEL,
     "wf_embed_anchor_stack_xgboost": WAVEFORM_AUGMENTED_LABEL,
 }
 
@@ -135,7 +135,13 @@ def _fmiss_lofo_main_cache_paths() -> tuple[Path, Path]:
 def _build_fpos_lofo_main_family_cache(force: bool = False) -> tuple[pd.DataFrame, pd.DataFrame]:
     by_family_path, aggregate_path = _fpos_lofo_main_cache_paths()
     if not force and by_family_path.exists() and aggregate_path.exists():
-        return pd.read_csv(by_family_path), pd.read_csv(aggregate_path)
+        by_family = pd.read_csv(by_family_path)
+        aggregate = pd.read_csv(aggregate_path)
+        if "label" in by_family.columns:
+            by_family["label"] = by_family["label"].map(normalize_model_label)
+        if "label" in aggregate.columns:
+            aggregate["label"] = aggregate["label"].map(normalize_model_label)
+        return by_family, aggregate
 
     recipe_map = {recipe_id: get_recipe(recipe_id) for recipe_id in FPOS_LOFO_MAIN_RECIPE_IDS}
     rows: list[dict[str, object]] = []
@@ -965,10 +971,25 @@ def build_fpos_lofo_main_family_preference_table(*, force_recompute: bool = Fals
         .reset_index(drop=True)
         .copy()
     )
+    ranked["label"] = ranked["label"].map(normalize_model_label)
+    if not aggregate.empty and "label" in aggregate.columns:
+        aggregate["label"] = aggregate["label"].map(normalize_model_label)
     ranked["family_rank"] = ranked.groupby("held_out_family").cumcount() + 1
     best = (
-        ranked.loc[ranked["family_rank"] == 1, ["held_out_family", "recipe_id", "label", "r2", "mae", "family_rank"]]
-        .rename(columns={"label": "best_label", "recipe_id": "best_recipe_id", "r2": "best_r2", "mae": "best_mae"})
+        ranked.loc[
+            ranked["family_rank"] == 1,
+            ["held_out_family", "recipe_id", "label", "r2", "r2_std", "mae", "mae_std", "family_rank"],
+        ]
+        .rename(
+            columns={
+                "label": "best_label",
+                "recipe_id": "best_recipe_id",
+                "r2": "best_r2",
+                "r2_std": "best_r2_std",
+                "mae": "best_mae",
+                "mae_std": "best_mae_std",
+            }
+        )
         .reset_index(drop=True)
     )
     r2_pivot = ranked.pivot(index="held_out_family", columns="label", values="r2")
@@ -1120,27 +1141,4 @@ def build_prediction_diagnostics(
 
 
 def build_shap_group_summary() -> pd.DataFrame:
-    shap_df = load_fpos_shap_importance().copy()
-
-    def _group(feature: str) -> str:
-        if feature.startswith("wf_"):
-            return "waveform"
-        if feature.startswith("acg_"):
-            return "acg"
-        if "_recording_" in feature:
-            return "recording_context"
-        if feature.startswith("amp_"):
-            return "amplitude"
-        if feature.startswith("si_") or feature.startswith("isi_"):
-            return "spikeinterface_qc"
-        if feature == "source_pred":
-            return "source_transfer"
-        return "other"
-
-    shap_df["feature_group"] = shap_df["feature"].map(_group)
-    return (
-        shap_df.groupby("feature_group", as_index=False)
-        .agg(mean_abs_shap=("mean_abs_shap", "sum"), feature_count=("feature", "size"))
-        .sort_values("mean_abs_shap", ascending=False)
-        .reset_index(drop=True)
-    )
+    return load_fpos_shap_group_summary().copy()

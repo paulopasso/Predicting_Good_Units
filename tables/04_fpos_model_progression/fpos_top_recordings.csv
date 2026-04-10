@@ -1,13 +1,13 @@
 label,recording_key,r2
-Waveform-augmented structure,PAIRED_KAMPFF::paired_kampff::2015_09_03_Pair_9_0B,0.8978148920512837
-Waveform-augmented structure,PAIRED_KAMPFF::paired_kampff::2015_09_03_Pair_9_0A,0.785563106958416
-Waveform-augmented structure,PAIRED_KAMPFF::paired_kampff::c14,0.6807254073265497
-Waveform-augmented structure,PAIRED_KAMPFF::paired_kampff::2014_11_25_Pair_3_0,0.6418455113205085
-Waveform-augmented structure,PAIRED_MEA64C_YGER::paired_mea64c::20170622_patch1,0.631205823807222
-Waveform-augmented structure,PAIRED_ENGLISH::paired_english::m15_190315_152315_cell1,0.3051658300114127
-Waveform-augmented structure,PAIRED_BOYDEN::paired_boyden32c::419_1_7,0.278540794534246
-Waveform-augmented structure,PAIRED_MEA64C_YGER::paired_mea64c::20170622_patch2,0.274828369287352
-Waveform-augmented structure,PAIRED_MEA64C_YGER::paired_mea64c::20170621_patch1,0.2562859724995016
-Waveform-augmented structure,PAIRED_ENGLISH::paired_english::m15_190315_142052_cell1,0.2005111148891836
-Waveform-augmented structure,PAIRED_BOYDEN::paired_boyden32c::509_1_1,0.1635745832708508
-Waveform-augmented structure,PAIRED_ENGLISH::paired_english::m57_191105_160026,0.1151563286333685
+Waveform-augmented stack,PAIRED_KAMPFF::paired_kampff::2015_09_03_Pair_9_0B,0.8978148920512837
+Waveform-augmented stack,PAIRED_KAMPFF::paired_kampff::2015_09_03_Pair_9_0A,0.785563106958416
+Waveform-augmented stack,PAIRED_KAMPFF::paired_kampff::c14,0.6807254073265497
+Waveform-augmented stack,PAIRED_KAMPFF::paired_kampff::2014_11_25_Pair_3_0,0.6418455113205085
+Waveform-augmented stack,PAIRED_MEA64C_YGER::paired_mea64c::20170622_patch1,0.631205823807222
+Waveform-augmented stack,PAIRED_ENGLISH::paired_english::m15_190315_152315_cell1,0.3051658300114127
+Waveform-augmented stack,PAIRED_BOYDEN::paired_boyden32c::419_1_7,0.278540794534246
+Waveform-augmented stack,PAIRED_MEA64C_YGER::paired_mea64c::20170622_patch2,0.274828369287352
+Waveform-augmented stack,PAIRED_MEA64C_YGER::paired_mea64c::20170621_patch1,0.2562859724995016
+Waveform-augmented stack,PAIRED_ENGLISH::paired_english::m15_190315_142052_cell1,0.2005111148891836
+Waveform-augmented stack,PAIRED_BOYDEN::paired_boyden32c::509_1_1,0.1635745832708508
+Waveform-augmented stack,PAIRED_ENGLISH::paired_english::m57_191105_160026,0.1151563286333685

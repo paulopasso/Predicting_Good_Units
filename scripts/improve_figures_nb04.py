@@ -29,6 +29,7 @@ FIG_DIR = REPO / "figures" / "04_fpos_model_progression"
 FIG_DIR.mkdir(parents=True, exist_ok=True)
 
 from qc_thesis.plots import BENCHMARK_MODEL_COLORS
+from qc_thesis.paths import PRE_WAVEFORM_LABEL, WAVEFORM_AUGMENTED_LABEL
 
 # ---------------------------------------------------------------------------
 # Style
@@ -47,7 +48,7 @@ plt.rcParams.update({
 })
 
 C_NEURAL = "#CC6677"
-C_WINNER = BENCHMARK_MODEL_COLORS["Waveform-augmented structure"]
+C_WINNER = BENCHMARK_MODEL_COLORS[WAVEFORM_AUGMENTED_LABEL]
 
 # Family colors (5 families)
 FAMILY_COLORS = {
@@ -74,8 +75,8 @@ SHORT = {
     "Context-first source stack":      "Context stack",
     "Best SSL neural":                 "SSL (neural)",
     "Best MMD neural":                 "MMD (neural)",
-    "Pre-waveform unlabeled structure":"Pseudo + anchor",
-    "Waveform-augmented structure":    "Waveform-augmented",
+    PRE_WAVEFORM_LABEL:               "Trust-filtered",
+    WAVEFORM_AUGMENTED_LABEL:         "Waveform-augmented",
 }
 
 def _model_color(label: str) -> str:
@@ -193,8 +194,8 @@ print(f"Saved: {out}")
 def plot_winner_scatter_from_recording_r2(df_rec_r2: pd.DataFrame) -> plt.Figure:
     """
     Scatter of per-recording R² values colored by family.
-    X-axis: R² for Context stack (best pre-waveform baseline)
-    Y-axis: R² for the waveform-augmented structure stack
+    X-axis: R² for Context stack (best trust-filtered baseline)
+    Y-axis: R² for the waveform-augmented stack
     This shows per-recording improvement, which is informative for the thesis.
     """
     d = df_rec_r2.copy()
@@ -225,8 +226,8 @@ def plot_winner_scatter_from_recording_r2(df_rec_r2: pd.DataFrame) -> plt.Figure
     ax.plot(lim, lim, color="#555555", linestyle="--", linewidth=1.0, zorder=2, label="y = x")
 
     ax.set_xlabel("R²  —  Context stack", fontsize=10)
-    ax.set_ylabel("R²  —  Waveform-augmented structure", fontsize=10)
-    ax.set_title("Per-recording mean R²: Context stack vs waveform-augmented structure\n(recording summaries pooled across 20 recording-disjoint seeds)", fontsize=12, fontweight="bold", pad=8)
+    ax.set_ylabel("R²  —  Waveform-augmented stack", fontsize=10)
+    ax.set_title("Per-recording mean R²: Context stack vs waveform-augmented stack\n(recording summaries pooled across 20 recording-disjoint seeds)", fontsize=12, fontweight="bold", pad=8)
     ax.set_xlim(lim)
     ax.set_ylim(lim)
     ax.legend(fontsize=8.5, framealpha=0.9, loc="upper left")
@@ -234,7 +235,7 @@ def plot_winner_scatter_from_recording_r2(df_rec_r2: pd.DataFrame) -> plt.Figure
     # Text annotation with overall metrics
     ax.text(
         0.98, 0.04,
-        "Waveform-augmented structure\nR²=0.533  MAE=0.116",
+        "Waveform-augmented stack\nR²=0.533  MAE=0.116",
         transform=ax.transAxes,
         ha="right", va="bottom",
         fontsize=8.5,
@@ -246,8 +247,8 @@ def plot_winner_scatter_from_recording_r2(df_rec_r2: pd.DataFrame) -> plt.Figure
 
 
 rec_r2 = pd.read_csv(TABLE_DIR / "fpos_recording_r2_pivot.csv").rename(columns={
-    "Waveform-augmented structure": "Waveform+",
-    "Waveform-augmented structure": "Waveform+",
+    WAVEFORM_AUGMENTED_LABEL: "Waveform+",
+    "Waveform winner": "Waveform+",
 })
 fig = plot_winner_scatter_from_recording_r2(rec_r2)
 out = FIG_DIR / "fpos_winner_prediction_scatter.png"
@@ -306,7 +307,7 @@ def plot_protocol_comparison(df: pd.DataFrame) -> plt.Figure:
         arrowprops=dict(arrowstyle="-|>", color="#CC3333", lw=1.0),
     )
 
-    fig.suptitle("Waveform-augmented structure — protocol gap\n(recording-disjoint 20-seed aggregate vs family-held-out LOFO)", fontsize=12, fontweight="bold", y=1.03)
+    fig.suptitle("Waveform-augmented stack — protocol gap\n(recording-disjoint 20-seed aggregate vs family-held-out LOFO)", fontsize=12, fontweight="bold", y=1.03)
     fig.tight_layout()
     return fig
 
@@ -333,8 +334,8 @@ def plot_family_r2_heatmap(df: pd.DataFrame) -> plt.Figure:
     col_map = {
         "Context stack":   "Context\nstack",
         "Paired context":  "Paired\ncontext",
-        "Pseudo+anchor":   "Pseudo\n+anchor",
-        "Waveform-augmented structure": "Waveform\naugmented",
+        "Trust-filtered":  "Trust-\nfiltered",
+        WAVEFORM_AUGMENTED_LABEL: "Waveform\naugmented",
     }
     d = d.rename(columns=col_map)
 
@@ -469,8 +470,8 @@ def plot_winner_residuals(df_rec_r2: pd.DataFrame, df_top: pd.DataFrame, df_wors
         color="#666666",
     )
 
-    fig.suptitle("Waveform-augmented structure — best and worst recording-level mean R²\n(recording summaries pooled across 20 recording-disjoint seeds)", fontsize=12, fontweight="bold", y=1.04)
-    fig.supxlabel("Per-recording mean R²  (Waveform-augmented structure; 20 recording-disjoint seeds)")
+    fig.suptitle("Waveform-augmented stack — best and worst recording-level mean R²\n(recording summaries pooled across 20 recording-disjoint seeds)", fontsize=12, fontweight="bold", y=1.04)
+    fig.supxlabel("Per-recording mean R²  (Waveform-augmented stack; 20 recording-disjoint seeds)")
 
     family_patches = [
         mpatches.Patch(color=v, label=k.replace("_", " ").title())

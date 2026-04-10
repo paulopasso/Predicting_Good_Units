@@ -1,0 +1,4 @@
+target,recipe_id,variant_id,budget_rows,repeats,mean_mae,std_mae,mean_r2,std_r2,mean_bias,mean_subset_recordings,mean_actual_budget_rows
+fpos,fpos_waveform_winner,wf_embed_anchor_stack_xgboost,20,2,0.15275313014619502,0.007997677443837234,0.12157313952724907,0.277260821518777,-0.07735947327847378,3.0,20.0
+fpos,fpos_waveform_winner,wf_embed_anchor_stack_xgboost,60,2,0.14051370077587638,0.017318504990008223,0.36919041496391225,0.07084159379560367,-0.0319957135389165,8.0,60.0
+fpos,fpos_waveform_winner,wf_embed_anchor_stack_xgboost,107,1,0.1160615450398521,0.0,0.5331891877732409,0.0,-0.0492654347470567,14.0,107.0

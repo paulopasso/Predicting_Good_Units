@@ -3,24 +3,24 @@
 
 \section{Dataset Taxonomy and Benchmark Scope}
 
-The thesis relies on SpikeForest \parencite{Magland2020} as its source of information. SpikeForest is a benchmarking framework that assesses multiple spike sorters using ground-truth datasets. It is the largest source of combined ground-truth data publicly available, offering a collection of recordings from various laboratories, probes, and dataset types, including paired juxtacellular recordings, simulations, and hybrid simulations. Using the hybrid simulation recordings and paired juxtacellular recordings provided through that framework, we constructed a dataset where each data point represents a unit (a putative neuron) together with its features. As targets, we use the false negative rate \fmiss{} and the false positive rate \fpos{}.
+The thesis relies on SpikeForest \parencite{Magland2020} as its source of information. SpikeForest is a benchmarking framework that assesses multiple spike sorters using ground-truth datasets. It is the largest source of combined ground-truth data publicly available, offering a collection of recordings from various laboratories, probes, and dataset types, including paired ground-truth recordings, simulations, and hybrid simulations. Using the hybrid simulation recordings and paired ground-truth recordings provided through that framework, we constructed a dataset where each data point represents a unit (a putative neuron) together with its features. As targets, we use the false negative rate \fmiss{} and the false positive rate \fpos{}.
 
-\subsection{Paired Juxtacellular Recordings}
+\subsection{Paired Ground-Truth Recordings}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.82\textwidth]{paired_juxtacellular_setup.png}
-    \caption{Paired juxtacellular and extracellular recording setup. A juxtacellular electrode records ground-truth spikes from a single neuron, while a high-density probe simultaneously captures extracellular activity from surrounding neurons across multiple channels, enabling evaluation of spike-sorting accuracy.}
+    \caption{Paired ground-truth and extracellular recording setup. A ground-truth electrode records spikes from a single neuron, while a high-density probe simultaneously captures extracellular activity from surrounding neurons across multiple channels, enabling evaluation of spike-sorting accuracy.}
     \label{fig:paired-setup}
 \end{figure}
 
-Paired juxtacellular recordings are comprised of two sensors. First, a probe with multiple channels is used to record the activity potential of nearby neurons. Channels are close to each other, and the activity of a single neuron often overlaps across multiple channels. The recording dataset is therefore a multivariate time series representing the recorded voltage over time for multiple channels.
+Paired ground-truth recordings are comprised of two sensors, as shown in \cref{fig:paired-setup}. First, a probe with multiple channels is used to record the activity potential of nearby neurons. Channels are close to each other, and the activity of a single neuron often overlaps across multiple channels. The recording dataset is therefore a multivariate time series representing the recorded voltage over time for multiple channels.
 
-The juxtacellular electrode, on the other hand, is a glass micropipette recording from a single neuron. Its recording dataset is represented as a two-column matrix, with the first column indexing rows by timestamps and the second column recording high-amplitude voltage traces. Its proximity to the cell membrane allows it to capture almost every action potential in the 1--10 mV range, while multi-channel probes might detect them in the 100--500 \si{\micro\volt} range. This capacity to capture every signal from a single target neuron is what makes it a legitimate ground truth.
+The ground-truth electrode, on the other hand, is a glass micropipette recording from a single neuron. Its recording dataset is represented as a two-column matrix, with the first column indexing rows by timestamps and the second column recording high-amplitude voltage traces. Its proximity to the cell membrane allows it to capture almost every action potential in the 1--10 mV range, while multi-channel probes might detect them in the 100--500 \si{\micro\volt} range. This capacity to capture every signal from a single target neuron is what makes it a legitimate ground truth.
 
 \subsection{Hybrid Simulations}
 
-As mentioned in \cref{chap:background}, one of the main challenges of the field is obtaining realistic ground-truth data. Fully simulated datasets became very popular for benchmarking sorters, but they can only be so close to reality. To palliate this, hybrid simulation datasets emerged. Hybrid datasets are constructed by combining a real extracellular recording with artificially reinserted real neuronal spike waveforms whose spike times and identities are known exactly.
+As mentioned in \cref{sec:background}, one of the main challenges of the field is obtaining realistic ground-truth data. Fully simulated datasets became very popular for benchmarking sorters, but they can only be so close to reality. To palliate this, hybrid simulation datasets emerged. Hybrid datasets are constructed by combining a real extracellular recording with artificially reinserted real neuronal spike waveforms whose spike times and identities are known exactly.
 
 This approach offers two main advantages. First, it preserves the multi-channel noise structure and waveform variability. Second, it provides exact spike-time ground truth, enabling rigorous evaluation of the developed quality metrics. In contrast to synthetic simulations, hybrid simulations employ a realistic noise model and, unlike purely in vivo recordings, allow performance measurement with exact labels.
 
@@ -29,10 +29,10 @@ The primary assumption underlying hybrid simulations is that the reinserted temp
 \subsection{What Kind of Dataset Each Split Component Is}
 
 \begin{itemize}
-    \item \textbf{Hybrid labelled source data.} These units are the main supervision reservoir used in the transfer-learning process. They teach the model the task at scale.
-    \item \textbf{Paired labelled target data.} These units are scarce but scientifically the most significant. They are used both to adapt the model to the target domain and to evaluate final performance.
-    \item \textbf{Paired unlabeled target data.} These units cannot be used for supervised learning, but they preserve the structure of the target domain. They are useful for support estimation, pseudo-label selection, and representation learning. Units coming from held-out recordings remain excluded from any such use.
-    \item \textbf{Family-held-out partitions.} These are stricter evaluation views of the same paired domain in which one study family is removed from training and evaluated entirely at test time.
+    \item \textbf{Hybrid labelled simulation data.} These units are the main supervision reservoir used in the transfer-learning process. They teach the model the task at scale.
+    \item \textbf{Paired labelled ground-truth data.} These units are scarce but scientifically the most significant. They are used both to adapt the model to paired juxtacellular and intracellular ground-truth data and to evaluate final performance.
+    \item \textbf{Paired unlabeled recording data.} These units cannot be used for supervised learning, but they preserve the structure of paired ground-truth recordings. They are useful for support estimation, pseudo-label selection, and representation learning. Units coming from held-out recordings remain excluded from any such use.
+    \item \textbf{Leave-one-family-out partitions.} These are stricter evaluation views of the same paired ground-truth data in which one study family is removed from training and evaluated entirely at test time.
 \end{itemize}
 
 \begin{table}[H]
@@ -56,13 +56,13 @@ The primary assumption underlying hybrid simulations is that the reinserted temp
     \end{tabular}
 \end{table}
 
-The final packaged dataset contains 33,206 rows from 61 recordings and 9 spike sorters. Of these rows, 24,224 come from hybrid simulations and 8,982 come from paired juxtacellular recordings. However, out of the 8,982 paired rows, only 207 have the matched labels required for the supervised target benchmark. In paired juxtacellular settings, only one neuron can be monitored per recording. The high-density probe captures multiple neurons, so the sorter detects several units, but only one ground-truth neuron can be monitored directly. The remaining 8,775 rows are putative units detected by the sorters that help us understand the recording context as well as the underlying structure of paired-recording data.
+The final packaged dataset contains 33,206 rows from 61 recordings and 9 spike sorters, as summarised in \cref{tab:dataset-summary}. Of these rows, 24,224 come from hybrid simulations and 8,982 come from paired ground-truth recordings. However, out of the 8,982 paired rows, only 207 have the matched labels required for the supervised target benchmark. In paired ground-truth settings, only one neuron can be monitored per recording. The high-density probe captures multiple neurons, so the sorter detects several units, but only one ground-truth neuron can be monitored directly. The remaining 8,775 rows are putative units detected by the sorters that help us understand the recording context as well as the underlying structure of paired-recording data.
 
 \subsection{Dataset Origins}
 
 The paired portion of the benchmark spans five SpikeForest study families. Their coverage is summarised in \cref{tab:family-coverage}. All five were accessed through the SpikeForest framework \parencite{Magland2020}, which standardises probe geometry and already provides multiple spike-sorting outputs with accessible results.
 
-\study{PAIRED\_BOYDEN} is a cortical paired dataset from mouse recordings and is particularly informative for bursting behaviour. \study{PAIRED\_CRCNS\_HC1} is a hippocampal dataset from anaesthetised rats, recorded with tetrodes and short silicon probes \parencite{doi:10.1152/jn.2000.84.1.401,Harris2001}. \study{PAIRED\_ENGLISH} is the broadest study set in the package, spanning hippocampus, neocortex, and thalamus. \study{PAIRED\_KAMPFF} provides dense cortical polytrode recordings with paired juxtacellular micro-pipettes \parencite{Neto2016Paired}. \study{PAIRED\_MEA64C\_YGER} is the only ex vivo dataset in the package and targets retinal ganglion cells on a dense multielectrode array \parencite{10.7554/eLife.34518}.
+\study{PAIRED\_BOYDEN} \parencite{doi:10.1152/jn.00650.2017} is a cortical paired dataset from mouse recordings and is particularly informative for bursting behaviour. \study{PAIRED\_CRCNS\_HC1} is a hippocampal dataset from anaesthetised rats, recorded with tetrodes and short silicon probes \parencite{doi:10.1152/jn.2000.84.1.401,Harris2001}. \study{PAIRED\_ENGLISH} \parencite{Magland2020} is the broadest study set in the package, spanning hippocampus, neocortex, and thalamus. \study{PAIRED\_KAMPFF} provides dense cortical polytrode recordings with paired juxtacellular micro-pipettes \parencite{Neto2016Paired}. \study{PAIRED\_MEA64C\_YGER} is the only ex vivo dataset in the package and targets retinal ganglion cells on a dense multielectrode array \parencite{10.7554/eLife.34518}.
 
 \begin{table}[H]
     \centering
@@ -72,11 +72,11 @@ The paired portion of the benchmark spans five SpikeForest study families. Their
         \toprule
         Study family & Rows & Recordings & Sorters & Labeled rows \\
         \midrule
-        PAIRED\_ENGLISH & 3,151 & 15 & 7 & 71 \\
-        PAIRED\_MEA64C\_YGER & 2,997 & 4 & 9 & 36 \\
-        PAIRED\_KAMPFF & 1,743 & 4 & 8 & 35 \\
-        PAIRED\_BOYDEN & 907 & 4 & 8 & 43 \\
-        PAIRED\_CRCNS\_HC1 & 184 & 4 & 8 & 22 \\
+        PAIRED\_ENGLISH \parencite{Magland2020} & 3,151 & 15 & 7 & 71 \\
+        PAIRED\_MEA64C\_YGER \parencite{10.7554/eLife.34518} & 2,997 & 4 & 9 & 36 \\
+        PAIRED\_KAMPFF \parencite{Neto2016Paired} & 1,743 & 4 & 8 & 35 \\
+        PAIRED\_BOYDEN \parencite{doi:10.1152/jn.00650.2017} & 907 & 4 & 8 & 43 \\
+        PAIRED\_CRCNS\_HC1 \parencite{doi:10.1152/jn.2000.84.1.401} & 184 & 4 & 8 & 22 \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -84,11 +84,11 @@ The paired portion of the benchmark spans five SpikeForest study families. Their
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.84\textwidth]{pca_2d_paired_by_family.png}
-    \caption{Paired families occupy different regions of the packaged feature space, reinforcing that the target domain is internally heterogeneous.}
+    \caption{Paired families occupy different regions of the packaged feature space, reinforcing that paired ground-truth data are internally heterogeneous.}
     \label{fig:paired-family-pca}
 \end{figure}
 
-\study{HYBRID\_JANELIA} is the hybrid simulation study set used as the source domain for transfer learning. It is distributed through SpikeForest \parencite{Magland2020} and covers both sinusoidal and static drift conditions. The waveforms used in these recordings originate from the Kampff laboratory. Even if no data leakage occurs at the recording level, full provenance independence cannot be guaranteed. For that reason, transfer claims on the Kampff family are interpreted cautiously.
+\study{HYBRID\_JANELIA} \parencite{Magland2020} is the hybrid simulation study set used as hybrid simulation data for transfer learning. It is distributed through SpikeForest \parencite{Magland2020} and covers both sinusoidal and static drift conditions. The waveforms used in these recordings originate from the Kampff laboratory \parencite{Neto2016Paired}. Even if no data leakage occurs at the recording level, full provenance independence cannot be guaranteed. For that reason, transfer claims on the Kampff family \parencite{Neto2016Paired} are interpreted cautiously, despite the family separation visible in \cref{fig:paired-family-pca}.
 
 \subsection{Dataset Audit}
 
@@ -99,21 +99,29 @@ We require a valid match for \fmiss{} because missed spikes can only be counted 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{{dataset_composition_audit copy}.png}
-    \caption{Dataset composition audit. The benchmark combines a large labelled hybrid source domain, a smaller unlabeled paired domain, and a paired labelled domain of only 207 rows.}
+    \caption{Dataset composition audit. The benchmark combines a large labelled hybrid simulation dataset, a smaller unlabeled paired-recording dataset, and a paired labelled ground-truth dataset of only 207 rows.}
     \label{fig:dataset-composition}
 \end{figure}
 
-Our target \fpos{} is available for each row. However, not every row has \fmiss{} available. Therefore, we only train and test \fmiss{} models on rows with valid \fmiss{} labels, while we still include rows with missing \fmiss{} in the broader hybrid source package used during transfer learning where relevant.
+Our target \fpos{} is available for each row. However, not every row has \fmiss{} available. Therefore, we only train and test \fmiss{} models on rows with valid \fmiss{} labels, while we still include rows with missing \fmiss{} in the broader hybrid source package used during transfer learning where relevant, as illustrated in \cref{fig:dataset-composition}.
 
-Additionally, the difference between hybrid simulation and paired data is not only in the number of rows. Hybrid rows are more uniform and easier to handle, while paired rows are more realistic and are split internally into different families with varying recording methods and biological settings. These differences shape which model might be more suited to certain family types and explain why the final story cannot be reduced to a single model recipe. This is also why it is important to distinguish between generalising across recordings of a family already present in training and generalising to entirely unseen family recordings.
+Additionally, the difference between hybrid simulation and paired data is not only in the number of rows. Hybrid rows are more uniform and easier to handle, while paired rows are more realistic and are split internally into different families with varying recording methods and biological settings. These differences shape which model might be more suited to certain family types and explain why the final story cannot be reduced to a single model configuration. This is also why it is important to distinguish between generalising across recordings of a family already present in training and generalising to entirely unseen family recordings.
+
+\subsection{Domain-Shift Quantification}
+
+In order to quantify the domain shift between hybrid simulation data and paired juxtacellular and intracellular ground-truth data, we train a simple logistic regression model \parencite{10.1111/j.2517-6161.1958.tb00292.x} from scikit-learn to classify units as paired or hybrid.
+
+After that, we judge the separability of the two domains based on the model's Area Under the Curve (AUC). AUC is the preferred metric for quantifying domain shift because it measures how well the model separates the two classes across all thresholds, instead of judging it at only one cutoff.
+
+Additionally, we build and evaluate a model trained on both the original feature dataset and the dataset augmented with context features. This tells us whether adding recording-level information on top of unit-level information increases the separability of the two domains.
 
 \section{Feature Construction}
 
-We built the dataset on derived features rather than raw voltage traces. Features were extracted directly from SpikeForest recordings and sorting outputs. The feature package is composed of waveform bins, autocorrelogram bins, amplitude statistics, SpikeInterface quality-control metrics, cosine-similarity features comparing units to neighbouring units, and recording-context features.
+We built the dataset on derived features rather than raw voltage traces. Features were extracted directly from SpikeForest recordings and sorting outputs. The feature package is composed of waveform bins, autocorrelogram bins, amplitude statistics, SpikeInterface quality-control metrics, cosine-similarity features comparing units to neighbouring units, and recording-context features. We define each of these in detail below.
 
 \subsection{Waveform and Autocorrelogram Features}
 
-The waveform of a neuron is the shape taken by the signal when it fires. This waveform might vary in amplitude from spike to spike, but it is a direct product of the neuron’s physiology and its position relative to the probe. The shape of the mean waveform is commonly called a ‘template’. This template provides important information about whether a specific spike might belong to a certain neuron.
+The waveform of a neuron is the shape taken by the signal when it fires, as illustrated in \cref{fig:waveform-template}. This waveform might vary in amplitude from spike to spike, but it is a direct product of the neuron’s physiology and its position relative to the probe. The shape of the mean waveform is commonly called a ‘template’. This template provides important information about whether a specific spike might belong to a certain neuron.
 
 \begin{figure}[H]
     \centering
@@ -122,7 +130,7 @@ The waveform of a neuron is the shape taken by the signal when it fires. This wa
     \label{fig:waveform-template}
 \end{figure}
 
-An autocorrelogram allows us to analyse the temporal firing structure of a neuron by studying the distribution of spike occurrences across time lags relative to each other. It enables us to verify that putative units do not break the biological refractory period. The refractory period is the interval following a spike in which a neuron is physiologically unable to fire again. A putative unit breaking it indicates that it likely contains overlapping signals from different neurons.
+An autocorrelogram allows us to analyse the temporal firing structure of a neuron by studying the distribution of spike occurrences across time lags relative to each other, as in \cref{fig:acg-quality}. It enables us to verify that putative units do not break the biological refractory period. The refractory period is the interval following a spike in which a neuron is physiologically unable to fire again. A putative unit breaking it indicates that it likely contains overlapping signals from different neurons.
 
 \begin{figure}[H]
     \centering
@@ -138,13 +146,13 @@ To give the model access to waveform- and autocorrelogram-rich information, we d
     \begin{subfigure}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{waveform_acg_profile_boyden.png}
-        \caption{Hybrid vs BOYDEN.}
+        \caption{Hybrid vs BOYDEN \parencite{doi:10.1152/jn.00650.2017}.}
     \end{subfigure}
     \hfill
     \begin{subfigure}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{waveform_acg_profile_crcns_hc1.png}
-        \caption{Hybrid vs CRCNS\_HC1.}
+        \caption{Hybrid vs CRCNS\_HC1 \parencite{doi:10.1152/jn.2000.84.1.401}.}
     \end{subfigure}
 
     \vspace{0.7em}
@@ -152,13 +160,13 @@ To give the model access to waveform- and autocorrelogram-rich information, we d
     \begin{subfigure}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{waveform_acg_profile_english.png}
-        \caption{Hybrid vs ENGLISH.}
+        \caption{Hybrid vs ENGLISH \parencite{Magland2020}.}
     \end{subfigure}
     \hfill
     \begin{subfigure}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{waveform_acg_profile_kampff.png}
-        \caption{Hybrid vs KAMPFF.}
+        \caption{Hybrid vs KAMPFF \parencite{Neto2016Paired}.}
     \end{subfigure}
 
     \vspace{0.7em}
@@ -166,15 +174,15 @@ To give the model access to waveform- and autocorrelogram-rich information, we d
     \begin{subfigure}[t]{0.62\textwidth}
         \centering
         \includegraphics[width=\textwidth]{waveform_acg_profile_mea64c_yger.png}
-        \caption{Hybrid vs MEA64C\_YGER.}
+        \caption{Hybrid vs MEA64C\_YGER \parencite{10.7554/eLife.34518}.}
     \end{subfigure}
-    \caption{Family-specific waveform and autocorrelogram profiles comparing the hybrid source domain with all five paired families. Hybrid waveforms remain sharper and more stereotyped, whereas paired averages are broader and more family-dependent. Even when hybrid templates originate from Kampff waveforms, the averaged packaged profiles remain visibly different from the paired KAMPFF family, which reduces concern about direct template leakage in the benchmark narrative.}
+    \caption{Average waveform and autocorrelogram profiles across the extracted benchmark sample, comparing hybrid simulation data with all five paired families. Each panel summarises the mean waveform and mean ACG for one paired family against the corresponding hybrid-simulation average. Hybrid waveforms remain sharper and more stereotyped, whereas paired averages are broader and more family-dependent. Even when hybrid templates originate from Kampff \parencite{Neto2016Paired} waveforms, the averaged profiles remain visibly different from the paired KAMPFF \parencite{Neto2016Paired} family, which reduces concern about direct template leakage in the benchmark narrative.}
     \label{fig:family-profiles}
 \end{figure}
 
-The left panel of each family profile compares the hybrid average waveform against a paired family's average waveform. The hybrid waveform displays sharper edges and a more stereotyped amplitude profile, while the paired waveforms are smoother and family-dependent. The right panel compares the autocorrelogram profiles. The hybrid ACG shows a clean trough around the refractory bin, while paired ACGs are broader, noisier, and more variable. The discrepancy in ACGs between paired and hybrid suggests that the temporal firing statistics of real recordings are not fully captured by hybrid simulations, which is another manifestation of domain shift between the source and target domains.
+The left panel of each family profile, in \cref{fig:family-profiles}, compares the hybrid-simulation average waveform against the average waveform of one paired family across our extracted benchmark sample. The hybrid waveform displays sharper edges and a more stereotyped amplitude profile, while the paired waveforms are smoother and family-dependent. The right panel compares the corresponding average autocorrelogram profiles. The hybrid ACG shows a clean trough around the refractory bin, while paired ACGs are broader, noisier, and more variable. The discrepancy in ACGs between paired and hybrid suggests that the temporal firing statistics of real recordings are not fully captured by hybrid simulations, which is another manifestation of domain shift between hybrid simulation data and paired juxtacellular and intracellular ground-truth data.
 
-It is also worth highlighting that even though the hybrid waveforms originate from the Kampff laboratory, their average waveform profile still differs substantially from the packaged paired KAMPFF average, which supports the low likelihood of direct leakage at the benchmark level. Finally, the BOYDEN family shows a marked peak around the refractory region in its ACG profile, which is characteristic of bursting neurons. Bursting neurons fire rapid clusters of spikes separated by relatively quiet periods, and that biology is already visible in the feature summary.
+It is also worth highlighting that even though the hybrid waveforms originate from the Kampff laboratory \parencite{Neto2016Paired}, their average waveform profile still differs substantially from the packaged paired KAMPFF \parencite{Neto2016Paired} average, which supports the low likelihood of direct leakage at the benchmark level. Finally, the BOYDEN family \parencite{doi:10.1152/jn.00650.2017} shows a marked peak around the refractory region in its ACG profile, which is characteristic of bursting neurons. Bursting neurons fire rapid clusters of spikes separated by relatively quiet periods, and that biology is already visible in the feature summary.
 
 \subsection{Amplitude, Spike-Timing, and Quality-Control Features}
 
@@ -191,7 +199,7 @@ When a neuron spikes, an extracellular probe records that activity on multiple c
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.92\textwidth]{probe_waveform.png}
-    \caption{Two example spatial footprints from the hybrid source domain. The left unit is clearly organised across channels, whereas the right unit shows a more ambiguous multi-channel pattern that is harder for the spike sorter to recover cleanly.}
+    \caption{Two example spatial footprints from hybrid simulation data. The left unit is clearly organised across channels, whereas the right unit shows a more ambiguous multi-channel pattern that is harder for the spike sorter to recover cleanly.}
     \label{fig:probe-waveform}
 \end{figure}
 
@@ -224,11 +232,11 @@ We then compare this accuracy against a chosen threshold that often ranges from 
 
 \section{Model Families}
 
-\subsection{Stacking as the Central Design Pattern}
+\subsection{Stacking}
 
 Stacking is an ensemble-learning method introduced by \textcite{WOLPERT1992241}, where one or multiple first-stage models are used to build additional inputs for the second-stage learner. It is implemented by augmenting the dataset seen by the second-stage learner with predictions made by previous specialised models. These added features are often referred to as meta-features. Stacking works for both regression and classification tasks; it has been applied to regression by \textcite{Breiman1996-xk} and to classification by \textcite{Leblanc01121996}.
 
-As this problem relies on multiple sources of information, which differ both in nature and reliability, stacking makes it possible to add information from different sources for the final model to learn to use. Signals derived from the source domain, recording-level context, pseudo-labels from unlabeled paired data, and waveform-based representations each provide useful but imperfect evidence about unit quality. After the relevant meta-features are added to the dataset, the second-stage learner, in our case trained on labelled paired target data, learns how much to trust each signal for a given unit. Treating intermediate predictions as fallible meta-features is especially relevant during important domain shift, because source-derived predictions cannot be assumed to transfer uniformly to the paired target domain.
+As this problem relies on multiple sources of information (recordings), which differ both in nature and reliability, stacking makes it possible to add information from different sources for the final model to learn to use. Signals derived from hybrid simulation data, recording-level context, pseudo-labels from unlabeled paired data, and waveform-based representations each provide useful but insufficient evidence about unit quality. After the meta-features are added to the dataset, the second-stage learner, in our case trained on labelled paired ground-truth data, learns how much to trust each of the meta-features (predictions of the first-stage models) for a given unit. Treating intermediate predictions as fallible meta-features is especially relevant during important domain shift, because predictions derived from hybrid simulation data cannot be assumed to transfer uniformly to paired ground-truth data.
 
 \subsection{Baseline Models}
 
@@ -241,18 +249,19 @@ As this problem relies on multiple sources of information, which differ both in 
         Baseline model & Main data used & Role in the benchmark \\
         \midrule
         Dummy paired mean & Paired labeled only & Sanity-floor predictor that always returns the target mean of the paired training set. \\
-        Paired-only raw XGBoost & Paired labeled only & Target-only reference model using raw unit-level features without source transfer. \\
-        Hybrid-only XGBoost & Hybrid labeled only & Source-only transfer reference model used to measure the raw cost of domain shift. \\
+        Paired-only raw XGBoost \parencite{ChenGuestrin2016} & Paired labeled only & Paired-only reference model using raw unit-level features without transfer from hybrid simulation data. \\
+        Hybrid-only XGBoost \parencite{ChenGuestrin2016} & Hybrid labeled only & Hybrid-only transfer reference model used to measure the raw cost of domain shift. \\
         \bottomrule
     \end{tabularx}
 \end{table}
 
 \subsection{Retained First-Stage Signals}
+\label{sec:first-stage-signals}
 
-The core stacked benchmark recipes differ by the first-stage configuration they expose to the second-stage learner.
+The core stacked benchmark configurations differ by the first-stage configuration they expose to the second-stage learner, relative to the baseline references in \cref{tab:baseline-models}.
 
 \begin{itemize}
-    \item \textbf{\texttt{source\_pred}} is a scalar regression prediction produced by a paired-domain LightGBM teacher trained on labeled target rows, using full context alongside a raw importance-weighted hybrid prediction. Out-of-fold and held-out predictions are propagated forward as a transferred first guess of the target metric. It provides the second stage with an initial estimate of the outcome, so the final model can start from an informed prediction instead of having to infer everything from scratch.
+    \item \textbf{\texttt{source\_pred}} is a scalar regression prediction produced by a LightGBM \parencite{Ke2017} teacher trained on labelled paired ground-truth rows, using full context alongside a raw importance-weighted hybrid prediction. Out-of-fold and held-out predictions are propagated forward as a transferred first guess of the target metric. It provides the second stage with an initial estimate of the outcome, so the final model can start from an informed prediction instead of having to infer everything from scratch.
     \item \textbf{\texttt{anchor\_fp\_score}} is a scalar probability in $[0,1]$ from a gradient-boosted classifier trained to distinguish labeled matched rows from unlabeled paired-pool rows, using masked context and unit features. It acts as a global unlabeled-pool-likeness score. It provides information about whether the unit looks like the broader population the model may encounter at deployment, which is useful because a unit can be realistic and important even if it is not well represented in the labeled set.
     \item \textbf{\texttt{matched\_support\_conf}} is a scalar confidence in $[0,1]$ derived from a PCA-based neighbourhood support model that converts distance to labeled neighbours into an exponentially decaying confidence. It provides a measure of how much nearby labeled evidence exists for the unit, meaning whether the model is predicting in a familiar region with close known examples or in a more isolated region where transfer is less certain.
     \item \textbf{\texttt{anchor\_support\_margin}} is the difference between the two previous signals. This signed scalar captures disagreement between global and local structure. It provides a simple summary of tension between looking like real unlabeled data and being well supported by labelled examples.
@@ -274,40 +283,59 @@ The core stacked benchmark recipes differ by the first-stage configuration they 
     \end{tabularx}
 \end{table}
 
-\subsection{Retained Model Recipes}
+\subsection{Retained Model Configurations}
 
-The retained compared models can be stated directly in recipe form. These recipes differ not only in their learner family, but also in which first-stage signals are exposed to the second-stage model and in whether additional unlabeled or waveform-derived information are introduced.
+We developed different model configurations by combining selected first-stage models with a second-stage predictor, as shown in \cref{tab:first-stage-configs}. The second-stage model is a gradient-boosted tree model \parencite{Friedman2001GBM}, as these models are known to perform well on tabular data with limited sample sizes. The choice between LightGBM \parencite{Ke2017} and XGBoost \parencite{ChenGuestrin2016} for the second-stage model was made empirically, selecting the one that delivered the best results.
 
+\paragraph{Predicting both \fpos{} and \fmiss{}.}
 \begin{itemize}
-    \item \textbf{Paired-only context.} This model uses only leakage-safe target-context features and does not append any source-derived first-stage outputs. It is the pure target-context control for both \fpos{} and \fmiss{}.
-    \item \textbf{Context-first source stack.} This is the canonical non-neural stack for \fpos{}. It passes the four retained anchor/support signals to the second-stage learner together with the target-context feature table.
-    \item \textbf{Reduced-latent context.} This retained \fmiss{} variant keeps only \texttt{source\_pred} and \texttt{anchor\_fp\_score}, while dropping the support-derived columns. Its role is to test whether the most portable transfer signals remain useful in a more compact stacked formulation.
-    \item \textbf{Pre-waveform unlabeled structure.} This \fpos{} recipe uses the same four transfer columns as the context-first source stack, but the second-stage learner is additionally trained on selected pseudo-labeled unlabeled rows that pass the trust filter.
-    \item \textbf{Waveform-augmented structure.} This final retained \fpos{} recipe extends the full anchor/support stack by appending learned \texttt{wf\_embed\_\*} coordinates as additional second-stage covariates.
+    \item \textbf{Paired-only context.} Paired-only context added recording-context features, but no additional first-stage outputs. It helps evaluate how much value recording context provides to the model on its own. This model is used for predicting both \fpos{} and \fmiss{} using LightGBM \parencite{Ke2017}.
 \end{itemize}
 
-\section{Evaluation Protocols, Metrics, and Leakage Prevention}
-
-Models are evaluated on 20 different seeds, which allows us to evaluate their performance on different dataset splits under a recording-disjoint protocol. Evaluating on multiple seeds also changes model stochasticity and pseudo-label selection, which impacts both recording-disjoint and leave-one-family-out comparisons.
-
-The two main metrics optimised throughout the benchmark are \rsq{} and \mae{}. \rsq{} is fundamental because it captures how much of the target variance the model explains, providing a global measure of explanatory power. \mae{} measures how far predictions are from the ground truth in the original target scale, making it easier to interpret the typical size of the error.
-
-As we run each model across 20 different seeds, we aggregate the mean \rsq{} and mean \mae{} across seeds to account for model stochasticity and favourable or unfavourable dataset splits.
-
-The anti-leakage policy is not only conceptual but strictly enforced throughout the benchmark implementation. A \texttt{recording\_key}, constructed from the study set and recording name, is used as the fundamental grouping unit for both the main train--test split and all validation procedures. The data pipeline explicitly separates the dataset into four disjoint pools: hybrid source data, paired fine-tuning data, paired test data, and an unlabeled target pool built exclusively from non-test recordings. Safeguards ensure that no overlap exists between held-out recordings and either the fine-tuning or unlabeled pools. This constraint is consistently reapplied during grouped validation, where pseudo-labeled rows originating from a validation recording are excluded whenever that recording is used for evaluation.
-
-These precautions are especially critical for stack-based models, where recording-level context statistics, pseudo-label support estimates, and trust scores encode strong recording-specific structure. While powerful, such features are treated as potentially unsafe and are only permitted when they do not violate the train--test boundary. In practice, the benchmark enforces a strict rule: any feature that could not be computed at deployment time for a truly unseen recording must not be used during model selection. At the split-construction level, group-aware shuffling replaces naive row sampling, generating candidate splits over recording groups and selecting the split that best balances two competing constraints: maintaining strict recording isolation while preserving a sufficiently large and stable labelled test set in this inherently label-scarce setting.
-
-\subsection{Reproducibility Measures}
-
-The project was written as a thesis-facing research package rather than a one-off notebook directory, and several reproducibility measures follow from that choice.
-
+\paragraph{Predicting \fpos{}.}
 \begin{itemize}
-    \item \textbf{Frozen inputs and tracked outputs.} The thesis is written against frozen input bundles and tracked figure and table outputs, rather than informal notebook screenshots.
-    \item \textbf{Recipe registry.} The runnable experiment catalog under \texttt{qc\_thesis.modeling.recipes} defines the source of truth for the benchmarked models and avoids undocumented recipe drift.
-    \item \textbf{Environment capture.} The repository includes an environment file and a generated environment snapshot recording the Python version, platform, git commit, branch, and environment metadata used for the thesis-facing run.
-    \item \textbf{Auditing.} The audit script checks that required directories exist, that notebooks use the thesis-root bootstrap rather than ad hoc working-directory logic, that cache directories are absent when requested, and that the recipe registry is internally valid.
-    \item \textbf{Explicit freeze path.} The reproducibility README documents the final command sequence for rebuilding the robustness sweep, notebooks, figures, and environment snapshot.
+    \item \textbf{Context-first source stack.} Context-first source stack is a stack configuration used to predict \fpos{}. It leverages the meta-features given by \texttt{source\_pred}, \texttt{anchor\_fp\_score}, \texttt{matched\_support\_conf}, and \texttt{anchor\_support\_margin} in its final prediction. Additionally, the dataset used by the second-stage model includes the same recording-context features used by the paired-only context model. Additionally, the second-stage learner used is LightGBM \parencite{Ke2017}.
+    \item \textbf{Trust-filtered unlabeled stack.} Trust-filtered unlabeled stack predicts the \fpos{} target using the same four meta-features as the Context-first source stack. However, the second-stage model, which uses XGBoost \parencite{ChenGuestrin2016}, is also trained on selected pseudo-labelled rows that pass a trust filter. This trust filter selects unlabelled units whose predicted labels are consistent across the teacher model, are similar to nearby labelled examples, and are kept and reused for training in the second stage.
+    \item \textbf{Waveform-augmented stack.} The Waveform-augmented stack predicts the \fpos{} target. Its configuration builds on the Context-first source stack by adding learned latent waveform features, using \texttt{wf\_embed\_\*}, to the second-stage model, which is XGBoost \parencite{ChenGuestrin2016}. It therefore combines transferred tabular signals with an explicit representation of waveform shape. This model combines context features, transferred tabular signals, and a latent representation of each unit's waveform shape.
 \end{itemize}
 
-These steps do not imply that the project is fully one-command reproducible from raw SpikeForest extraction. The original extraction depended on external services and Colab-specific runtime behaviour. What the thesis does provide is an explicit and auditable path from the frozen packaged dataset to the manuscript-facing results.
+\paragraph{Predicting \fmiss{}.}
+\begin{itemize}
+    \item \textbf{Reduced-latent context.} Reduced-latent context was retained for predicting the \fmiss{} target. It leverages the meta-features \texttt{source\_pred} and \texttt{anchor\_fp\_score}, and its second-stage model is LightGBM \parencite{Ke2017}. Its goal is to evaluate whether the transfer signal could remain stable under the \fmiss{} target.
+\end{itemize}
+
+Every model was evaluated for both targets, but only the ones performing better and providing relevant information were kept in our analysis.
+
+The models are evaluated across 20 seeds, allowing us to assess their performance on different recording-disjoint splits. Additionally, evaluating across multiple seeds also affects model stochasticity and pseudo-label selection, thereby affecting both disjoint and leave-one-family-out splits. Leave-one-family-out splits hold out one entire family of the training set in order to evaluate the model generalisation capabilities to new data.
+
+\subsection{Metrics}
+
+We optimised our models around two metrics. The first metric is \rsq{}, in order to quantify the explanatory power of each of our models, by comparing the models output to the ground truth values of \fpos{} and \fmiss{}. A model with a higher \rsq{} captures a greater proportion of the variance in the target variable. The second metric is \mae{}, which helps us quantify how far our predictions of \fmiss{} and \fpos{} are from the ground truth. We prefer \mae{} over mean squared error because it is easier to interpret on our shared 0 to 1 target scale and is less sensitive to outliers.
+
+As mentioned previously, we run each model across 20 different seeds. This allows us to average \rsq{} and \mae{} across all 20 seeds, accounting for both model stochasticity and differences in dataset splits.
+
+\subsection{Train-test split}
+
+For recording-disjoint evaluation, we ensure that 100 of the 207 labelled paired ground-truth units are reserved for testing to provide a sufficiently large and stable held-out set for robust model comparison. 
+
+For the leave-one-family-out protocol, the test set consists of the family being evaluated labelled data, while the train-test set is composed of the four other paired family labelled units.
+
+\subsection{Evaluating Feature Importance}
+
+To evaluate feature importance, we use SHAP values \parencite{lundberg2017unifiedapproachinterpretingmodel} to understand which feature a specific model relies on most to make its prediction. To simulate a realistic scenario, we evaluate the model's performance on the LOFO protocol. We compute the mean absolute SHAP value for each feature. We then aggregate the absolute SHAP values of each feature across the 5 held-out model families for each of the 20 seeds. This provides an average feature importance along with its standard deviation across the 100 different models (5 models per seed, one per paired data family). This allows us to identify which features and feature families contribute most on average, but also how stable that contribution was across all the different seeds and held-out families.
+
+\subsection{Leakage Prevention}
+
+To prevent potential data leakage, we create a recording key from the recording family and recording name. This recording key ensures that no overlap exists between held-out recordings in the test set and the training sets, as well as the unlabeled pool. 
+
+\subsection{Data Reproducibility Measures}
+
+In order to ensure full reproducibility of the research, multiple measures were put in place:
+
+\begin{itemize}
+    \item The data used in this thesis are frozen and saved, so all figures and tables can be reproduced rather than relying on temporary notebook outputs.
+    \item The repository contains a \texttt{reproducibility} folder, which includes the conda environment and environment snapshot that record the Python version and environment metadata used to run the code.
+    \item The use of seed 42 was consistent throughout the entire code, including within external libraries, except for training and evaluation, which were run from seed 42 to 61.
+    \item The \texttt{reproducibility} folder contains a README document giving the command sequence to reproduce the results, notebooks, figures, and environment snapshot.
+    \item The SpikeForest data extraction was performed on Google Colab using the standard CPU and extended RAM settings, while all other runs were performed on the 14-core Apple silicon M3 Max CPU.
+\end{itemize}
